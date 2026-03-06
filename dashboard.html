@@ -790,6 +790,66 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 768px) {
+      /* Hide sidebar, show top nav only */
+      .sidebar { display: none; }
+      .mobile-logo { display: inline !important; }
+
+      .main { margin-left: 0; }
+
+      /* Mobile topbar */
+      .topbar {
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .topbar-search { display: none; }
+
+      .topbar-title {
+        font-size: 16px;
+      }
+
+      /* Content padding */
+      .content { padding: 16px; }
+
+      /* Summary strip — 2 columns */
+      .summary-strip {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .summary-value { font-size: 22px; }
+
+      /* Account table — simplified for mobile */
+      .table-head { display: none; }
+
+      .account-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 14px 16px;
+      }
+
+      .adoption-cell { display: none; }
+
+      .account-row > div:nth-child(4),
+      .account-row > div:nth-child(5) { display: none; }
+
+      .account-row > div:nth-child(6) { justify-self: start; }
+      .account-row > div:nth-child(7) { justify-self: start; }
+
+      /* Lower grid — stack vertically */
+      .lower-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      /* Nova panel full width */
+      .nova-panel { min-height: 300px; }
+    }
   </style>
 </head>
 <body>
@@ -862,7 +922,10 @@
 
   <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-title">Portfolio Overview</div>
+    <div class="topbar-title" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;letter-spacing:0.14em;text-transform:uppercase;display:none;" class="mobile-logo"><span style="color:var(--text);">Sync</span><span style="color:var(--teal);">Dash</span></span>
+      Portfolio Overview
+    </div>
     <div class="topbar-search">
       <span class="search-icon">⌕</span>
       <input type="text" placeholder="Search accounts…"/>

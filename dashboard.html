@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — Account Health</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b24;
+      --surface2:  #1c2333;
+      --border:    #242d3d;
+      --border2:   #2e3a50;
+      --text:      #e2e8f0;
+      --muted:     #7a8ba3;
+      --faint:     #3d4f68;
+
+      --teal:      #00c9a7;
+      --teal-dim:  #00a389;
+      --teal-bg:   rgba(0,201,167,0.08);
+
+      --green:     #22d98a;
+      --green-bg:  rgba(34,217,138,0.10);
+      --amber:     #f5a623;
+      --amber-bg:  rgba(245,166,35,0.10);
+      --red:       #ff5c6a;
+      --red-bg:    rgba(255,92,106,0.10);
+      --blue:      #4da6ff;
+      --blue-bg:   rgba(77,166,255,0.08);
+
+      --sidebar-w: 220px;
+      --radius:    10px;
+      --radius-sm: 6px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .logo-wordmark span {
+      color: var(--teal);
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .powered-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.2);
+      border-radius: 20px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      font-size: 9.5px;
+      color: var(--teal);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .powered-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 9.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 400;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--teal-bg);
+      color: var(--teal);
+      font-weight: 500;
+    }
+
+    .nav-icon {
+      width: 16px;
+      text-align: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red-bg);
+      color: var(--red);
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #005f8a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+    .user-name {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-role {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── MAIN ────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ──────────────────────────────── */
+    .topbar {
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      gap: 8px;
+      width: 220px;
+    }
+
+    .topbar-search input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+    }
+
+    .topbar-search input::placeholder { color: var(--faint); }
+
+    .search-icon { color: var(--faint); font-size: 13px; }
+
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+    .icon-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .notif-btn { position: relative; }
+    .notif-dot {
+      position: absolute;
+      top: 6px; right: 6px;
+      width: 6px; height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      border: 1px solid var(--surface);
+    }
+
+    /* ── CONTENT ─────────────────────────────── */
+    .content {
+      padding: 28px;
+      flex: 1;
+    }
+
+    /* ── PORTFOLIO SUMMARY ───────────────────── */
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .summary-card:hover { border-color: var(--border2); }
+
+    .summary-label {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .summary-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .summary-value.green { color: var(--green); }
+    .summary-value.amber { color: var(--amber); }
+    .summary-value.red   { color: var(--red); }
+
+    .summary-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    /* ── SECTION HEADER ──────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--teal);
+      color: var(--teal);
+      background: var(--teal-bg);
+    }
+
+    /* ── ACCOUNT TABLE ───────────────────────── */
+    .accounts-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .table-head {
+      display: grid;
+      grid-template-columns: 2fr 90px 100px 110px 110px 120px 100px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .th {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--faint);
+      font-weight: 500;
+    }
+
+    .account-row {
+      display: grid;
+      grid-template-columns: 2fr 90px 100px 110px 110px 120px 100px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .account-row:last-child { border-bottom: none; }
+    .account-row:hover { background: var(--surface2); }
+
+    .account-info { display: flex; flex-direction: column; gap: 3px; }
+
+    .account-name {
+      font-weight: 600;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+
+    .account-meta {
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .account-meta-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--faint);
+    }
+
+    /* Health score */
+    .health-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .health-score.green { color: var(--green); }
+    .health-score.amber { color: var(--amber); }
+    .health-score.red   { color: var(--red); }
+
+    /* Adoption bar */
+    .adoption-cell { display: flex; flex-direction: column; gap: 4px; }
+    .adoption-pct {
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+    }
+    .adoption-bar {
+      height: 4px;
+      background: var(--border2);
+      border-radius: 2px;
+      overflow: hidden;
+      width: 70px;
+    }
+    .adoption-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+    .adoption-fill.green { background: var(--green); }
+    .adoption-fill.amber { background: var(--amber); }
+    .adoption-fill.red   { background: var(--red); }
+
+    /* Generic cell text */
+    .cell-main {
+      font-size: 13px;
+      color: var(--text);
+    }
+    .cell-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Renewal chip */
+    .renewal-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+    }
+    .renewal-chip.green { background: var(--green-bg); color: var(--green); }
+    .renewal-chip.amber { background: var(--amber-bg); color: var(--amber); }
+    .renewal-chip.red   { background: var(--red-bg);   color: var(--red); }
+
+    /* Risk flags */
+    .risk-flags { display: flex; flex-direction: column; gap: 3px; }
+
+    .risk-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .risk-flag.warn { color: var(--amber); }
+    .risk-flag.crit { color: var(--red); }
+    .risk-flag.ok   { color: var(--green); }
+
+    .risk-flag::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Action button */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+    }
+
+    .action-btn.teal {
+      background: var(--teal-bg);
+      border-color: rgba(0,201,167,0.25);
+      color: var(--teal);
+    }
+    .action-btn.teal:hover {
+      background: rgba(0,201,167,0.15);
+      border-color: var(--teal);
+    }
+
+    /* ── LOWER GRID ──────────────────────────── */
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* Activity feed */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .panel-link {
+      font-size: 11.5px;
+      color: var(--teal);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .feed-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .feed-item:last-child { border-bottom: none; }
+
+    .feed-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .feed-icon.blue   { background: var(--blue-bg);  color: var(--blue); }
+    .feed-icon.amber  { background: var(--amber-bg); color: var(--amber); }
+    .feed-icon.green  { background: var(--green-bg); color: var(--green); }
+    .feed-icon.red    { background: var(--red-bg);   color: var(--red); }
+    .feed-icon.teal   { background: var(--teal-bg);  color: var(--teal); }
+
+    .feed-body { flex: 1; }
+    .feed-text {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .feed-text strong { color: var(--text); font-weight: 600; }
+    .feed-time {
+      font-size: 11px;
+      color: var(--faint);
+      font-family: 'DM Mono', monospace;
+      margin-top: 3px;
+    }
+
+    /* Nova panel */
+    .nova-panel { display: flex; flex-direction: column; }
+
+    .nova-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nova-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #005f8a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+    }
+
+    .nova-title-block { flex: 1; }
+    .nova-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .nova-status {
+      font-size: 10.5px;
+      color: var(--teal);
+      font-family: 'DM Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nova-status::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse-dot 2s infinite;
+    }
+
+    .nova-signals { padding: 12px 18px; flex: 1; }
+
+    .signal-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+    }
+    .signal-item:last-child { margin-bottom: 0; }
+
+    .signal-item.crit {
+      background: var(--red-bg);
+      border-color: rgba(255,92,106,0.2);
+    }
+    .signal-item.warn {
+      background: var(--amber-bg);
+      border-color: rgba(245,166,35,0.2);
+    }
+    .signal-item.info {
+      background: var(--blue-bg);
+      border-color: rgba(77,166,255,0.15);
+    }
+
+    .signal-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .signal-body { flex: 1; }
+    .signal-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .signal-item.crit .signal-title { color: var(--red); }
+    .signal-item.warn .signal-title { color: var(--amber); }
+    .signal-item.info .signal-title { color: var(--blue); }
+
+    .signal-text {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .signal-account {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      color: var(--faint);
+      margin-top: 4px;
+    }
+
+    .nova-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .nova-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+    }
+
+    .nova-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 12.5px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .nova-input::placeholder { color: var(--faint); }
+
+    .nova-send {
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.25);
+      border-radius: 4px;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--teal);
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+    .nova-send:hover { background: rgba(0,201,167,0.2); }
+
+    /* ── ANIMATIONS ──────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-card { animation: fadeUp 0.4s ease both; }
+    .summary-card:nth-child(1) { animation-delay: 0.05s; }
+    .summary-card:nth-child(2) { animation-delay: 0.10s; }
+    .summary-card:nth-child(3) { animation-delay: 0.15s; }
+    .summary-card:nth-child(4) { animation-delay: 0.20s; }
+
+    .accounts-table { animation: fadeUp 0.4s 0.25s ease both; }
+    .lower-grid     { animation: fadeUp 0.4s 0.35s ease both; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ─────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wordmark">Sync<span>Dash</span></div>
+    <div class="logo-sub">Account Intelligence</div>
+    <div class="powered-badge">Powered by SyncToScale</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Workspace</div>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">◈</span> Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◎</span> Accounts
+      <span class="nav-badge">1</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◷</span> Activity
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◫</span> Tasks
+    </a>
+
+    <div class="nav-label">Insights</div>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◉</span> Health Reports
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◑</span> Renewals
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">✦</span> Nova Signals
+      <span class="nav-badge">3</span>
+    </a>
+
+    <div class="nav-label">Tools</div>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◰</span> QBR Builder
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⊞</span> Integrations
+    </a>
+    <a class="nav-item" href="https://synctoscale.me" target="_blank">
+      <span class="nav-icon">↗</span> SyncToScale
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">CM</div>
+      <div class="user-info">
+        <div class="user-name">Christy M.</div>
+        <div class="user-role">Technical Account Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ────────────────────────────── -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title">Portfolio Overview</div>
+    <div class="topbar-search">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search accounts…"/>
+    </div>
+    <div class="topbar-actions">
+      <div class="icon-btn notif-btn">
+        🔔<span class="notif-dot"></span>
+      </div>
+      <div class="icon-btn">⚙</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Summary strip -->
+    <div class="summary-strip">
+      <div class="summary-card">
+        <div class="summary-label">Total Accounts</div>
+        <div class="summary-value">3</div>
+        <div class="summary-sub">Active portfolio</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Healthy</div>
+        <div class="summary-value green">1</div>
+        <div class="summary-sub">Score ≥ 80</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">At Risk</div>
+        <div class="summary-value amber">1</div>
+        <div class="summary-sub">Score 50–79</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Critical</div>
+        <div class="summary-value red">1</div>
+        <div class="summary-sub">Score &lt; 50</div>
+      </div>
+    </div>
+
+    <!-- Accounts table -->
+    <div class="section-header">
+      <div class="section-title">Account Portfolio</div>
+      <div class="section-controls">
+        <button class="filter-btn active">All</button>
+        <button class="filter-btn">Healthy</button>
+        <button class="filter-btn">At Risk</button>
+        <button class="filter-btn">Critical</button>
+      </div>
+    </div>
+
+    <div class="accounts-table">
+      <div class="table-head">
+        <div class="th">Account</div>
+        <div class="th">Health</div>
+        <div class="th">Adoption</div>
+        <div class="th">Last Touch</div>
+        <div class="th">Contract</div>
+        <div class="th">Renewal</div>
+        <div class="th">Action</div>
+      </div>
+
+      <!-- PayFlow — Green -->
+      <div class="account-row">
+        <div class="account-info">
+          <div class="account-name">PayFlow</div>
+          <div class="account-meta">
+            Payroll Automation SaaS
+            <span class="account-meta-dot"></span>
+            260 employees
+            <span class="account-meta-dot"></span>
+            NPS: 72
+          </div>
+          <div class="risk-flags" style="margin-top:4px;">
+            <span class="risk-flag ok">Fully onboarded across all departments</span>
+            <span class="risk-flag ok">Expansion signal — UK entity in planning</span>
+          </div>
+        </div>
+        <div class="health-score green">91<span style="font-size:10px;color:var(--muted)">/100</span></div>
+        <div class="adoption-cell">
+          <div class="adoption-pct">88%</div>
+          <div class="adoption-bar"><div class="adoption-fill green" style="width:88%"></div></div>
+        </div>
+        <div>
+          <div class="cell-main">2 days ago</div>
+          <div class="cell-sub">QBR completed</div>
+        </div>
+        <div>
+          <div class="cell-main">$84,000</div>
+          <div class="cell-sub">ARR</div>
+        </div>
+        <div><span class="renewal-chip green">● 8 months</span></div>
+        <div><a class="action-btn teal" href="#">View →</a></div>
+      </div>
+
+      <!-- BenefitBridge — Amber -->
+      <div class="account-row">
+        <div class="account-info">
+          <div class="account-name">BenefitBridge</div>
+          <div class="account-meta">
+            Employee Benefits Platform
+            <span class="account-meta-dot"></span>
+            310 employees
+            <span class="account-meta-dot"></span>
+            NPS: 41
+          </div>
+          <div class="risk-flags" style="margin-top:4px;">
+            <span class="risk-flag warn">Adoption dropped 14% (Finance dept)</span>
+            <span class="risk-flag warn">2 open support tickets — workflow blocked</span>
+          </div>
+        </div>
+        <div class="health-score amber">63<span style="font-size:10px;color:var(--muted)">/100</span></div>
+        <div class="adoption-cell">
+          <div class="adoption-pct">61%</div>
+          <div class="adoption-bar"><div class="adoption-fill amber" style="width:61%"></div></div>
+        </div>
+        <div>
+          <div class="cell-main">11 days ago</div>
+          <div class="cell-sub">Check-in overdue</div>
+        </div>
+        <div>
+          <div class="cell-main">$52,000</div>
+          <div class="cell-sub">ARR</div>
+        </div>
+        <div><span class="renewal-chip amber">● 3 months</span></div>
+        <div><a class="action-btn teal" href="#">View →</a></div>
+      </div>
+
+      <!-- ShiftHR — Red -->
+      <div class="account-row">
+        <div class="account-info">
+          <div class="account-name">ShiftHR</div>
+          <div class="account-meta">
+            Workforce Scheduling & Compliance
+            <span class="account-meta-dot"></span>
+            180 employees
+            <span class="account-meta-dot"></span>
+            NPS: 18
+          </div>
+          <div class="risk-flags" style="margin-top:4px;">
+            <span class="risk-flag crit">No logins in 23 days</span>
+            <span class="risk-flag crit">Champion contact left company</span>
+          </div>
+        </div>
+        <div class="health-score red">31<span style="font-size:10px;color:var(--muted)">/100</span></div>
+        <div class="adoption-cell">
+          <div class="adoption-pct">28%</div>
+          <div class="adoption-bar"><div class="adoption-fill red" style="width:28%"></div></div>
+        </div>
+        <div>
+          <div class="cell-main">23 days ago</div>
+          <div class="cell-sub">⚠ Escalation open</div>
+        </div>
+        <div>
+          <div class="cell-main">$38,000</div>
+          <div class="cell-sub">ARR</div>
+        </div>
+        <div><span class="renewal-chip red">● 6 weeks</span></div>
+        <div><a class="action-btn teal" href="#">View →</a></div>
+      </div>
+    </div>
+
+    <!-- Lower grid -->
+    <div class="lower-grid">
+
+      <!-- Activity feed -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Recent Activity</div>
+          <a class="panel-link" href="#">View all</a>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-icon amber">⚠</div>
+          <div class="feed-body">
+            <div class="feed-text"><strong>BenefitBridge</strong> — adoption drop flagged in Finance department. Check-in recommended within 48hrs.</div>
+            <div class="feed-time">Today, 09:14</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-icon red">🔴</div>
+          <div class="feed-body">
+            <div class="feed-text"><strong>ShiftHR</strong> — champion contact departure detected via HRIS sync. Re-engagement plan needed.</div>
+            <div class="feed-time">Yesterday, 16:42</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-icon green">✓</div>
+          <div class="feed-body">
+            <div class="feed-text"><strong>PayFlow</strong> — QBR completed. Expansion discussion initiated for UK entity in Q3. Follow-up scheduled.</div>
+            <div class="feed-time">2 days ago, 11:00</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-icon teal">⟳</div>
+          <div class="feed-body">
+            <div class="feed-text"><strong>SyncToScale sync</strong> — workflow execution data refreshed across all 3 accounts. Nova signals updated.</div>
+            <div class="feed-time">2 days ago, 08:00</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-icon blue">📋</div>
+          <div class="feed-body">
+            <div class="feed-text"><strong>BenefitBridge</strong> — support ticket #1042 escalated. Engineering loop opened for blocked workflow.</div>
+            <div class="feed-time">3 days ago, 14:22</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nova signals -->
+      <div class="panel nova-panel">
+        <div class="nova-header">
+          <div class="nova-avatar">✦</div>
+          <div class="nova-title-block">
+            <div class="nova-name">Nova Signals</div>
+            <div class="nova-status">3 active insights</div>
+          </div>
+        </div>
+
+        <div class="nova-signals">
+          <div class="signal-item crit">
+            <div class="signal-icon">⚡</div>
+            <div class="signal-body">
+              <div class="signal-title">Churn Risk — High</div>
+              <div class="signal-text">Champion departure + 23-day login gap indicates likely non-renewal without intervention.</div>
+              <div class="signal-account">ShiftHR · Score 31 · Renews in 6 weeks</div>
+            </div>
+          </div>
+
+          <div class="signal-item warn">
+            <div class="signal-icon">◎</div>
+            <div class="signal-body">
+              <div class="signal-title">Adoption Regression</div>
+              <div class="signal-text">Finance dept usage down 14% over 30 days. Likely tied to blocked workflow in ticket #1042.</div>
+              <div class="signal-account">BenefitBridge · Score 63 · Renews in 3 months</div>
+            </div>
+          </div>
+
+          <div class="signal-item info">
+            <div class="signal-icon">↑</div>
+            <div class="signal-body">
+              <div class="signal-title">Expansion Opportunity</div>
+              <div class="signal-text">High adoption + 8-month runway suggests strong upsell timing for UK entity expansion in Q3.</div>
+              <div class="signal-account">PayFlow · Score 91 · Renews in 8 months</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nova-footer">
+          <div class="nova-input-row">
+            <input class="nova-input" type="text" placeholder="Ask Nova about your accounts…"/>
+            <div class="nova-send">→</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  // Filter buttons
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

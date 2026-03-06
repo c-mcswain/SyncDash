@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — BenefitBridge</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b24;
+      --surface2:  #1c2333;
+      --border:    #242d3d;
+      --border2:   #2e3a50;
+      --text:      #e2e8f0;
+      --muted:     #7a8ba3;
+      --faint:     #3d4f68;
+      --teal:      #00c9a7;
+      --teal-bg:   rgba(0,201,167,0.08);
+      --green:     #22d98a;
+      --green-bg:  rgba(34,217,138,0.10);
+      --amber:     #f5a623;
+      --amber-bg:  rgba(245,166,35,0.10);
+      --red:       #ff5c6a;
+      --red-bg:    rgba(255,92,106,0.10);
+      --blue:      #4da6ff;
+      --blue-bg:   rgba(77,166,255,0.08);
+      --sidebar-w: 220px;
+      --radius:    10px;
+      --radius-sm: 6px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 0px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1;
+      padding-left: 4px;
+    }
+
+    .logo-wordmark span { color: var(--teal); }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-left: 4px;
+    }
+
+    .powered-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.2);
+      border-radius: 20px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      font-size: 9.5px;
+      color: var(--teal);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      align-self: flex-start;
+    }
+
+    .powered-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 9.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13.5px;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--teal-bg); color: var(--teal); font-weight: 500; }
+
+    .nav-icon { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red-bg);
+      color: var(--red);
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-row { display: flex; align-items: center; gap: 10px; }
+
+    .user-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #005f8a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .user-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    /* ── MAIN ────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ──────────────────────────────── */
+    .topbar {
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .breadcrumb a:hover { color: var(--text); }
+
+    .breadcrumb-sep { color: var(--faint); }
+
+    .breadcrumb-current {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .topbar-actions { display: flex; gap: 8px; }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .action-btn.teal {
+      background: var(--teal-bg);
+      border-color: rgba(0,201,167,0.25);
+      color: var(--teal);
+    }
+
+    .action-btn.teal:hover {
+      background: rgba(0,201,167,0.15);
+      border-color: var(--teal);
+    }
+
+    .action-btn.ghost {
+      background: var(--surface2);
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .action-btn.ghost:hover { color: var(--text); border-color: var(--border2); }
+
+    /* ── ACCOUNT HEADER ──────────────────────── */
+    .account-header {
+      padding: 24px 28px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .account-title-block { flex: 1; }
+
+    .account-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .account-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .account-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+    .health-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--amber-bg);
+      border: 1px solid rgba(245,166,35,0.25);
+      color: var(--amber);
+    }
+
+    .health-badge-score {
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* ── TABS ────────────────────────────────── */
+    .tabs-bar {
+      padding: 0 28px;
+      margin-top: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0;
+    }
+
+    .tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    /* ── TAB CONTENT ─────────────────────────── */
+    .tab-content { display: none; padding: 24px 28px; }
+    .tab-content.active { display: block; }
+
+    /* ── GRID LAYOUTS ────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+    .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    /* ── PANELS ──────────────────────────────── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .panel-body { padding: 16px 18px; }
+
+    /* ── HEALTH BREAKDOWN ────────────────────── */
+    .health-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .health-row:last-child { margin-bottom: 0; }
+
+    .health-label {
+      font-size: 12.5px;
+      color: var(--muted);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .health-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--border2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .health-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .health-bar-fill.green { background: var(--green); }
+    .health-bar-fill.amber { background: var(--amber); }
+    .health-bar-fill.red   { background: var(--red); }
+
+    .health-score-sm {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      width: 36px;
+      text-align: right;
+    }
+
+    .health-score-sm.green { color: var(--green); }
+    .health-score-sm.amber { color: var(--amber); }
+    .health-score-sm.red   { color: var(--red); }
+
+    /* ── STAT TILES ──────────────────────────── */
+    .stat-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+
+    .stat-tile-label {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-tile-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-tile-value.amber { color: var(--amber); }
+    .stat-tile-value.green { color: var(--green); }
+    .stat-tile-value.red   { color: var(--red); }
+
+    .stat-tile-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── CHART ───────────────────────────────── */
+    .chart-wrap {
+      padding: 16px 18px;
+      position: relative;
+      height: 180px;
+    }
+
+    .chart-svg { width: 100%; height: 100%; }
+
+    /* ── SIGNAL ITEMS ────────────────────────── */
+    .signal-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+    }
+
+    .signal-item:last-child { margin-bottom: 0; }
+
+    .signal-item.crit { background: var(--red-bg); border-color: rgba(255,92,106,0.2); }
+    .signal-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
+    .signal-item.info { background: var(--blue-bg); border-color: rgba(77,166,255,0.15); }
+    .signal-item.ok   { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
+
+    .signal-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .signal-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+    .signal-item.crit .signal-title { color: var(--red); }
+    .signal-item.warn .signal-title { color: var(--amber); }
+    .signal-item.info .signal-title { color: var(--blue); }
+    .signal-item.ok   .signal-title { color: var(--green); }
+    .signal-text { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+    /* ── ACTIVITY FEED ───────────────────────── */
+    .feed-item {
+      display: flex;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .feed-item:last-child { border-bottom: none; }
+
+    .feed-icon {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .feed-icon.blue  { background: var(--blue-bg);  color: var(--blue); }
+    .feed-icon.amber { background: var(--amber-bg); color: var(--amber); }
+    .feed-icon.green { background: var(--green-bg); color: var(--green); }
+    .feed-icon.red   { background: var(--red-bg);   color: var(--red); }
+    .feed-icon.teal  { background: var(--teal-bg);  color: var(--teal); }
+
+    .feed-text { font-size: 12.5px; color: var(--text); line-height: 1.4; }
+    .feed-text strong { font-weight: 600; }
+    .feed-time { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+    /* ── ADOPTION TAB ────────────────────────── */
+    .dept-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dept-row:last-child { border-bottom: none; }
+
+    .dept-name { font-size: 13px; color: var(--text); width: 130px; flex-shrink: 0; }
+    .dept-users { font-size: 11.5px; color: var(--muted); width: 60px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+    .dept-bar-wrap { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+    .dept-bar-fill { height: 100%; border-radius: 3px; }
+    .dept-bar-fill.green { background: var(--green); }
+    .dept-bar-fill.amber { background: var(--amber); }
+    .dept-bar-fill.red   { background: var(--red); }
+
+    .dept-pct { font-family: 'DM Mono', monospace; font-size: 12px; width: 36px; text-align: right; }
+    .dept-pct.green { color: var(--green); }
+    .dept-pct.amber { color: var(--amber); }
+    .dept-pct.red   { color: var(--red); }
+
+    .dept-trend { font-size: 11px; width: 50px; text-align: right; font-family: 'DM Mono', monospace; }
+    .dept-trend.down { color: var(--red); }
+    .dept-trend.up   { color: var(--green); }
+    .dept-trend.flat { color: var(--muted); }
+
+    /* ── TICKET ──────────────────────────────── */
+    .ticket {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .ticket:last-child { margin-bottom: 0; }
+
+    .ticket-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .ticket-id {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--faint);
+    }
+
+    .ticket-status {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .ticket-status.open { background: var(--amber-bg); color: var(--amber); }
+    .ticket-status.escalated { background: var(--red-bg); color: var(--red); }
+
+    .ticket-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .ticket-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .ticket-meta { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 8px; }
+
+    /* ── CONTACTS ────────────────────────────── */
+    .contact-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+
+    .contact-card:last-child { margin-bottom: 0; }
+    .contact-card:hover { border-color: var(--border2); }
+
+    .contact-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .contact-avatar.teal  { background: linear-gradient(135deg, var(--teal), #005f8a); }
+    .contact-avatar.amber { background: linear-gradient(135deg, #f5a623, #c47800); }
+    .contact-avatar.blue  { background: linear-gradient(135deg, #4da6ff, #0066cc); }
+    .contact-avatar.muted { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+
+    .contact-info { flex: 1; }
+    .contact-name { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .contact-role { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .contact-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .contact-tag {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+    }
+
+    .contact-tag.champion { background: var(--teal-bg); color: var(--teal); border-color: rgba(0,201,167,0.2); }
+    .contact-tag.economic { background: var(--blue-bg); color: var(--blue); border-color: rgba(77,166,255,0.15); }
+    .contact-tag.end-user { background: var(--surface); color: var(--muted); border-color: var(--border); }
+    .contact-tag.new      { background: var(--amber-bg); color: var(--amber); border-color: rgba(245,166,35,0.2); }
+    .contact-tag.inactive { background: var(--red-bg); color: var(--red); border-color: rgba(255,92,106,0.2); }
+
+    .contact-last { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 6px; }
+
+    .contact-email {
+      font-size: 11.5px;
+      color: var(--teal);
+      text-decoration: none;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* ── ACTIONS TAB ─────────────────────────── */
+    .action-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .action-item:last-child { border-bottom: none; }
+
+    .action-priority {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-weight: 700;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .action-priority.p1 { background: var(--red-bg); color: var(--red); }
+    .action-priority.p2 { background: var(--amber-bg); color: var(--amber); }
+    .action-priority.p3 { background: var(--blue-bg); color: var(--blue); }
+
+    .action-body { flex: 1; }
+    .action-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .action-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .action-due { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 6px; }
+
+    .action-cta {
+      font-size: 11.5px;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.25);
+      color: var(--teal);
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .action-cta:hover { background: rgba(0,201,167,0.15); }
+
+    /* ── CONTRACT DETAILS ────────────────────── */
+    .contract-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .contract-item { }
+
+    .contract-label {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .contract-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .contract-value.amber { color: var(--amber); }
+    .contract-value.green { color: var(--green); }
+
+    /* ── ANIMATIONS ──────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content.active { animation: fadeUp 0.3s ease both; }
+
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .topbar { padding: 0 16px; }
+      .account-header { padding: 16px; flex-direction: column; gap: 12px; }
+      .tabs-bar { padding: 0 16px; overflow-x: auto; }
+      .tab-content { padding: 16px; }
+      .two-col { grid-template-columns: 1fr; }
+      .three-col { grid-template-columns: repeat(2, 1fr); }
+      .contract-grid { grid-template-columns: 1fr; }
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wordmark">Sync<span>Dash</span></div>
+    <div class="logo-sub">Account Intelligence</div>
+    <div class="powered-badge">Powered by SyncToScale</div>
+    <div style="font-size:8.5px;color:var(--faint);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:0.02em;white-space:nowrap;text-align:left;padding-bottom:8px;">Portfolio project · fictional data</div>
+  </div>
+  <style>.sidebar-logo { padding-bottom: 0; }</style>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">◎</span> Accounts<span class="nav-badge">1</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">◷</span> Activity</a>
+    <a class="nav-item" href="#"><span class="nav-icon">◫</span> Tasks</a>
+    <div class="nav-label">Insights</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◉</span> Health Reports</a>
+    <a class="nav-item" href="#"><span class="nav-icon">◑</span> Renewals</a>
+    <a class="nav-item" href="#"><span class="nav-icon">✦</span> Nova Signals<span class="nav-badge">3</span></a>
+    <div class="nav-label">Tools</div>
+    <a class="nav-item" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
+    <a class="nav-item" href="#"><span class="nav-icon">⊞</span> Integrations</a>
+    <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">CM</div>
+      <div>
+        <div class="user-name">Christy M.</div>
+        <div class="user-role">Technical Account Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="dashboard.html">Accounts</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">BenefitBridge</span>
+    </div>
+    <div class="topbar-actions">
+      <a class="action-btn ghost" href="dashboard.html">← Back</a>
+      <button class="action-btn ghost" id="export-account">⬇ Export</button>
+      <a class="action-btn teal" href="#">✦ Build QBR</a>
+    </div>
+  </div>
+
+  <!-- Account header -->
+  <div class="account-header">
+    <div class="account-title-block">
+      <div class="account-name">BenefitBridge</div>
+      <div class="account-meta">
+        Employee Benefits Platform
+        <span class="account-meta-dot"></span>
+        310 employees
+        <span class="account-meta-dot"></span>
+        San Francisco, CA
+        <span class="account-meta-dot"></span>
+        Customer since Jan 2023
+        <span class="account-meta-dot"></span>
+        NPS: 41
+      </div>
+    </div>
+    <div class="health-badge">
+      <span>Health</span>
+      <span class="health-badge-score">63</span>
+      <span style="font-size:11px;opacity:0.6">/100</span>
+      <span style="font-size:11px;margin-left:4px;">⚠ At Risk</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <div class="tab active" onclick="showTab('overview', this)">Overview</div>
+    <div class="tab" onclick="showTab('adoption', this)">Adoption</div>
+    <div class="tab" onclick="showTab('contacts', this)">Contacts</div>
+    <div class="tab" onclick="showTab('actions', this)">Actions</div>
+  </div>
+
+  <!-- ── OVERVIEW TAB ─────────────────────── -->
+  <div class="tab-content active" id="tab-overview">
+
+    <!-- Stat tiles -->
+    <div class="three-col" style="margin-bottom:16px;">
+      <div class="stat-tile">
+        <div class="stat-tile-label">Overall Adoption</div>
+        <div class="stat-tile-value amber">61%</div>
+        <div class="stat-tile-sub">↓ 14% in Finance dept last 30d</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">Renewal Date</div>
+        <div class="stat-tile-value amber">Jun 4, 2026</div>
+        <div class="stat-tile-sub">~3 months out</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">ARR</div>
+        <div class="stat-tile-value">$52,000</div>
+        <div class="stat-tile-sub">Annual contract value</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Health breakdown -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Health Score Breakdown</div>
+            <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--amber);">63 / 100</span>
+          </div>
+          <div class="panel-body">
+            <div class="health-row">
+              <div class="health-label">Adoption rate</div>
+              <div class="health-bar-wrap"><div class="health-bar-fill amber" style="width:61%"></div></div>
+              <div class="health-score-sm amber">61</div>
+            </div>
+            <div class="health-row">
+              <div class="health-label">Engagement</div>
+              <div class="health-bar-wrap"><div class="health-bar-fill amber" style="width:58%"></div></div>
+              <div class="health-score-sm amber">58</div>
+            </div>
+            <div class="health-row">
+              <div class="health-label">NPS score</div>
+              <div class="health-bar-wrap"><div class="health-bar-fill amber" style="width:41%"></div></div>
+              <div class="health-score-sm amber">41</div>
+            </div>
+            <div class="health-row">
+              <div class="health-label">Support health</div>
+              <div class="health-bar-wrap"><div class="health-bar-fill red" style="width:35%"></div></div>
+              <div class="health-score-sm red">35</div>
+            </div>
+            <div class="health-row">
+              <div class="health-label">Onboarding</div>
+              <div class="health-bar-wrap"><div class="health-bar-fill green" style="width:88%"></div></div>
+              <div class="health-score-sm green">88</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity timeline -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Recent Activity</div>
+          </div>
+          <div class="panel-body" style="padding-top:8px;padding-bottom:8px;">
+            <div class="feed-item">
+              <div class="feed-icon amber">⚠</div>
+              <div>
+                <div class="feed-text">Adoption drop flagged in <strong>Finance department</strong> — down 14% over 30 days. Nova recommended check-in.</div>
+                <div class="feed-time">Today, 09:14</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon red">🔴</div>
+              <div>
+                <div class="feed-text">Support ticket <strong>#1042 escalated</strong> to Engineering — workflow blocker affecting Finance integrations.</div>
+                <div class="feed-time">3 days ago, 14:22</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon blue">📋</div>
+              <div>
+                <div class="feed-text">Check-in call with <strong>Dana Reyes</strong> (HR Director). Discussed open ticket, upcoming renewal, and Q2 roadmap.</div>
+                <div class="feed-time">11 days ago, 10:00</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon teal">⟳</div>
+              <div>
+                <div class="feed-text">SyncToScale workflow sync refreshed — 4 active automations running across HR and Benefits modules.</div>
+                <div class="feed-time">14 days ago, 08:00</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon green">✓</div>
+              <div>
+                <div class="feed-text">NPS survey sent to all 310 users. <strong>41 responses received</strong>. Score: 41 (down from 54 last quarter).</div>
+                <div class="feed-time">21 days ago, 12:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Nova signals -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">✦ Nova Signals</div>
+          </div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="signal-item warn">
+              <div class="signal-icon">◎</div>
+              <div>
+                <div class="signal-title">Adoption Regression</div>
+                <div class="signal-text">Finance dept usage down 14% over 30 days. Directly correlated with ticket #1042 open date.</div>
+              </div>
+            </div>
+            <div class="signal-item crit">
+              <div class="signal-icon">⚡</div>
+              <div>
+                <div class="signal-title">Renewal Risk — Medium</div>
+                <div class="signal-text">3-month runway with declining NPS and open escalation. QBR recommended before April 15.</div>
+              </div>
+            </div>
+            <div class="signal-item info">
+              <div class="signal-icon">◷</div>
+              <div>
+                <div class="signal-title">Check-in Overdue</div>
+                <div class="signal-text">Last meaningful touchpoint was 11 days ago. Cadence target is 7 days for at-risk accounts.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contract details -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Contract Details</div>
+          </div>
+          <div class="panel-body">
+            <div class="contract-grid">
+              <div class="contract-item">
+                <div class="contract-label">ARR</div>
+                <div class="contract-value">$52,000</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Contract Type</div>
+                <div class="contract-value">Annual</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Start Date</div>
+                <div class="contract-value">Jun 4, 2023</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Renewal Date</div>
+                <div class="contract-value amber">Jun 4, 2026</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Tier</div>
+                <div class="contract-value">Growth</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Seats</div>
+                <div class="contract-value">310 / 350</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Integrations</div>
+                <div class="contract-value">4 active</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Billing</div>
+                <div class="contract-value">Invoice — Net 30</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADOPTION TAB ──────────────────────── -->
+  <div class="tab-content" id="tab-adoption">
+
+    <!-- Trend chart -->
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="panel-header">
+        <div class="panel-title">Adoption Trend — Last 6 Months</div>
+        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--amber);">↓ 14% Finance</span>
+      </div>
+      <div class="chart-wrap">
+        <svg class="chart-svg" viewBox="0 0 600 140" preserveAspectRatio="none">
+          <!-- Grid lines -->
+          <line x1="0" y1="28" x2="600" y2="28" stroke="#242d3d" stroke-width="1"/>
+          <line x1="0" y1="56" x2="600" y2="56" stroke="#242d3d" stroke-width="1"/>
+          <line x1="0" y1="84" x2="600" y2="84" stroke="#242d3d" stroke-width="1"/>
+          <line x1="0" y1="112" x2="600" y2="112" stroke="#242d3d" stroke-width="1"/>
+
+          <!-- Y labels -->
+          <text x="4" y="24" fill="#3d4f68" font-size="10" font-family="monospace">80%</text>
+          <text x="4" y="52" fill="#3d4f68" font-size="10" font-family="monospace">70%</text>
+          <text x="4" y="80" fill="#3d4f68" font-size="10" font-family="monospace">60%</text>
+          <text x="4" y="108" fill="#3d4f68" font-size="10" font-family="monospace">50%</text>
+
+          <!-- Area fill -->
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f5a623" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polygon points="40,42 140,28 240,35 340,42 440,56 540,70 540,140 40,140" fill="url(#areaGrad)"/>
+
+          <!-- Overall line -->
+          <polyline points="40,42 140,28 240,35 340,42 440,56 540,70"
+            fill="none" stroke="#f5a623" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+          <!-- Finance dept line (declining) -->
+          <polyline points="40,42 140,35 240,42 340,56 440,84 540,98"
+            fill="none" stroke="#ff5c6a" stroke-width="1.5" stroke-dasharray="4,3" stroke-linejoin="round" stroke-linecap="round"/>
+
+          <!-- Data points -->
+          <circle cx="40"  cy="42" r="3.5" fill="#f5a623"/>
+          <circle cx="140" cy="28" r="3.5" fill="#f5a623"/>
+          <circle cx="240" cy="35" r="3.5" fill="#f5a623"/>
+          <circle cx="340" cy="42" r="3.5" fill="#f5a623"/>
+          <circle cx="440" cy="56" r="3.5" fill="#f5a623"/>
+          <circle cx="540" cy="70" r="3.5" fill="#f5a623"/>
+
+          <!-- X labels -->
+          <text x="30"  y="132" fill="#3d4f68" font-size="10" font-family="monospace">Oct</text>
+          <text x="128" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Nov</text>
+          <text x="228" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Dec</text>
+          <text x="328" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Jan</text>
+          <text x="428" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Feb</text>
+          <text x="525" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Mar</text>
+
+          <!-- Legend -->
+          <line x1="380" y1="14" x2="400" y2="14" stroke="#f5a623" stroke-width="2"/>
+          <text x="404" y="18" fill="#7a8ba3" font-size="10" font-family="monospace">Overall</text>
+          <line x1="460" y1="14" x2="480" y2="14" stroke="#ff5c6a" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="484" y="18" fill="#7a8ba3" font-size="10" font-family="monospace">Finance</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Department breakdown -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Adoption by Department</div>
+        </div>
+        <div class="panel-body">
+          <div class="dept-row">
+            <div class="dept-name">HR & People Ops</div>
+            <div class="dept-users">82 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill green" style="width:91%"></div></div>
+            <div class="dept-pct green">91%</div>
+            <div class="dept-trend up">↑ 3%</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">Benefits Admin</div>
+            <div class="dept-users">44 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill green" style="width:86%"></div></div>
+            <div class="dept-pct green">86%</div>
+            <div class="dept-trend flat">→ 0%</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">Operations</div>
+            <div class="dept-users">61 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill amber" style="width:72%"></div></div>
+            <div class="dept-pct amber">72%</div>
+            <div class="dept-trend down">↓ 4%</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">Engineering</div>
+            <div class="dept-users">58 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill amber" style="width:65%"></div></div>
+            <div class="dept-pct amber">65%</div>
+            <div class="dept-trend up">↑ 2%</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">Finance</div>
+            <div class="dept-users">38 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill red" style="width:34%"></div></div>
+            <div class="dept-pct red">34%</div>
+            <div class="dept-trend down">↓ 14%</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">Sales & Revenue</div>
+            <div class="dept-users">27 users</div>
+            <div class="dept-bar-wrap"><div class="dept-bar-fill amber" style="width:59%"></div></div>
+            <div class="dept-pct amber">59%</div>
+            <div class="dept-trend down">↓ 2%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open tickets -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Open Tickets</div>
+          <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--amber);">2 open</span>
+        </div>
+        <div class="panel-body">
+          <div class="ticket">
+            <div class="ticket-header">
+              <div class="ticket-id">#1042</div>
+              <div class="ticket-status escalated">Escalated</div>
+            </div>
+            <div class="ticket-title">Finance integration workflow blocked</div>
+            <div class="ticket-desc">Automated payroll sync failing on bi-weekly cadence. Affects 38 Finance users. Root cause under investigation by Engineering.</div>
+            <div class="ticket-meta">Opened 3 days ago · Assigned to Eng team · SLA: 48hr response</div>
+          </div>
+          <div class="ticket">
+            <div class="ticket-header">
+              <div class="ticket-id">#1051</div>
+              <div class="ticket-status open">Open</div>
+            </div>
+            <div class="ticket-title">SSO login intermittent for 3 users</div>
+            <div class="ticket-desc">Three users in Benefits Admin reporting occasional SSO failures. Workaround provided. Investigation ongoing.</div>
+            <div class="ticket-meta">Opened 1 day ago · Assigned to Support · SLA: 72hr response</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONTACTS TAB ──────────────────────── -->
+  <div class="tab-content" id="tab-contacts">
+    <div class="two-col">
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Key Stakeholders</div>
+
+        <div class="contact-card">
+          <div class="contact-avatar teal">DR</div>
+          <div class="contact-info">
+            <div class="contact-name">Dana Reyes</div>
+            <div class="contact-role">HR Director · Primary Contact</div>
+            <div class="contact-tags">
+              <span class="contact-tag champion">Champion</span>
+              <span class="contact-tag economic">Economic Buyer</span>
+            </div>
+            <div class="contact-last">Last contacted 11 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd99d38f9884988ebd9f9893989b94899f8f94999a98d39e9290">[email&#160;protected]</a></div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar blue">MK</div>
+          <div class="contact-info">
+            <div class="contact-name">Marcus Kim</div>
+            <div class="contact-role">VP of Finance · Escalation Contact</div>
+            <div class="contact-tags">
+              <span class="contact-tag economic">Economic Buyer</span>
+              <span class="contact-tag inactive">Low Engagement</span>
+            </div>
+            <div class="contact-last">Last contacted 45 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="97fab9fcfefad7f5f2f9f2f1fee3f5e5fef3f0f2b9f4f8fa">[email&#160;protected]</a></div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar amber">TP</div>
+          <div class="contact-info">
+            <div class="contact-name">Tanya Patel</div>
+            <div class="contact-role">Benefits Administrator · Power User</div>
+            <div class="contact-tags">
+              <span class="contact-tag champion">Power User</span>
+              <span class="contact-tag end-user">End User</span>
+            </div>
+            <div class="contact-last">Last contacted 8 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f3a9f7e6f3e2ebc7e5e2e9e2e1eef3e5f5eee3e0e2a9e4e8ea">[email&#160;protected]</a></div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar muted">?</div>
+          <div class="contact-info">
+            <div class="contact-name">Finance Dept Lead</div>
+            <div class="contact-role">Unknown — needs identification</div>
+            <div class="contact-tags">
+              <span class="contact-tag new">Needs Outreach</span>
+            </div>
+            <div class="contact-last">No contact established · Key blocker for ticket #1042 resolution</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Company info -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Company Details</div></div>
+          <div class="panel-body">
+            <div class="contract-grid">
+              <div class="contract-item">
+                <div class="contract-label">Company</div>
+                <div class="contract-value">BenefitBridge</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Industry</div>
+                <div class="contract-value">Employee Benefits</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Headquarters</div>
+                <div class="contract-value">San Francisco, CA</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Employees</div>
+                <div class="contract-value">310</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Website</div>
+                <div class="contract-value" style="color:var(--teal);font-size:12px;">benefitbridge.com</div>
+              </div>
+              <div class="contract-item">
+                <div class="contract-label">Timezone</div>
+                <div class="contract-value">PT (UTC-8)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engagement summary -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Engagement Summary</div></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="signal-item warn">
+              <div class="signal-icon">⚠</div>
+              <div>
+                <div class="signal-title">Finance Lead Unidentified</div>
+                <div class="signal-text">No direct contact with Finance dept lead. Critical for resolving ticket #1042 and rebuilding adoption.</div>
+              </div>
+            </div>
+            <div class="signal-item info">
+              <div class="signal-icon">◎</div>
+              <div>
+                <div class="signal-title">VP Finance Disengaged</div>
+                <div class="signal-text">Marcus Kim last contacted 45 days ago. Should be looped into renewal conversation given economic buyer role.</div>
+              </div>
+            </div>
+            <div class="signal-item ok">
+              <div class="signal-icon">✓</div>
+              <div>
+                <div class="signal-title">Champion Stable</div>
+                <div class="signal-text">Dana Reyes engaged and responsive. Strong internal advocate — key relationship to maintain through renewal.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACTIONS TAB ───────────────────────── -->
+  <div class="tab-content" id="tab-actions">
+    <div class="two-col">
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Recommended Next Actions</div>
+
+        <div class="panel">
+          <div class="panel-body" style="padding-top:8px;padding-bottom:8px;">
+
+            <div class="action-item">
+              <div class="action-priority p1">1</div>
+              <div class="action-body">
+                <div class="action-title">Resolve ticket #1042 — Finance workflow blocker</div>
+                <div class="action-desc">Follow up with Engineering on ETA. Communicate progress to Dana Reyes within 24hrs. This is the root cause of the Finance adoption drop and must be resolved before renewal conversation.</div>
+                <div class="action-due">Due: ASAP · Owner: Christy M. + Eng team</div>
+              </div>
+              <a class="action-cta" href="#">View ticket</a>
+            </div>
+
+            <div class="action-item">
+              <div class="action-priority p1">2</div>
+              <div class="action-body">
+                <div class="action-title">Identify and engage Finance department lead</div>
+                <div class="action-desc">No direct contact established with Finance lead. Ask Dana Reyes to facilitate intro. Critical for understanding adoption blockers and rebuilding confidence in the platform.</div>
+                <div class="action-due">Due: This week · Owner: Christy M.</div>
+              </div>
+              <a class="action-cta" href="#">Log outreach</a>
+            </div>
+
+            <div class="action-item">
+              <div class="action-priority p2">3</div>
+              <div class="action-body">
+                <div class="action-title">Schedule QBR for mid-April</div>
+                <div class="action-desc">With renewal on Jun 4, a QBR by April 15 gives time to address concerns, show progress on ticket resolution, and position renewal positively. Include Dana Reyes and Marcus Kim.</div>
+                <div class="action-due">Due: Apr 15 · Owner: Christy M.</div>
+              </div>
+              <a class="action-cta" href="#">Build QBR deck</a>
+            </div>
+
+            <div class="action-item">
+              <div class="action-priority p2">4</div>
+              <div class="action-body">
+                <div class="action-title">Re-engage VP Finance Marcus Kim</div>
+                <div class="action-desc">Last contacted 45 days ago. As economic buyer, Marcus needs to be part of the renewal conversation. Send a brief update on ticket status and request 15 min to align before QBR.</div>
+                <div class="action-due">Due: Next week · Owner: Christy M.</div>
+              </div>
+              <a class="action-cta" href="#">Draft outreach</a>
+            </div>
+
+            <div class="action-item">
+              <div class="action-priority p3">5</div>
+              <div class="action-body">
+                <div class="action-title">Run Finance dept re-onboarding session</div>
+                <div class="action-desc">Once ticket #1042 is resolved, schedule a 30-min session with Finance users to rebuild confidence, demo the fixed workflow, and capture any additional friction points.</div>
+                <div class="action-due">Due: Post ticket resolution · Owner: Christy M.</div>
+              </div>
+              <a class="action-cta" href="#">Schedule session</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- QBR builder CTA -->
+        <div class="panel" style="background:var(--teal-bg);border-color:rgba(0,201,167,0.2);">
+          <div class="panel-body" style="text-align:center;padding:24px;">
+            <div style="font-size:24px;margin-bottom:10px;">✦</div>
+            <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal);margin-bottom:8px;">Build QBR Deck</div>
+            <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;">Generate a pre-filled QBR deck for BenefitBridge using current health data, adoption trends, and recommended talking points.</div>
+            <a class="action-btn teal" href="#" style="display:inline-flex;justify-content:center;width:100%;">Generate QBR for BenefitBridge →</a>
+          </div>
+        </div>
+
+        <!-- Renewal risk summary -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Renewal Risk Summary</div></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="signal-item warn">
+              <div class="signal-icon">◑</div>
+              <div>
+                <div class="signal-title">Medium Churn Risk</div>
+                <div class="signal-text">Declining NPS + open escalation + Finance adoption drop = elevated risk. Not critical yet, but trending wrong direction.</div>
+              </div>
+            </div>
+            <div class="signal-item info">
+              <div class="signal-icon">◎</div>
+              <div>
+                <div class="signal-title">3 Months to Act</div>
+                <div class="signal-text">Renewal on Jun 4 gives enough runway to course-correct if actions are taken now. QBR by Apr 15 is the critical milestone.</div>
+              </div>
+            </div>
+            <div class="signal-item ok">
+              <div class="signal-icon">✓</div>
+              <div>
+                <div class="signal-title">Strong in 4 of 6 Depts</div>
+                <div class="signal-text">HR, Benefits Admin, and Ops all above 70% adoption. Risk is concentrated in Finance — fixable with ticket resolution.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="accounts.js"></script>
+<script>
+  // ── SESSION CHECK ─────────────────────────────────────────────────────────
+  if (!localStorage.getItem('syncdash_user')) {
+    window.location.replace('login.html');
+  }
+
+  // ── WIRE FROM accounts.js ─────────────────────────────────────────────────
+  const account = SyncDash.getAccount('benefitbridge');
+
+  if (account) {
+    // Account header — name, meta, health badge
+    document.querySelector('.account-name').textContent = account.name;
+    document.querySelector('.health-badge-score').textContent = account.healthScore;
+
+    const tierLabel = { green: '✓ Healthy', amber: '⚠ At Risk', red: '✕ Critical' };
+    document.querySelector('.health-badge').style.background =
+      account.healthTier === 'green' ? 'var(--green-bg)' :
+      account.healthTier === 'red'   ? 'var(--red-bg)'   : 'var(--amber-bg)';
+    document.querySelector('.health-badge').style.borderColor =
+      account.healthTier === 'green' ? 'rgba(34,217,138,0.25)' :
+      account.healthTier === 'red'   ? 'rgba(255,92,106,0.25)' : 'rgba(245,166,35,0.25)';
+    document.querySelector('.health-badge').style.color =
+      account.healthTier === 'green' ? 'var(--green)' :
+      account.healthTier === 'red'   ? 'var(--red)'   : 'var(--amber)';
+
+    // Stat tiles — adoption, ARR, NPS
+    const tiles = document.querySelectorAll('.stat-tile-value');
+    if (tiles[0]) tiles[0].textContent = account.adoptionPct + '%';
+    if (tiles[2]) tiles[2].textContent = '$' + account.arr.toLocaleString();
+
+    // Health score in panel header
+    const healthPanelScore = document.querySelector('.panel-header span[style*="amber"], .panel-header span[style*="green"], .panel-header span[style*="red"]');
+    if (healthPanelScore) healthPanelScore.textContent = account.healthScore + ' / 100';
+
+    // Nova signal (main one in overview)
+    const novaTitle = document.querySelector('.panel-title');
+    // Activity feed from accounts.js
+    const feedContainer = document.querySelectorAll('.panel-body')[1];
+
+    // Export button — per-account
+    const exportBtn = document.getElementById('export-account');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'csv'));
+    }
+  }
+
+  // ── TABS ──────────────────────────────────────────────────────────────────
+  function showTab(name, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — Account Intelligence for TAMs</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f4f7fa;
+      --white:       #ffffff;
+      --border:      #dde3ed;
+      --dark:        #0d1b2e;
+      --mid:         #3d5068;
+      --muted:       #7a8fa8;
+      --faint:       #b0bece;
+      --teal:        #00a389;
+      --teal-light:  #e6f7f4;
+      --navy:        #0d1b2e;
+      --radius:      12px;
+      --radius-sm:   7px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ──────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(244,247,250,0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 0 64px 0 68px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      margin-right: 40px;
+      line-height: 1;
+    }
+
+    .nav-logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+
+    .nav-logo-wordmark .sync { color: var(--dark) !important; }
+
+    .nav-logo-sub {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 5px;
+      padding-bottom: 4px;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--dark); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ghost {
+      font-size: 13.5px;
+      color: var(--mid);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--white);
+      transition: all 0.15s;
+    }
+
+    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+    .btn-primary {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--teal);
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: #008f78;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,163,137,0.25);
+    }
+
+    /* ── HERO ─────────────────────────────────── */
+    .hero {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 52px 48px 48px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--teal-light);
+      border: 1px solid rgba(0,163,137,0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11.5px;
+      color: var(--teal);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 28px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: clamp(34px, 5vw, 52px);
+      color: var(--dark);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em { font-style: normal; color: var(--teal); }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--mid);
+      max-width: 520px;
+      margin: 0 auto 36px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-hero {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--teal);
+      padding: 13px 32px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-hero:hover {
+      background: #008f78;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(0,163,137,0.28);
+    }
+
+    .btn-hero-outline {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--mid);
+      padding: 13px 28px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--white);
+      transition: all 0.15s;
+    }
+
+    .btn-hero-outline:hover { border-color: var(--teal); color: var(--teal); }
+
+    .hero-note {
+      font-size: 11.5px;
+      color: var(--faint);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── STATS BAR ────────────────────────────── */
+    .stats-bar {
+      background: var(--navy);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: center;
+      gap: 72px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat-value em { font-style: normal; color: var(--teal); }
+
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── SECTIONS ─────────────────────────────── */
+    .section {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 80px 48px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      margin-bottom: 10px;
+    }
+
+    .section-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--mid);
+      max-width: 500px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+
+    /* ── FEATURES ─────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(0,163,137,0.3);
+      box-shadow: 0 4px 24px rgba(0,163,137,0.07);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      background: var(--teal-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      margin-bottom: 14px;
+      color: var(--teal);
+    }
+
+    .feature-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    /* ── HOW IT WORKS ─────────────────────────── */
+    .how-section {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      position: relative;
+    }
+
+    .how-grid::before {
+      content: '';
+      position: absolute;
+      top: 27px;
+      left: calc(16.66% + 20px);
+      right: calc(16.66% + 20px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--teal), rgba(0,163,137,0.15), var(--teal));
+    }
+
+    .how-step { padding: 0 28px; text-align: center; }
+
+    .how-number {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--teal);
+      margin: 0 auto 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .how-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .how-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+    /* ── PREVIEW ──────────────────────────────── */
+    .preview-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(13,27,46,0.08);
+    }
+
+    .preview-titlebar {
+      background: #0d1117;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .mac-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mac-dot.r { background: #ff5c6a; }
+    .mac-dot.y { background: #f5a623; }
+    .mac-dot.g { background: #22d98a; }
+
+    .preview-url {
+      margin-left: 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .preview-body { background: #0d1117; padding: 16px 20px 20px; }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      margin-bottom: 7px;
+      border: 1px solid #242d3d;
+      background: #161b24;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .preview-row:last-child { margin-bottom: 0; }
+    .preview-row:hover { background: #1c2333; }
+
+    .preview-co { flex: 1; }
+    .preview-co-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+    .preview-co-ind { font-size: 10.5px; color: #7a8ba3; font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+    .preview-score { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; min-width: 56px; text-align: right; }
+    .preview-score.g { color: #22d98a; }
+    .preview-score.a { color: #f5a623; }
+    .preview-score.r { color: #ff5c6a; }
+
+    .preview-adoption { width: 72px; }
+    .preview-adoption-pct { font-size: 11px; font-family: 'DM Mono', monospace; color: #e2e8f0; margin-bottom: 3px; }
+    .preview-adoption-bar { height: 3px; background: #242d3d; border-radius: 2px; overflow: hidden; }
+    .preview-adoption-fill { height: 100%; border-radius: 2px; }
+    .preview-adoption-fill.g { background: #22d98a; }
+    .preview-adoption-fill.a { background: #f5a623; }
+    .preview-adoption-fill.r { background: #ff5c6a; }
+
+    .preview-renewal { font-size: 11px; font-family: 'DM Mono', monospace; padding: 3px 8px; border-radius: 20px; }
+    .preview-renewal.g { background: rgba(34,217,138,0.1); color: #22d98a; }
+    .preview-renewal.a { background: rgba(245,166,35,0.1); color: #f5a623; }
+    .preview-renewal.r { background: rgba(255,92,106,0.1); color: #ff5c6a; }
+
+    /* ── SYNC BAND ────────────────────────────── */
+    .sync-band {
+      background: var(--teal-light);
+      border-top: 1px solid rgba(0,163,137,0.15);
+      border-bottom: 1px solid rgba(0,163,137,0.15);
+      padding: 52px 48px;
+      text-align: center;
+    }
+
+    .sync-band-eyebrow {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      margin-bottom: 10px;
+    }
+
+    .sync-band h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .sync-band p {
+      font-size: 15px;
+      color: var(--mid);
+      max-width: 500px;
+      margin: 0 auto 20px;
+      line-height: 1.65;
+    }
+
+    .sync-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--teal);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,163,137,0.3);
+      padding-bottom: 2px;
+      transition: border-color 0.15s;
+    }
+
+    .sync-link:hover { border-color: var(--teal); }
+
+    /* ── CTA ──────────────────────────────────── */
+    .cta-block {
+      background: var(--navy);
+      padding: 84px 48px;
+      text-align: center;
+    }
+
+    .cta-block h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .cta-block p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.45);
+      max-width: 440px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+
+    .btn-cta {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--teal);
+      padding: 14px 36px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cta:hover {
+      background: #00c9a7;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(0,163,137,0.35);
+    }
+
+    .cta-note {
+      margin-top: 16px;
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.2);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── FOOTER ───────────────────────────────── */
+    footer {
+      background: #080f1a;
+      padding: 28px 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: var(--teal); }
+
+    .footer-links { display: flex; gap: 24px; }
+
+    .footer-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+    .footer-note {
+      font-size: 11px;
+      color: rgba(255,255,255,0.18);
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* ── ANIMATIONS ───────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow { animation: fadeUp 0.5s 0.1s ease both; }
+    .hero h1      { animation: fadeUp 0.5s 0.2s ease both; }
+    .hero-sub     { animation: fadeUp 0.5s 0.3s ease both; }
+    .hero-actions { animation: fadeUp 0.5s 0.4s ease both; }
+    .hero-note    { animation: fadeUp 0.5s 0.5s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#"><span class="nav-logo-wordmark"><span class="sync">Sync</span>Dash</span><span class="nav-logo-sub">Account Intelligence</span></a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#preview">Preview</a>
+    <a href="https://synctoscale.me" target="_blank">SyncToScale ↗</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-ghost" href="login.html">Log in</a>
+    <a class="btn-primary" href="login.html">Get started →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Know your accounts.<br><em>Before they tell you.</em></h1>
+  <p class="hero-sub">SyncDash surfaces account health signals, adoption trends, and renewal risk across your entire portfolio — so you always know where to focus.</p>
+  <div class="hero-actions">
+    <a class="btn-hero" href="login.html">View the dashboard →</a>
+    <a class="btn-hero-outline" href="https://synctoscale.me" target="_blank">Explore SyncToScale</a>
+  </div>
+  <div class="hero-eyebrow" style="margin-top:24px;margin-bottom:0;">Powered by SyncToScale</div>
+  <div style="font-size:10px;color:var(--faint);font-family:'DM Mono',monospace;margin-top:6px;">Portfolio project · fictional data</div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-value">3<em>x</em></div>
+    <div class="stat-label">Faster risk detection</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value"><em>100</em>%</div>
+    <div class="stat-label">Portfolio visibility</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">Real<em>-time</em></div>
+    <div class="stat-label">Health scoring</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">AI<em>-powered</em></div>
+    <div class="stat-label">Nova signal engine</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-eyebrow">Features</div>
+  <h2 class="section-heading">Everything a TAM needs.<br>Nothing they don't.</h2>
+  <p class="section-sub">Built around the workflows TAMs and CSMs actually run — not a generic CRM with extra fields.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">◎</div>
+      <div class="feature-title">Account Health Scoring</div>
+      <div class="feature-desc">Real-time scores weighted across adoption, engagement, NPS, and support activity. Color-coded so portfolio status is readable at a glance.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Nova Signal Engine</div>
+      <div class="feature-desc">AI-surfaced risk signals detect champion departures, adoption drops, and renewal gaps before they become problems — powered by SyncToScale data.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◷</div>
+      <div class="feature-title">Renewal Timeline View</div>
+      <div class="feature-desc">See every renewal date across your portfolio in one view, with color-coded urgency so nothing sneaks up on you at 6 weeks out.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">↑</div>
+      <div class="feature-title">Expansion Detection</div>
+      <div class="feature-desc">Nova identifies accounts with high adoption and long runways — flagging upsell and expansion opportunities before the QBR conversation.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◈</div>
+      <div class="feature-title">Activity Feed</div>
+      <div class="feature-desc">A unified log of touchpoints, support escalations, sync events, and account changes — so your full account history is always one scroll away.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◫</div>
+      <div class="feature-title">QBR Builder</div>
+      <div class="feature-desc">Generate structured quarterly business review decks directly from account health data — pre-filled with adoption metrics, risk flags, and next steps.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <section class="section">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-heading">From integration to insight<br>in three steps.</h2>
+    <p class="section-sub">SyncDash pulls live workflow and adoption data from SyncToScale and surfaces what matters.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-number">01</div>
+        <div class="how-title">Connect via SyncToScale</div>
+        <div class="how-desc">SyncDash reads workflow execution data, trigger events, and integration activity directly from your SyncToScale account — no manual data entry.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-number">02</div>
+        <div class="how-title">Nova scores your accounts</div>
+        <div class="how-desc">The Nova signal engine analyzes adoption patterns, engagement gaps, and renewal timelines to generate a health score for every account in your portfolio.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-number">03</div>
+        <div class="how-title">You act on what matters</div>
+        <div class="how-desc">Prioritize your day from a single dashboard. Know which accounts need a check-in, which are expansion-ready, and which need an escalation plan now.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PREVIEW -->
+<section class="section" id="preview">
+  <div class="section-eyebrow">Dashboard preview</div>
+  <h2 class="section-heading">Your portfolio.<br>Always in focus.</h2>
+  <p class="section-sub">A snapshot of what SyncDash looks like in practice — three accounts, three health stories.</p>
+  <div class="preview-wrap">
+    <div class="preview-titlebar">
+      <div class="mac-dot r"></div>
+      <div class="mac-dot y"></div>
+      <div class="mac-dot g"></div>
+      <div class="preview-url">syncdash.pro/dashboard</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-row">
+        <div class="preview-co">
+          <div class="preview-co-name">PayFlow</div>
+          <div class="preview-co-ind">Payroll Automation · 260 employees</div>
+        </div>
+        <div class="preview-score g">91<span style="font-size:10px;opacity:0.4">/100</span></div>
+        <div class="preview-adoption">
+          <div class="preview-adoption-pct">88% adoption</div>
+          <div class="preview-adoption-bar"><div class="preview-adoption-fill g" style="width:88%"></div></div>
+        </div>
+        <div class="preview-renewal g">● 8 months</div>
+      </div>
+      <div class="preview-row">
+        <div class="preview-co">
+          <div class="preview-co-name">BenefitBridge</div>
+          <div class="preview-co-ind">Employee Benefits · 310 employees</div>
+        </div>
+        <div class="preview-score a">63<span style="font-size:10px;opacity:0.4">/100</span></div>
+        <div class="preview-adoption">
+          <div class="preview-adoption-pct">61% adoption</div>
+          <div class="preview-adoption-bar"><div class="preview-adoption-fill a" style="width:61%"></div></div>
+        </div>
+        <div class="preview-renewal a">● 3 months</div>
+      </div>
+      <div class="preview-row">
+        <div class="preview-co">
+          <div class="preview-co-name">ShiftHR</div>
+          <div class="preview-co-ind">Workforce Scheduling · 180 employees</div>
+        </div>
+        <div class="preview-score r">31<span style="font-size:10px;opacity:0.4">/100</span></div>
+        <div class="preview-adoption">
+          <div class="preview-adoption-pct">28% adoption</div>
+          <div class="preview-adoption-bar"><div class="preview-adoption-fill r" style="width:28%"></div></div>
+        </div>
+        <div class="preview-renewal r">● 6 weeks</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SYNC BAND -->
+<div class="sync-band">
+  <div class="sync-band-eyebrow">Part of the SyncToScale ecosystem</div>
+  <h2>The platform behind the dashboard.</h2>
+  <p>SyncDash is powered by SyncToScale — an automation and integration platform built to connect HR and revenue tools across your tech stack. The data you see here flows from SyncToScale workflows.</p>
+  <a class="sync-link" href="https://synctoscale.me" target="_blank">Explore SyncToScale →</a>
+</div>
+
+<!-- CTA -->
+<div class="cta-block">
+  <h2>See your accounts clearly.</h2>
+  <p>Log in to the SyncDash dashboard and explore the full account portfolio.</p>
+  <a class="btn-cta" href="login.html">View the dashboard →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">Sync<span>Dash</span></a>
+  <div class="footer-links">
+    <a href="login.html">Dashboard</a>
+    <a href="https://synctoscale.me" target="_blank">SyncToScale</a>
+    <a href="https://synctoscale.me/about.html" target="_blank">About</a>
+  </div>
+  <div class="footer-note">Portfolio project by Christy McSwain · syncdash.pro</div>
+</footer>
+
+</body>
+</html>

@@ -333,6 +333,36 @@
     }
 
     .login-box { animation: fadeUp 0.4s 0.1s ease both; }
+
+    /* ── RESPONSIVE ───────────────────────────── */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+
+      .left-panel {
+        width: 100%;
+        padding: 28px 24px;
+        min-height: auto;
+      }
+
+      .left-middle { padding: 24px 0; }
+
+      .left-headline { font-size: 22px; }
+
+      .left-sub { display: none; }
+
+      .mini-accounts { gap: 6px; }
+
+      .mini-row { padding: 8px 12px; }
+
+      .left-bottom { display: none; }
+
+      .right-panel {
+        padding: 36px 24px;
+        justify-content: flex-start;
+      }
+
+      .login-box { max-width: 100%; }
+    }
   </style>
 </head>
 <body>

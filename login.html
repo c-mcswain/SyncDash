@@ -43,7 +43,6 @@
       overflow: hidden;
     }
 
-    /* subtle grid background */
     .left-panel::before {
       content: '';
       position: absolute;
@@ -104,10 +103,7 @@
       margin-bottom: 16px;
     }
 
-    .left-headline em {
-      font-style: normal;
-      color: var(--teal);
-    }
+    .left-headline em { font-style: normal; color: var(--teal); }
 
     .left-sub {
       font-size: 14px;
@@ -117,7 +113,6 @@
       margin-bottom: 36px;
     }
 
-    /* mini account preview */
     .mini-accounts { display: flex; flex-direction: column; gap: 8px; }
 
     .mini-row {
@@ -130,12 +125,7 @@
       padding: 10px 14px;
     }
 
-    .mini-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
+    .mini-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .mini-dot.g { background: #22d98a; }
     .mini-dot.a { background: #f5a623; }
     .mini-dot.r { background: #ff5c6a; }
@@ -147,18 +137,13 @@
       color: rgba(255,255,255,0.7);
     }
 
-    .mini-score {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-    }
-
+    .mini-score { font-family: 'DM Mono', monospace; font-size: 12px; }
     .mini-score.g { color: #22d98a; }
     .mini-score.a { color: #f5a623; }
     .mini-score.r { color: #ff5c6a; }
 
     .mini-bar-wrap {
-      width: 48px;
-      height: 3px;
+      width: 48px; height: 3px;
       background: rgba(255,255,255,0.08);
       border-radius: 2px;
       overflow: hidden;
@@ -169,10 +154,7 @@
     .mini-bar.a { background: #f5a623; }
     .mini-bar.r { background: #ff5c6a; }
 
-    .left-bottom {
-      position: relative;
-      z-index: 1;
-    }
+    .left-bottom { position: relative; z-index: 1; }
 
     .left-note {
       font-size: 10px;
@@ -212,9 +194,7 @@
       margin-bottom: 32px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
 
     .form-label {
       display: block;
@@ -222,7 +202,6 @@
       font-weight: 500;
       color: var(--mid);
       margin-bottom: 6px;
-      font-family: 'DM Sans', sans-serif;
     }
 
     .form-input {
@@ -284,11 +263,7 @@
       margin: 20px 0;
     }
 
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
 
     .divider-text {
       font-size: 11px;
@@ -309,10 +284,7 @@
       text-align: center;
     }
 
-    .demo-hint strong {
-      color: var(--teal);
-      font-weight: 600;
-    }
+    .demo-hint strong { color: var(--teal); font-weight: 600; }
 
     .back-link {
       display: block;
@@ -337,30 +309,14 @@
     /* ── RESPONSIVE ───────────────────────────── */
     @media (max-width: 768px) {
       body { flex-direction: column; }
-
-      .left-panel {
-        width: 100%;
-        padding: 28px 24px;
-        min-height: auto;
-      }
-
+      .left-panel { width: 100%; padding: 28px 24px; min-height: auto; }
       .left-middle { padding: 24px 0; }
-
       .left-headline { font-size: 22px; }
-
       .left-sub { display: none; }
-
       .mini-accounts { gap: 6px; }
-
       .mini-row { padding: 8px 12px; }
-
       .left-bottom { display: none; }
-
-      .right-panel {
-        padding: 36px 24px;
-        justify-content: flex-start;
-      }
-
+      .right-panel { padding: 36px 24px; justify-content: flex-start; }
       .login-box { max-width: 100%; }
     }
   </style>
@@ -379,27 +335,7 @@
   <div class="left-middle">
     <div class="left-headline">Your portfolio.<br><em>Always in sync.</em></div>
     <div class="left-sub">Three accounts. Three health stories. One dashboard to see it all clearly.</div>
-
-    <div class="mini-accounts">
-      <div class="mini-row">
-        <div class="mini-dot g"></div>
-        <div class="mini-name">PayFlow</div>
-        <div class="mini-bar-wrap"><div class="mini-bar g" style="width:88%"></div></div>
-        <div class="mini-score g">91/100</div>
-      </div>
-      <div class="mini-row">
-        <div class="mini-dot a"></div>
-        <div class="mini-name">BenefitBridge</div>
-        <div class="mini-bar-wrap"><div class="mini-bar a" style="width:61%"></div></div>
-        <div class="mini-score a">63/100</div>
-      </div>
-      <div class="mini-row">
-        <div class="mini-dot r"></div>
-        <div class="mini-name">ShiftHR</div>
-        <div class="mini-bar-wrap"><div class="mini-bar r" style="width:28%"></div></div>
-        <div class="mini-score r">31/100</div>
-      </div>
-    </div>
+    <div class="mini-accounts" id="mini-accounts"></div>
   </div>
 
   <div class="left-bottom">
@@ -415,16 +351,16 @@
 
     <div class="form-group">
       <label class="form-label">Email address</label>
-      <input class="form-input" type="email" placeholder="you@company.com"/>
+      <input class="form-input" type="email" placeholder="you@company.com" id="email-input"/>
     </div>
 
     <div class="form-group">
       <label class="form-label">Password</label>
-      <input class="form-input" type="password" placeholder="••••••••"/>
+      <input class="form-input" type="password" placeholder="••••••••" id="password-input"/>
       <div class="form-hint">Use any password to continue →</div>
     </div>
 
-    <button class="btn-login" onclick="window.location.href='dashboard.html'">
+    <button class="btn-login" id="login-btn">
       Log in to SyncDash →
     </button>
 
@@ -441,6 +377,51 @@
     <a class="back-link" href="https://www.syncdash.pro">← Back to home</a>
   </div>
 </div>
+
+<script src="accounts.js"></script>
+<script>
+  // ── REDIRECT IF ALREADY LOGGED IN ─────────────────────────────────────────
+  if (localStorage.getItem('syncdash_user')) {
+    window.location.replace('dashboard.html');
+  }
+
+  // ── RENDER MINI ACCOUNTS FROM accounts.js ─────────────────────────────────
+  const tierClass = { green: 'g', amber: 'a', red: 'r' };
+
+  function renderMiniAccounts() {
+    const accounts = SyncDash.getAccounts();
+    document.getElementById('mini-accounts').innerHTML = accounts.map(a => {
+      const c = tierClass[a.healthTier] || 'g';
+      return `
+        <div class="mini-row">
+          <div class="mini-dot ${c}"></div>
+          <div class="mini-name">${a.name}</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar ${c}" style="width:${a.adoptionPct}%"></div>
+          </div>
+          <div class="mini-score ${c}">${a.healthScore}/100</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderMiniAccounts();
+
+  // ── LOGIN HANDLER ──────────────────────────────────────────────────────────
+  function handleLogin() {
+    localStorage.setItem('syncdash_user', 'christy');
+    window.location.href = 'dashboard.html';
+  }
+
+  document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+  // Allow Enter key in either field
+  ['email-input', 'password-input'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  });
+</script>
 
 </body>
 </html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — Log In</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #f4f7fa;
+      --white:      #ffffff;
+      --border:     #dde3ed;
+      --dark:       #0d1b2e;
+      --mid:        #3d5068;
+      --muted:      #7a8fa8;
+      --faint:      #b0bece;
+      --teal:       #00a389;
+      --teal-light: #e6f7f4;
+      --navy:       #0d1b2e;
+      --radius:     12px;
+      --radius-sm:  7px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── LEFT PANEL ───────────────────────────── */
+    .left-panel {
+      width: 44%;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle grid background */
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,163,137,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,163,137,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .left-top { position: relative; z-index: 1; }
+
+    .left-logo {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .left-logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      line-height: 1;
+    }
+
+    .left-logo-wordmark .sync { color: #fff; }
+
+    .left-logo-sub {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .left-middle {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .left-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      color: #fff;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .left-headline em {
+      font-style: normal;
+      color: var(--teal);
+    }
+
+    .left-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.65;
+      max-width: 320px;
+      margin-bottom: 36px;
+    }
+
+    /* mini account preview */
+    .mini-accounts { display: flex; flex-direction: column; gap: 8px; }
+
+    .mini-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .mini-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .mini-dot.g { background: #22d98a; }
+    .mini-dot.a { background: #f5a623; }
+    .mini-dot.r { background: #ff5c6a; }
+
+    .mini-name {
+      flex: 1;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .mini-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+    }
+
+    .mini-score.g { color: #22d98a; }
+    .mini-score.a { color: #f5a623; }
+    .mini-score.r { color: #ff5c6a; }
+
+    .mini-bar-wrap {
+      width: 48px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .mini-bar { height: 100%; border-radius: 2px; }
+    .mini-bar.g { background: #22d98a; }
+    .mini-bar.a { background: #f5a623; }
+    .mini-bar.r { background: #ff5c6a; }
+
+    .left-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .left-note {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── RIGHT PANEL ──────────────────────────── */
+    .right-panel {
+      flex: 1;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .login-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 6px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,163,137,0.1);
+    }
+
+    .form-input::placeholder { color: var(--faint); }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--faint);
+      font-family: 'DM Mono', monospace;
+      margin-top: 5px;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover {
+      background: #008f78;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,163,137,0.25);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text {
+      font-size: 11px;
+      color: var(--faint);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .demo-hint {
+      background: var(--teal-light);
+      border: 1px solid rgba(0,163,137,0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .demo-hint strong {
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--teal); }
+
+    /* ── ANIMATIONS ───────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-box { animation: fadeUp 0.4s 0.1s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+  <div class="left-top">
+    <a class="left-logo" href="https://www.syncdash.pro">
+      <div class="left-logo-wordmark"><span class="sync">Sync</span>Dash</div>
+      <div class="left-logo-sub">Account Intelligence</div>
+    </a>
+  </div>
+
+  <div class="left-middle">
+    <div class="left-headline">Your portfolio.<br><em>Always in sync.</em></div>
+    <div class="left-sub">Three accounts. Three health stories. One dashboard to see it all clearly.</div>
+
+    <div class="mini-accounts">
+      <div class="mini-row">
+        <div class="mini-dot g"></div>
+        <div class="mini-name">PayFlow</div>
+        <div class="mini-bar-wrap"><div class="mini-bar g" style="width:88%"></div></div>
+        <div class="mini-score g">91/100</div>
+      </div>
+      <div class="mini-row">
+        <div class="mini-dot a"></div>
+        <div class="mini-name">BenefitBridge</div>
+        <div class="mini-bar-wrap"><div class="mini-bar a" style="width:61%"></div></div>
+        <div class="mini-score a">63/100</div>
+      </div>
+      <div class="mini-row">
+        <div class="mini-dot r"></div>
+        <div class="mini-name">ShiftHR</div>
+        <div class="mini-bar-wrap"><div class="mini-bar r" style="width:28%"></div></div>
+        <div class="mini-score r">31/100</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="left-bottom">
+    <div class="left-note">Portfolio project · fictional data · Christy McSwain</div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="login-box">
+    <div class="login-heading">Welcome back</div>
+    <div class="login-sub">Log in to your SyncDash account</div>
+
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input class="form-input" type="email" placeholder="you@company.com"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="••••••••"/>
+      <div class="form-hint">Use any password to continue →</div>
+    </div>
+
+    <button class="btn-login" onclick="window.location.href='dashboard.html'">
+      Log in to SyncDash →
+    </button>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">or</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="demo-hint">
+      This is a <strong>portfolio demo</strong> — enter any email and password to explore the dashboard. No account required.
+    </div>
+
+    <a class="back-link" href="https://www.syncdash.pro">← Back to home</a>
+  </div>
+</div>
+
+</body>
+</html>

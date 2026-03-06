@@ -807,7 +807,8 @@
     </div>
     <div class="topbar-actions">
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
-      <button class="action-btn ghost" id="export-account">⬇ Export</button>
+      <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
+      <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
       <a class="action-btn teal" href="#">✦ Build QBR</a>
     </div>
   </div>
@@ -1446,11 +1447,11 @@
     // Activity feed from accounts.js
     const feedContainer = document.querySelectorAll('.panel-body')[1];
 
-    // Export button — per-account
-    const exportBtn = document.getElementById('export-account');
-    if (exportBtn) {
-      exportBtn.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'csv'));
-    }
+    // Export buttons
+    const exportCSV  = document.getElementById('btn-export-csv');
+    const exportJSON = document.getElementById('btn-export-json');
+    if (exportCSV)  exportCSV.addEventListener('click',  () => SyncDash.exportAccount('benefitbridge', 'csv'));
+    if (exportJSON) exportJSON.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'json'));
   }
 
   // ── TABS ──────────────────────────────────────────────────────────────────

@@ -1110,7 +1110,7 @@
           <span class="renewal-chip ${a.renewalTier}">● ${renewal}</span>
         </div>
         <div>
-          <a class="action-btn teal" href="account.html?account=${a.id}">View →</a>
+          <a class="action-btn teal" href="${a.id}.html">View →</a>
         </div>
       </div>
     `;
@@ -1197,6 +1197,14 @@
   document.getElementById('export-json').addEventListener('click', () => {
     SyncDash.exportBookOfBusiness('json');
   });
+
+
+  // ── SESSION CHECK ─────────────────────────────────────────────────────────
+  // If no session found, redirect to login page
+
+  if (!localStorage.getItem('syncdash_user')) {
+    window.location.replace('login.html');
+  }
 
 
   // ── INIT ──────────────────────────────────────────────────────────────────

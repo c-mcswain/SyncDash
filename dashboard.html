@@ -62,8 +62,11 @@
     }
 
     .sidebar-logo {
-      padding: 24px 20px 20px;
+      padding: 24px 20px 0px;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     .logo-wordmark {
@@ -74,6 +77,7 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       line-height: 1;
+      padding-left: 4px;
     }
 
     .logo-wordmark span {
@@ -87,6 +91,7 @@
       font-family: 'DM Mono', monospace;
       letter-spacing: 0.05em;
       text-transform: uppercase;
+      padding-left: 4px;
     }
 
     .powered-badge {
@@ -102,7 +107,8 @@
       color: var(--teal);
       font-family: 'DM Mono', monospace;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
+      align-self: flex-start;
     }
 
     .powered-badge::before {
@@ -794,7 +800,11 @@
     <div class="logo-wordmark">Sync<span>Dash</span></div>
     <div class="logo-sub">Account Intelligence</div>
     <div class="powered-badge">Powered by SyncToScale</div>
+    <div style="font-size:8.5px;color:var(--faint);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:0.02em;white-space:nowrap;text-align:left;padding-bottom:8px;">Portfolio project · fictional data</div>
   </div>
+  <style>
+    .sidebar-logo { padding-bottom: 0; }
+  </style>
 
   <nav class="sidebar-nav">
     <div class="nav-label">Workspace</div>

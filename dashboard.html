@@ -1110,7 +1110,7 @@
           <span class="renewal-chip ${a.renewalTier}">● ${renewal}</span>
         </div>
         <div>
-          <a class="action-btn teal" href="${a.id}.html">View →</a>
+          <a class="action-btn teal" href="${a.id === 'benefitbridge' ? 'benefitbridge.html' : 'account.html?account=' + a.id}">View →</a>
         </div>
       </div>
     `;

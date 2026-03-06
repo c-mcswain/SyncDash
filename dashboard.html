@@ -282,15 +282,19 @@
     .topbar-actions { display: flex; align-items: center; gap: 10px; }
 
     .icon-btn {
-      width: 32px; height: 32px;
+      height: 32px;
+      padding: 0 10px;
       border-radius: var(--radius-sm);
       background: var(--surface2);
       border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 11.5px;
+      font-family: 'DM Mono', monospace;
       transition: all 0.15s;
+      white-space: nowrap;
+      gap: 4px;
     }
     .icon-btn:hover { border-color: var(--border2); color: var(--text); }
 
@@ -931,6 +935,8 @@
       <input type="text" placeholder="Search accounts…"/>
     </div>
     <div class="topbar-actions">
+      <button class="icon-btn" id="export-csv" title="Export Book of Business (CSV)">⬇ CSV</button>
+      <button class="icon-btn" id="export-json" title="Export Book of Business (JSON)">⬇ JSON</button>
       <div class="icon-btn notif-btn">
         🔔<span class="notif-dot"></span>
       </div>
@@ -942,37 +948,17 @@
   <div class="content">
 
     <!-- Summary strip -->
-    <div class="summary-strip">
-      <div class="summary-card">
-        <div class="summary-label">Total Accounts</div>
-        <div class="summary-value">3</div>
-        <div class="summary-sub">Active portfolio</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Healthy</div>
-        <div class="summary-value green">1</div>
-        <div class="summary-sub">Score ≥ 80</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">At Risk</div>
-        <div class="summary-value amber">1</div>
-        <div class="summary-sub">Score 50–79</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Critical</div>
-        <div class="summary-value red">1</div>
-        <div class="summary-sub">Score &lt; 50</div>
-      </div>
-    </div>
+    <!-- Summary strip — rendered by accounts.js -->
+    <div class="summary-strip" id="summary-strip"></div>
 
     <!-- Accounts table -->
     <div class="section-header">
       <div class="section-title">Account Portfolio</div>
       <div class="section-controls">
-        <button class="filter-btn active">All</button>
-        <button class="filter-btn">Healthy</button>
-        <button class="filter-btn">At Risk</button>
-        <button class="filter-btn">Critical</button>
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="green">Healthy</button>
+        <button class="filter-btn" data-filter="amber">At Risk</button>
+        <button class="filter-btn" data-filter="red">Critical</button>
       </div>
     </div>
 
@@ -986,156 +972,17 @@
         <div class="th">Renewal</div>
         <div class="th">Action</div>
       </div>
-
-      <!-- PayFlow — Green -->
-      <div class="account-row">
-        <div class="account-info">
-          <div class="account-name">PayFlow</div>
-          <div class="account-meta">
-            Payroll Automation SaaS
-            <span class="account-meta-dot"></span>
-            260 employees
-            <span class="account-meta-dot"></span>
-            NPS: 72
-          </div>
-          <div class="risk-flags" style="margin-top:4px;">
-            <span class="risk-flag ok">Fully onboarded across all departments</span>
-            <span class="risk-flag ok">Expansion signal — UK entity in planning</span>
-          </div>
-        </div>
-        <div class="health-score green">91<span style="font-size:10px;color:var(--muted)">/100</span></div>
-        <div class="adoption-cell">
-          <div class="adoption-pct">88%</div>
-          <div class="adoption-bar"><div class="adoption-fill green" style="width:88%"></div></div>
-        </div>
-        <div>
-          <div class="cell-main">2 days ago</div>
-          <div class="cell-sub">QBR completed</div>
-        </div>
-        <div>
-          <div class="cell-main">$84,000</div>
-          <div class="cell-sub">ARR</div>
-        </div>
-        <div><span class="renewal-chip green">● 8 months</span></div>
-        <div><a class="action-btn teal" href="#">View →</a></div>
-      </div>
-
-      <!-- BenefitBridge — Amber -->
-      <div class="account-row">
-        <div class="account-info">
-          <div class="account-name">BenefitBridge</div>
-          <div class="account-meta">
-            Employee Benefits Platform
-            <span class="account-meta-dot"></span>
-            310 employees
-            <span class="account-meta-dot"></span>
-            NPS: 41
-          </div>
-          <div class="risk-flags" style="margin-top:4px;">
-            <span class="risk-flag warn">Adoption dropped 14% (Finance dept)</span>
-            <span class="risk-flag warn">2 open support tickets — workflow blocked</span>
-          </div>
-        </div>
-        <div class="health-score amber">63<span style="font-size:10px;color:var(--muted)">/100</span></div>
-        <div class="adoption-cell">
-          <div class="adoption-pct">61%</div>
-          <div class="adoption-bar"><div class="adoption-fill amber" style="width:61%"></div></div>
-        </div>
-        <div>
-          <div class="cell-main">11 days ago</div>
-          <div class="cell-sub">Check-in overdue</div>
-        </div>
-        <div>
-          <div class="cell-main">$52,000</div>
-          <div class="cell-sub">ARR</div>
-        </div>
-        <div><span class="renewal-chip amber">● 3 months</span></div>
-        <div><a class="action-btn teal" href="#">View →</a></div>
-      </div>
-
-      <!-- ShiftHR — Red -->
-      <div class="account-row">
-        <div class="account-info">
-          <div class="account-name">ShiftHR</div>
-          <div class="account-meta">
-            Workforce Scheduling & Compliance
-            <span class="account-meta-dot"></span>
-            180 employees
-            <span class="account-meta-dot"></span>
-            NPS: 18
-          </div>
-          <div class="risk-flags" style="margin-top:4px;">
-            <span class="risk-flag crit">No logins in 23 days</span>
-            <span class="risk-flag crit">Champion contact left company</span>
-          </div>
-        </div>
-        <div class="health-score red">31<span style="font-size:10px;color:var(--muted)">/100</span></div>
-        <div class="adoption-cell">
-          <div class="adoption-pct">28%</div>
-          <div class="adoption-bar"><div class="adoption-fill red" style="width:28%"></div></div>
-        </div>
-        <div>
-          <div class="cell-main">23 days ago</div>
-          <div class="cell-sub">⚠ Escalation open</div>
-        </div>
-        <div>
-          <div class="cell-main">$38,000</div>
-          <div class="cell-sub">ARR</div>
-        </div>
-        <div><span class="renewal-chip red">● 6 weeks</span></div>
-        <div><a class="action-btn teal" href="#">View →</a></div>
-      </div>
+      <div id="accounts-tbody"></div>
     </div>
 
-    <!-- Lower grid -->
     <div class="lower-grid">
-
       <!-- Activity feed -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Recent Activity</div>
           <a class="panel-link" href="#">View all</a>
         </div>
-
-        <div class="feed-item">
-          <div class="feed-icon amber">⚠</div>
-          <div class="feed-body">
-            <div class="feed-text"><strong>BenefitBridge</strong> — adoption drop flagged in Finance department. Check-in recommended within 48hrs.</div>
-            <div class="feed-time">Today, 09:14</div>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <div class="feed-icon red">🔴</div>
-          <div class="feed-body">
-            <div class="feed-text"><strong>ShiftHR</strong> — champion contact departure detected via HRIS sync. Re-engagement plan needed.</div>
-            <div class="feed-time">Yesterday, 16:42</div>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <div class="feed-icon green">✓</div>
-          <div class="feed-body">
-            <div class="feed-text"><strong>PayFlow</strong> — QBR completed. Expansion discussion initiated for UK entity in Q3. Follow-up scheduled.</div>
-            <div class="feed-time">2 days ago, 11:00</div>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <div class="feed-icon teal">⟳</div>
-          <div class="feed-body">
-            <div class="feed-text"><strong>SyncToScale sync</strong> — workflow execution data refreshed across all 3 accounts. Nova signals updated.</div>
-            <div class="feed-time">2 days ago, 08:00</div>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <div class="feed-icon blue">📋</div>
-          <div class="feed-body">
-            <div class="feed-text"><strong>BenefitBridge</strong> — support ticket #1042 escalated. Engineering loop opened for blocked workflow.</div>
-            <div class="feed-time">3 days ago, 14:22</div>
-          </div>
-        </div>
+        <div id="activity-feed"></div>
       </div>
 
       <!-- Nova signals -->
@@ -1144,39 +991,10 @@
           <div class="nova-avatar">✦</div>
           <div class="nova-title-block">
             <div class="nova-name">Nova Signals</div>
-            <div class="nova-status">3 active insights</div>
+            <div class="nova-status" id="nova-status">— active insights</div>
           </div>
         </div>
-
-        <div class="nova-signals">
-          <div class="signal-item crit">
-            <div class="signal-icon">⚡</div>
-            <div class="signal-body">
-              <div class="signal-title">Churn Risk — High</div>
-              <div class="signal-text">Champion departure + 23-day login gap indicates likely non-renewal without intervention.</div>
-              <div class="signal-account">ShiftHR · Score 31 · Renews in 6 weeks</div>
-            </div>
-          </div>
-
-          <div class="signal-item warn">
-            <div class="signal-icon">◎</div>
-            <div class="signal-body">
-              <div class="signal-title">Adoption Regression</div>
-              <div class="signal-text">Finance dept usage down 14% over 30 days. Likely tied to blocked workflow in ticket #1042.</div>
-              <div class="signal-account">BenefitBridge · Score 63 · Renews in 3 months</div>
-            </div>
-          </div>
-
-          <div class="signal-item info">
-            <div class="signal-icon">↑</div>
-            <div class="signal-body">
-              <div class="signal-title">Expansion Opportunity</div>
-              <div class="signal-text">High adoption + 8-month runway suggests strong upsell timing for UK entity expansion in Q3.</div>
-              <div class="signal-account">PayFlow · Score 91 · Renews in 8 months</div>
-            </div>
-          </div>
-        </div>
-
+        <div class="nova-signals" id="nova-signals"></div>
         <div class="nova-footer">
           <div class="nova-input-row">
             <input class="nova-input" type="text" placeholder="Ask Nova about your accounts…"/>
@@ -1184,20 +1002,209 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </main>
 
+<script src="accounts.js"></script>
 <script>
-  // Filter buttons
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  filterBtns.forEach(btn => {
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+
+  const TIER_COLORS = { green: 'green', amber: 'amber', red: 'red' };
+
+  const SIGNAL_ICONS = { crit: '⚡', warn: '◎', info: '↑' };
+
+  function formatARR(n) {
+    return '$' + n.toLocaleString();
+  }
+
+  function formatRenewal(months) {
+    if (months < 2)  return `${Math.round(months * 4)} weeks`;
+    if (months < 12) return `${Math.round(months)} months`;
+    return `${(months / 12).toFixed(1)} years`;
+  }
+
+  function formatLastTouch(days) {
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days} days ago`;
+  }
+
+  function relativeDate(isoDate) {
+    const diff = Math.round((Date.now() - new Date(isoDate)) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    return `${diff} days ago`;
+  }
+
+
+  // ── SUMMARY STRIP ─────────────────────────────────────────────────────────
+
+  function renderSummary() {
+    const s = SyncDash.getPortfolioSummary();
+    document.getElementById('summary-strip').innerHTML = `
+      <div class="summary-card">
+        <div class="summary-label">Total Accounts</div>
+        <div class="summary-value">${s.total}</div>
+        <div class="summary-sub">Active portfolio</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Healthy</div>
+        <div class="summary-value green">${s.healthy}</div>
+        <div class="summary-sub">Score ≥ 80</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">At Risk</div>
+        <div class="summary-value amber">${s.atRisk}</div>
+        <div class="summary-sub">Score 50–79</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Critical</div>
+        <div class="summary-value red">${s.critical}</div>
+        <div class="summary-sub">Score &lt; 50</div>
+      </div>
+    `;
+  }
+
+
+  // ── ACCOUNT TABLE ─────────────────────────────────────────────────────────
+
+  function renderAccountRow(a) {
+    const tier    = a.healthTier;
+    const renewal = formatRenewal(a.renewalMonths);
+    const flags   = (a.riskFlags || []).map(f =>
+      `<span class="risk-flag ${f.type}">${f.text}</span>`
+    ).join('');
+
+    return `
+      <div class="account-row" data-tier="${tier}" data-id="${a.id}">
+        <div class="account-info">
+          <div class="account-name">${a.name}</div>
+          <div class="account-meta">
+            ${a.industry}
+            <span class="account-meta-dot"></span>
+            ${a.employees.toLocaleString()} employees
+            <span class="account-meta-dot"></span>
+            NPS: ${a.nps}
+          </div>
+          <div class="risk-flags" style="margin-top:4px;">${flags}</div>
+        </div>
+        <div class="health-score ${tier}">
+          ${a.healthScore}<span style="font-size:10px;color:var(--muted)">/100</span>
+        </div>
+        <div class="adoption-cell">
+          <div class="adoption-pct">${a.adoptionPct}%</div>
+          <div class="adoption-bar">
+            <div class="adoption-fill ${tier}" style="width:${a.adoptionPct}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="cell-main">${formatLastTouch(a.lastTouchDays)}</div>
+          <div class="cell-sub">${a.lastTouchNote}</div>
+        </div>
+        <div>
+          <div class="cell-main">${formatARR(a.arr)}</div>
+          <div class="cell-sub">ARR</div>
+        </div>
+        <div>
+          <span class="renewal-chip ${a.renewalTier}">● ${renewal}</span>
+        </div>
+        <div>
+          <a class="action-btn teal" href="account.html?account=${a.id}">View →</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAccounts(filter = 'all') {
+    const accounts = SyncDash.getAccounts();
+    const filtered = filter === 'all' ? accounts : accounts.filter(a => a.healthTier === filter);
+    document.getElementById('accounts-tbody').innerHTML =
+      filtered.length ? filtered.map(renderAccountRow).join('') :
+      `<div style="padding:24px 20px;color:var(--muted);font-size:13px;">No accounts match this filter.</div>`;
+  }
+
+
+  // ── ACTIVITY FEED ─────────────────────────────────────────────────────────
+
+  function renderActivityFeed() {
+    const accounts = SyncDash.getAccounts();
+
+    // Gather all activity items across accounts, sort newest first
+    const items = accounts.flatMap(a =>
+      (a.activityFeed || []).map(item => ({ ...item, accountName: a.name }))
+    ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    document.getElementById('activity-feed').innerHTML = items.map(item => `
+      <div class="feed-item">
+        <div class="feed-icon ${item.type}">${item.icon}</div>
+        <div class="feed-body">
+          <div class="feed-text"><strong>${item.accountName}</strong> — ${item.text}</div>
+          <div class="feed-time">${relativeDate(item.date)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+
+  // ── NOVA SIGNALS ──────────────────────────────────────────────────────────
+
+  function renderNovaSignals() {
+    const accounts = SyncDash.getAccounts();
+    const signals  = accounts
+      .filter(a => a.novaSignal)
+      .sort((a, b) => {
+        const order = { crit: 0, warn: 1, info: 2 };
+        return (order[a.novaSignal.type] ?? 9) - (order[b.novaSignal.type] ?? 9);
+      });
+
+    document.getElementById('nova-status').textContent = `${signals.length} active insights`;
+
+    document.getElementById('nova-signals').innerHTML = signals.map(a => {
+      const s       = a.novaSignal;
+      const renewal = formatRenewal(a.renewalMonths);
+      return `
+        <div class="signal-item ${s.type}">
+          <div class="signal-icon">${SIGNAL_ICONS[s.type] || '◎'}</div>
+          <div class="signal-body">
+            <div class="signal-title">${s.title}</div>
+            <div class="signal-text">${s.text}</div>
+            <div class="signal-account">${a.name} · Score ${a.healthScore} · Renews in ${renewal}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+
+  // ── FILTER BUTTONS ────────────────────────────────────────────────────────
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      renderAccounts(btn.dataset.filter);
     });
   });
+
+
+  // ── EXPORT BUTTONS ────────────────────────────────────────────────────────
+
+  document.getElementById('export-csv').addEventListener('click', () => {
+    SyncDash.exportBookOfBusiness('csv');
+  });
+
+  document.getElementById('export-json').addEventListener('click', () => {
+    SyncDash.exportBookOfBusiness('json');
+  });
+
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+
+  renderSummary();
+  renderAccounts();
+  renderActivityFeed();
+  renderNovaSignals();
 </script>
 
 </body>

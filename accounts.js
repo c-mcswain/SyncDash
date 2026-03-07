@@ -54,6 +54,26 @@ const SyncDash = (() => {
         { date: '2026-03-04', type: 'green', icon: '✓',  text: 'QBR completed. Expansion discussion initiated for UK entity in Q3. Follow-up scheduled.' },
         { date: '2026-03-02', type: 'teal',  icon: '⟳',  text: 'SyncToScale sync — workflow execution data refreshed.' },
       ],
+      contract: {
+        plan:            'Growth',
+        pricePerSeat:    49,
+        billingCycle:    'Annual — Invoice, Net 30',
+        startDate:       'March 1, 2024',
+        endDate:         'March 1, 2027',
+        termYears:       3,
+        autoRenew:       true,
+        cancelDeadline:  'January 1, 2027',
+        novaAddon:       false,
+        modules:         'Payroll Core, Tax Filing, Direct Deposit, API Access',
+        orderRef:        'OF-2024-0301-PF-002',
+        msaRef:          'MSA-2024-PF-002',
+        signerCustomer:  { name: 'Alex Morgan', title: 'VP of Finance' },
+        signerVendor:    { name: 'Jordan Ellis', title: 'Account Executive' },
+        signedDate:      'March 1, 2024 at 09:45 AM PDT',
+        sigIdCustomer:   'PF-SIG-20240301-AM-3312',
+        sigIdVendor:     'STS-SIG-20240301-JE-3311',
+        hq:              'Austin, TX',
+      },
     },
 
     {
@@ -87,6 +107,26 @@ const SyncDash = (() => {
         { date: '2026-03-03', type: 'blue',  icon: '📋', text: 'Support ticket #1042 escalated. Engineering loop opened for blocked workflow.' },
         { date: '2026-03-02', type: 'teal',  icon: '⟳',  text: 'SyncToScale sync — workflow execution data refreshed.' },
       ],
+      contract: {
+        plan:           'Growth',
+        pricePerSeat:   49,
+        billingCycle:   'Annual — Invoice, Net 30',
+        startDate:      'June 4, 2023',
+        endDate:        'June 4, 2026',
+        termYears:      3,
+        autoRenew:      true,
+        cancelDeadline: 'April 5, 2026',
+        novaAddon:      false,
+        modules:        'HR Core, Benefits Administration, Compliance Reporting, API Access',
+        orderRef:       'OF-2023-0604-BB-001',
+        msaRef:         'MSA-2023-BB-001',
+        signerCustomer: { name: 'Dana Reyes', title: 'HR Director' },
+        signerVendor:   { name: 'Jordan Ellis', title: 'Account Executive' },
+        signedDate:     'June 4, 2023 at 11:32 AM PDT',
+        sigIdCustomer:  'BB-SIG-20230604-DR-4829',
+        sigIdVendor:    'STS-SIG-20230604-JE-7741',
+        hq:             'San Francisco, CA',
+      },
     },
 
     {
@@ -119,6 +159,26 @@ const SyncDash = (() => {
         { date: '2026-03-05', type: 'red',  icon: '🔴', text: 'Champion contact departure detected via HRIS sync. Re-engagement plan needed.' },
         { date: '2026-03-02', type: 'teal', icon: '⟳',  text: 'SyncToScale sync — workflow execution data refreshed.' },
       ],
+      contract: {
+        plan:           'Starter',
+        pricePerSeat:   19,
+        billingCycle:   'Annual — Invoice, Net 30',
+        startDate:      'September 12, 2024',
+        endDate:        'April 18, 2026',
+        termYears:      1.5,
+        autoRenew:      true,
+        cancelDeadline: 'February 18, 2026',
+        novaAddon:      false,
+        modules:        'Workforce Scheduling, Shift Management, Compliance Reporting',
+        orderRef:       'OF-2024-0912-SH-003',
+        msaRef:         'MSA-2024-SH-003',
+        signerCustomer: { name: 'Marcus Webb', title: 'COO' },
+        signerVendor:   { name: 'Jordan Ellis', title: 'Account Executive' },
+        signedDate:     'September 12, 2024 at 02:17 PM PDT',
+        sigIdCustomer:  'SH-SIG-20240912-MW-9901',
+        sigIdVendor:    'STS-SIG-20240912-JE-9900',
+        hq:             'Chicago, IL',
+      },
     },
   ];
 
@@ -423,6 +483,7 @@ const SyncDash = (() => {
     getHistory,
     exportAccount,
     exportBookOfBusiness,
+    generateContract,   // defined in contract-generator.js — loaded separately
   };
 
 })();

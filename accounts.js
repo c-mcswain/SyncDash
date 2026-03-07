@@ -483,7 +483,6 @@ const SyncDash = (() => {
     getHistory,
     exportAccount,
     exportBookOfBusiness,
-    generateContract,   // defined in contract-generator.js — loaded separately
   };
 
 })();

@@ -519,29 +519,11 @@
 
   <!-- CONTRACT -->
   <div class="tab-content" id="tab-contract">
-
-    <!-- Summary card -->
     <div id="contract-summary-card" style="margin-bottom:16px;"></div>
-
-    <!-- PDF Preview -->
-    <div class="panel" style="margin-bottom:16px;">
-      <div class="panel-header">
-        <div class="panel-title">📄 Contract Preview</div>
-        <button class="action-btn ghost" id="btn-contract-download-tab" style="padding:4px 12px;font-size:11.5px;">⬇ Download PDF</button>
-      </div>
-      <div id="contract-preview-wrap" style="background:#1a1a2a;border-radius:0 0 10px 10px;min-height:200px;display:flex;align-items:center;justify-content:center;">
-        <div id="contract-preview-loading" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px;color:var(--muted);">
-          <div style="font-size:28px;">📄</div>
-          <div style="font-size:13px;">Click <strong style="color:var(--teal)">Load Preview</strong> to generate the contract</div>
-          <button class="action-btn teal" id="btn-load-preview" style="margin-top:4px;">Load Preview</button>
-        </div>
-        <iframe id="contract-iframe"
-          style="display:none;width:100%;height:780px;border:none;border-radius:0 0 10px 10px;"
-          title="Contract Preview">
-        </iframe>
-      </div>
+    <div style="display:flex;gap:10px;">
+      <button class="action-btn ghost" id="btn-contract-download-tab">⬇ Download PDF</button>
+      <button class="action-btn teal" id="btn-contract-reopen">↗ Open Contract</button>
     </div>
-
   </div>
 
   <!-- NOVA SIGNALS -->
@@ -725,34 +707,17 @@
       document.getElementById('tab-contract').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // In-tab download button
+    // In-tab buttons
     const dlBtn = document.getElementById('btn-contract-download-tab');
     if (dlBtn) dlBtn.addEventListener('click', () => SyncDash.generateContract(a.id));
 
-    // Load preview button — generates PDF as data URI → iframe
-    const loadBtn = document.getElementById('btn-load-preview');
-    if (loadBtn) loadBtn.addEventListener('click', () => {
-      loadBtn.textContent = 'Generating…';
-      loadBtn.disabled = true;
-      // Small timeout so UI updates before jsPDF blocks
-      setTimeout(() => {
-        try {
-          const dataUri = SyncDash.generateContract(a.id, 'preview');
-          if (dataUri) {
-            const iframe = document.getElementById('contract-iframe');
-            iframe.src = dataUri;
-            iframe.style.display = 'block';
-            document.getElementById('contract-preview-loading').style.display = 'none';
-          } else {
-            loadBtn.textContent = 'Load Preview';
-            loadBtn.disabled = false;
-          }
-        } catch(e) {
-          console.error(e);
-          loadBtn.textContent = 'Load Preview';
-          loadBtn.disabled = false;
-        }
-      }, 50);
+    const reopenBtn = document.getElementById('btn-contract-reopen');
+    if (reopenBtn) reopenBtn.addEventListener('click', () => {
+      const dataUri = SyncDash.generateContract(a.id, 'preview');
+      if (dataUri) {
+        const win = window.open();
+        win.document.write(`<iframe src="${dataUri}" style="width:100%;height:100%;border:none;position:fixed;top:0;left:0;" frameborder="0"></iframe>`);
+      }
     });
   }
 
@@ -876,6 +841,18 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     el.classList.add('active');
+
+    // Open contract PDF in new tab on first click
+    if (name === 'contract' && !showTab._contractOpened) {
+      showTab._contractOpened = true;
+      setTimeout(() => {
+        const dataUri = SyncDash.generateContract(account.id, 'preview');
+        if (dataUri) {
+          const win = window.open();
+          win.document.write(`<iframe src="${dataUri}" style="width:100%;height:100%;border:none;position:fixed;top:0;left:0;" frameborder="0"></iframe>`);
+        }
+      }, 50);
+    }
   }
 </script>
 

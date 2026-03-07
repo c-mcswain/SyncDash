@@ -29,10 +29,11 @@ const SyncDash = (() => {
       name:           'PayFlow',
       industry:       'Payroll Automation SaaS',
       employees:      260,
+      licensedSeats:  143,          // Growth plan @ $49/user/mo × 143 seats × 12 = $84,084 ≈ $84K ARR
       healthScore:    91,
       healthTier:     'green',       // 'green' | 'amber' | 'red'
       adoptionPct:    88,
-      arr:            84000,
+      arr:            84084,
       renewalMonths:  8,
       renewalTier:    'green',       // 'green' (6m+) | 'amber' (2-5m) | 'red' (<2m)
       nps:            72,
@@ -60,10 +61,11 @@ const SyncDash = (() => {
       name:           'BenefitBridge',
       industry:       'Employee Benefits Platform',
       employees:      310,
+      licensedSeats:  88,           // Growth plan @ $49/user/mo × 88 seats × 12 = $51,744 ≈ $52K ARR
       healthScore:    63,
       healthTier:     'amber',
       adoptionPct:    61,
-      arr:            52000,
+      arr:            51744,
       renewalMonths:  3,
       renewalTier:    'amber',
       nps:            41,
@@ -92,10 +94,11 @@ const SyncDash = (() => {
       name:           'ShiftHR',
       industry:       'Workforce Scheduling & Compliance',
       employees:      180,
+      licensedSeats:  167,          // Starter plan @ $19/user/mo × 167 seats × 12 = $38,076 ≈ $38K ARR
       healthScore:    31,
       healthTier:     'red',
       adoptionPct:    28,
-      arr:            38000,
+      arr:            38076,
       renewalMonths:  1.5,           // ~6 weeks
       renewalTier:    'red',
       nps:            18,

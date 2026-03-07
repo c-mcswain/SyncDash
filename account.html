@@ -454,6 +454,7 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
+      <button class="action-btn ghost" id="btn-contract">📄 Contract</button>
       <a class="action-btn teal" href="#">✦ Build QBR</a>
     </div>
   </div>
@@ -545,7 +546,9 @@
 
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="accounts.js"></script>
+<script src="contract-generator.js"></script>
 <script>
   // ── SESSION CHECK ─────────────────────────────────────────────────────────
   if (!localStorage.getItem('syncdash_user')) {
@@ -708,6 +711,10 @@
     // Export buttons
     document.getElementById('btn-export-csv').addEventListener('click',  () => SyncDash.exportAccount(a.id, 'csv'));
     document.getElementById('btn-export-json').addEventListener('click', () => SyncDash.exportAccount(a.id, 'json'));
+
+    // Contract download
+    const contractBtn = document.getElementById('btn-contract');
+    if (contractBtn) contractBtn.addEventListener('click', () => SyncDash.generateContract(a.id));
   }
 
   // ── HELPERS ───────────────────────────────────────────────────────────────

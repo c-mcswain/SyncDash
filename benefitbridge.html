@@ -809,6 +809,7 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
+      <button class="action-btn ghost" id="btn-contract">📄 Contract</button>
       <a class="action-btn teal" href="#">✦ Build QBR</a>
     </div>
   </div>
@@ -1407,7 +1408,9 @@
 
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="accounts.js"></script>
+<script src="contract-generator.js"></script>
 <script>
   // ── SESSION CHECK ─────────────────────────────────────────────────────────
   if (!localStorage.getItem('syncdash_user')) {
@@ -1442,16 +1445,15 @@
     const healthPanelScore = document.querySelector('.panel-header span[style*="amber"], .panel-header span[style*="green"], .panel-header span[style*="red"]');
     if (healthPanelScore) healthPanelScore.textContent = account.healthScore + ' / 100';
 
-    // Nova signal (main one in overview)
-    const novaTitle = document.querySelector('.panel-title');
-    // Activity feed from accounts.js
-    const feedContainer = document.querySelectorAll('.panel-body')[1];
-
     // Export buttons
     const exportCSV  = document.getElementById('btn-export-csv');
     const exportJSON = document.getElementById('btn-export-json');
     if (exportCSV)  exportCSV.addEventListener('click',  () => SyncDash.exportAccount('benefitbridge', 'csv'));
     if (exportJSON) exportJSON.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'json'));
+
+    // Contract download
+    const contractBtn = document.getElementById('btn-contract');
+    if (contractBtn) contractBtn.addEventListener('click', () => SyncDash.generateContract('benefitbridge'));
   }
 
   // ── TABS ──────────────────────────────────────────────────────────────────
@@ -1463,5 +1465,4 @@
   }
 </script>
 
-</body>
-</html>
+</body></html>

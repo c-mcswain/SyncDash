@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncToScale — Contract</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0d1b2e;
+      --teal:      #00a389;
+      --teal-light:#e6f7f4;
+      --mid:       #3d5068;
+      --muted:     #7a8fa8;
+      --border:    #dde3ed;
+      --light-bg:  #f4f7fa;
+      --sig-bg:    #f9fbfd;
+      --amber:     #f5a623;
+      --amber-bg:  #fff8ed;
+      --red:       #e03040;
+      --text:      #1a1a2e;
+      --white:     #ffffff;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f0f4f8;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 32px 16px 64px;
+    }
+
+    /* ── PRINT BAR ── */
+    .print-bar {
+      max-width: 820px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .print-bar-left {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .print-bar-left a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+
+    .print-bar-left a:hover { text-decoration: underline; }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-print:hover { background: #1a3050; }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-download:hover { background: #008a73; }
+
+    /* ── DOCUMENT ── */
+    .document {
+      max-width: 820px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 48px 56px;
+      border-bottom: 2px dashed var(--border);
+    }
+
+    .page:last-child { border-bottom: none; }
+
+    /* ── DOC HEADER ── */
+    .doc-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: -0.01em;
+    }
+
+    .doc-type {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: right;
+    }
+
+    .teal-rule {
+      height: 2.5px;
+      background: var(--teal);
+      border-radius: 2px;
+      margin-bottom: 6px;
+    }
+
+    .doc-notice {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* ── SECTION HEADING ── */
+    .section-heading {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 20px 0 8px;
+    }
+
+    /* ── ORDER FORM TITLE ── */
+    .of-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .of-subtitle {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── PARTIES ── */
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .party-box {
+      background: var(--light-bg);
+      padding: 14px 16px;
+    }
+
+    .party-box:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .party-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .party-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+
+    .party-detail {
+      font-size: 11.5px;
+      color: var(--mid);
+      line-height: 1.5;
+    }
+
+    /* ── DETAILS TABLE ── */
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .details-table thead tr {
+      background: var(--navy);
+    }
+
+    .details-table thead th {
+      padding: 8px 12px;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+    }
+
+    .details-table tbody tr:nth-child(even) {
+      background: var(--light-bg);
+    }
+
+    .details-table tbody td {
+      padding: 7px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .details-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .details-table .td-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      width: 200px;
+    }
+
+    .td-amber { color: var(--amber); font-weight: 600; }
+    .td-navy  { color: var(--navy);  font-weight: 600; }
+    .td-red   { color: var(--red);   font-weight: 600; }
+
+    /* ── CANCELLATION WARNING ── */
+    .cancel-warning {
+      background: var(--amber-bg);
+      border: 1.5px solid var(--amber);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .cancel-warning-icon { font-size: 16px; flex-shrink: 0; }
+
+    .cancel-warning-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7a3800;
+      margin-bottom: 2px;
+    }
+
+    .cancel-warning-text {
+      font-size: 11.5px;
+      color: #7a3800;
+      line-height: 1.5;
+    }
+
+    /* ── SIGNATURE BLOCK ── */
+    .sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .sig-box {
+      background: var(--sig-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+    }
+
+    .sig-party {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .sig-cursive {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--teal);
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sig-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-top: 6px;
+    }
+
+    .sig-title {
+      font-size: 11.5px;
+      color: var(--mid);
+    }
+
+    .sig-timestamp {
+      font-size: 11px;
+      color: var(--teal);
+      margin-top: 6px;
+    }
+
+    .sig-id {
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .esig-note {
+      font-size: 10.5px;
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* ── MSA ── */
+    .msa-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: 2px;
+    }
+
+    .msa-ref {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .msa-intro {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      text-align: justify;
+    }
+
+    .clause-heading {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 10px 0 3px;
+    }
+
+    .clause-body {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 4px;
+      text-align: justify;
+    }
+
+    .disclaimer {
+      font-size: 11.5px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 4px;
+    }
+
+    /* ── VERIFY FOOTER ── */
+    .verify-footer {
+      background: var(--teal-light);
+      border: 1px solid var(--teal);
+      border-radius: 6px;
+      padding: 12px 16px;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 11px;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    /* ── DOC FOOTER ── */
+    .doc-footer {
+      padding: 10px 56px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .print-bar { display: none; }
+      .document { box-shadow: none; border: none; }
+      .page { padding: 32px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PRINT BAR -->
+<div class="print-bar">
+  <div class="print-bar-left">
+    <a href="javascript:history.back()">← Back to account</a>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-download" id="btn-pdf-download">⬇ Download PDF</button>
+    <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+  </div>
+</div>
+
+<!-- DOCUMENT -->
+<div class="document" id="contract-doc">
+
+  <!-- ══ PAGE 1: ORDER FORM ══ -->
+  <div class="page" id="page-order-form">
+
+    <div class="doc-header">
+      <div class="logo-wordmark">SyncToScale</div>
+      <div class="doc-type">Master Subscription Agreement</div>
+    </div>
+    <div class="teal-rule"></div>
+    <div class="doc-notice">This document constitutes a binding legal agreement. Please read carefully.</div>
+
+    <div class="of-title">ORDER FORM</div>
+    <div class="of-subtitle">Incorporated into and subject to the Master Subscription Agreement below.</div>
+
+    <div class="section-heading">Parties</div>
+    <div class="parties-grid">
+      <div class="party-box">
+        <div class="party-label">Vendor</div>
+        <div class="party-name">SyncToScale, Inc.</div>
+        <div class="party-detail">340 Pine Street, Suite 800<br>San Francisco, CA 94104<br>contracts@synctoscale.com</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Customer</div>
+        <div class="party-name" id="of-customer-name">—</div>
+        <div class="party-detail" id="of-customer-detail">—</div>
+      </div>
+    </div>
+
+    <div class="section-heading">Subscription Details</div>
+    <table class="details-table">
+      <thead><tr><th>Field</th><th>Detail</th></tr></thead>
+      <tbody id="of-details-tbody"></tbody>
+    </table>
+
+    <div class="section-heading">Authorized Signatures — Order Form</div>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px;">By signing below, each party agrees to be bound by this Order Form and the Master Subscription Agreement.</p>
+
+    <div class="sig-grid" id="of-sig-grid"></div>
+
+    <p class="esig-note">This Order Form was executed electronically. Timestamp verification available upon request. Signature IDs are recorded in the SyncToScale contract management system.</p>
+
+  </div>
+
+  <!-- ══ PAGE 2: MSA ══ -->
+  <div class="page" id="page-msa">
+
+    <div class="doc-header">
+      <div class="logo-wordmark">SyncToScale</div>
+      <div class="doc-type">Master Subscription Agreement</div>
+    </div>
+    <div class="teal-rule"></div>
+
+    <div class="msa-title">MASTER SUBSCRIPTION AGREEMENT</div>
+    <div class="msa-ref" id="msa-ref-line">—</div>
+
+    <p class="msa-intro" id="msa-intro">—</p>
+
+    <!-- Section 1 -->
+    <div class="section-heading">1. Definitions</div>
+    <div class="clause-heading">1.1 "Platform"</div>
+    <p class="clause-body">The SyncToScale workflow automation and account intelligence software, including all updates, enhancements, and integrations made available to Customer under this Agreement.</p>
+    <div class="clause-heading">1.2 "Subscription Term"</div>
+    <p class="clause-body">The period during which Customer is authorized to access the Platform, as specified in the Order Form.</p>
+    <div class="clause-heading">1.3 "Authorized Users"</div>
+    <p class="clause-body" id="def-authorized-users">—</p>
+    <div class="clause-heading">1.4 "Customer Data"</div>
+    <p class="clause-body">All data, content, and information submitted by Customer or its Authorized Users to the Platform.</p>
+    <div class="clause-heading">1.5 "Order Form"</div>
+    <p class="clause-body">The ordering document executed by both parties specifying subscription details, pricing, and term, incorporated herein by reference.</p>
+
+    <!-- Section 2 -->
+    <div class="section-heading">2. Subscription and Access</div>
+    <div class="clause-heading">2.1 Grant of License</div>
+    <p class="clause-body">Subject to the terms of this Agreement and timely payment of all fees, Vendor grants Customer a non-exclusive, non-transferable, limited right to access and use the Platform solely for Customer's internal business operations during the Subscription Term.</p>
+    <div class="clause-heading">2.2 Seat Licenses</div>
+    <p class="clause-body" id="clause-seats">—</p>
+    <div class="clause-heading">2.3 Restrictions</div>
+    <p class="clause-body">Customer shall not: (a) sublicense, resell, or transfer access to the Platform; (b) reverse engineer or decompile the Platform; (c) use the Platform to develop a competing product; or (d) remove any proprietary notices.</p>
+
+    <!-- Section 3 -->
+    <div class="section-heading">3. Fees and Payment</div>
+    <div class="clause-heading">3.1 Subscription Fees</div>
+    <p class="clause-body" id="clause-fees">—</p>
+    <div class="clause-heading">3.2 Late Payments</div>
+    <p class="clause-body">Overdue amounts accrue interest at 1.5% per month. Vendor reserves the right to suspend access upon thirty (30) days written notice for non-payment.</p>
+    <div class="clause-heading">3.3 Price Adjustments</div>
+    <p class="clause-body">Vendor may adjust subscription pricing at renewal with no less than sixty (60) days prior written notice. Price increases shall not exceed 7% annually without Customer's written consent.</p>
+
+    <!-- Section 4 -->
+    <div class="section-heading">4. Customer Data and Privacy</div>
+    <div class="clause-heading">4.1 Customer Ownership</div>
+    <p class="clause-body">Customer retains all rights, title, and interest in and to Customer Data. Vendor acquires no ownership rights by virtue of this Agreement.</p>
+    <div class="clause-heading">4.2 Data Security</div>
+    <p class="clause-body">Vendor shall implement commercially reasonable security measures to protect Customer Data. Vendor maintains SOC 2 Type II compliance and shall notify Customer within 72 hours of any confirmed data breach.</p>
+    <div class="clause-heading">4.3 Data Retention</div>
+    <p class="clause-body">Upon termination, Vendor shall make Customer Data available for export for thirty (30) days, after which Vendor may delete Customer Data per its retention policies.</p>
+
+    <!-- Section 5 -->
+    <div class="section-heading">5. Service Levels and Support</div>
+    <div class="clause-heading">5.1 Uptime Commitment</div>
+    <p class="clause-body">Vendor commits to 99.5% monthly uptime, excluding scheduled maintenance. Customer shall receive a 5% monthly fee credit for each 0.5% below the SLA.</p>
+    <div class="clause-heading">5.2 Support</div>
+    <p class="clause-body" id="clause-support">—</p>
+
+    <!-- Section 6 -->
+    <div class="section-heading">6. Confidentiality</div>
+    <div class="clause-heading">6.1 Mutual Confidentiality</div>
+    <p class="clause-body">Each party agrees to hold in confidence and not disclose to third parties any Confidential Information received from the other party, using no less than reasonable care.</p>
+    <div class="clause-heading">6.2 Survival</div>
+    <p class="clause-body">Confidentiality obligations shall survive termination of this Agreement for three (3) years.</p>
+
+    <!-- Section 7 -->
+    <div class="section-heading">7. Intellectual Property</div>
+    <div class="clause-heading">7.1 Vendor IP</div>
+    <p class="clause-body">Vendor retains all right, title, and interest in the Platform and all underlying technology. No rights are granted except as expressly set forth in this Agreement.</p>
+
+    <!-- Section 8 — CANCELLATION -->
+    <div class="section-heading">8. Cancellation and Termination</div>
+    <div id="cancel-warning-block"></div>
+    <div class="clause-heading">8.1 Term</div>
+    <p class="clause-body" id="clause-term">—</p>
+    <div class="clause-heading">8.2 Cancellation — Non-Renewal Notice</div>
+    <p class="clause-body" id="clause-cancellation">—</p>
+    <div class="clause-heading">8.3 Termination for Cause</div>
+    <p class="clause-body">Either party may terminate for material breach upon thirty (30) days written notice if the breach is not cured within the notice period.</p>
+    <div class="clause-heading">8.4 Effect of Termination</div>
+    <p class="clause-body">Upon termination: all licenses terminate; Customer shall cease use of the Platform; Customer Data is available for export for 30 days. Fees for prepaid periods are non-refundable except in cases of Vendor-caused termination.</p>
+    <div class="clause-heading">8.5 Early Termination Fee</div>
+    <p class="clause-body">If Customer terminates prior to term end for any reason other than Vendor's uncured material breach, Customer shall pay an early termination fee equal to fifty percent (50%) of remaining unpaid subscription fees.</p>
+
+    <!-- Section 9 -->
+    <div class="section-heading">9. Warranties and Disclaimers</div>
+    <div class="clause-heading">9.1 Vendor Warranty</div>
+    <p class="clause-body">Vendor warrants the Platform will perform materially per the Documentation. Customer's sole remedy for breach is the service credit described in Section 5.1.</p>
+    <div class="clause-heading">9.2 Disclaimer</div>
+    <p class="disclaimer">EXCEPT AS SET FORTH IN SECTION 9.1, THE PLATFORM IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. VENDOR DISCLAIMS ALL IMPLIED WARRANTIES INCLUDING WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+    <!-- Section 10 -->
+    <div class="section-heading">10. Limitation of Liability</div>
+    <p class="disclaimer" id="clause-liability">—</p>
+
+    <!-- Section 11 -->
+    <div class="section-heading">11. General Provisions</div>
+    <div class="clause-heading">11.1 Governing Law</div>
+    <p class="clause-body">This Agreement is governed by the laws of the State of California. Disputes shall be resolved by binding arbitration in San Francisco, CA.</p>
+    <div class="clause-heading">11.2 Entire Agreement</div>
+    <p class="clause-body">This Agreement and all executed Order Forms constitute the entire agreement between the parties.</p>
+    <div class="clause-heading">11.3 Amendments</div>
+    <p class="clause-body">Amendments require written instruments signed by authorized representatives of both parties.</p>
+    <div class="clause-heading">11.4 Assignment</div>
+    <p class="clause-body">Neither party may assign this Agreement without written consent, except in connection with a merger or acquisition.</p>
+    <div class="clause-heading">11.5 Force Majeure</div>
+    <p class="clause-body">Neither party is liable for delays caused by circumstances beyond reasonable control.</p>
+
+    <!-- MSA Signatures -->
+    <hr style="border:none;border-top:1px solid var(--border);margin:24px 0 16px;">
+    <div class="section-heading">Authorized Signatures — Master Subscription Agreement</div>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px;">Electronic signatures are legally binding under E-SIGN and UETA.</p>
+    <div class="sig-grid" id="msa-sig-grid"></div>
+
+    <div class="verify-footer" id="verify-footer">—</div>
+
+  </div>
+
+  <!-- DOC FOOTER -->
+  <div class="doc-footer">
+    <span id="footer-left">—</span>
+    <span>CONFIDENTIAL</span>
+  </div>
+
+</div>
+
+<script src="accounts.js"></script>
+<script src="contract-generator.js"></script>
+<script>
+  // ── LOAD ACCOUNT ───────────────────────────────────────────────────────────
+  const params  = new URLSearchParams(window.location.search);
+  const id      = params.get('account');
+  const account = id ? SyncDash.getAccount(id) : null;
+
+  if (!account || !account.contract) {
+    document.getElementById('contract-doc').innerHTML = `
+      <div style="padding:64px;text-align:center;color:#7a8fa8;">
+        <div style="font-size:32px;margin-bottom:12px;">📄</div>
+        <div style="font-size:16px;color:#0d1b2e;margin-bottom:8px;">Contract not found</div>
+        <div style="font-size:13px;">No contract data for "${id || 'unknown'}".</div>
+        <a href="javascript:history.back()" style="display:inline-block;margin-top:16px;color:#00a389;font-size:13px;">← Go back</a>
+      </div>`;
+  } else {
+    renderContract(account);
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────────────────────
+  function renderContract(a) {
+    const c = a.contract;
+    const arr = (a.licensedSeats * c.pricePerSeat * 12).toLocaleString('en-US', { minimumFractionDigits: 2 });
+    const monthlyArr = Math.round(a.arr / 12).toLocaleString('en-US');
+
+    document.title = `SyncToScale — ${a.name} Contract`;
+
+    // Customer party box
+    document.getElementById('of-customer-name').textContent = a.name;
+    document.getElementById('of-customer-detail').innerHTML =
+      `${a.industry}<br>${c.hq}`;
+
+    // Order form details table
+    const deadlineDate   = new Date(c.cancelDeadline);
+    const daysToDeadline = Math.round((deadlineDate - Date.now()) / 86400000);
+
+    const rows = [
+      ['Subscription Plan',              `${c.plan} — $${c.pricePerSeat}/user/month`, ''],
+      ['Total Employees',                a.employees.toLocaleString(), ''],
+      ['Licensed Seats',                 `${a.licensedSeats} seats`, ''],
+      ['Annual Recurring Revenue (ARR)', `$${arr} USD (${a.licensedSeats} seats × $${c.pricePerSeat}/mo × 12)`, 'td-navy'],
+      ['Billing Frequency',              c.billingCycle, ''],
+      ['Contract Start Date',            c.startDate, ''],
+      ['Initial Term',                   `${c.termYears} year${c.termYears !== 1 ? 's' : ''}`, ''],
+      ['Contract End Date',              c.endDate, 'td-amber'],
+      ['Auto-Renewal',                   'Yes — 12-month terms unless cancelled per Section 8.2', ''],
+      ['Cancellation Deadline',          c.cancelDeadline, daysToDeadline < 0 ? 'td-red' : 'td-amber'],
+      ['Modules Included',               c.modules, ''],
+      ['Nova AI Add-On',                 c.novaAddon ? 'Included (+$15/user/month)' : 'Not included — available at +$15/user/month', ''],
+      ['Support Tier',                   c.plan === 'Starter' ? 'Standard — Email, 8x5, 8-hour SLA' : 'Business — Email + Slack, 8x5, 4-hour SLA', ''],
+      ['Governing Law',                  'State of California, United States', ''],
+      ['Order Form Reference',           c.orderRef, ''],
+    ];
+
+    document.getElementById('of-details-tbody').innerHTML = rows.map(([label, value, cls], i) => `
+      <tr>
+        <td class="td-label">${label}</td>
+        <td class="${cls}">${value}</td>
+      </tr>`).join('');
+
+    // Signature blocks
+    document.getElementById('of-sig-grid').innerHTML   = sigGrid(a, c);
+    document.getElementById('msa-sig-grid').innerHTML  = sigGrid(a, c);
+
+    // MSA ref line
+    document.getElementById('msa-ref-line').textContent =
+      `Effective Date: ${c.startDate}  |  Agreement Reference: ${c.msaRef}`;
+
+    // MSA intro
+    document.getElementById('msa-intro').textContent =
+      `This Master Subscription Agreement ("Agreement") is entered into as of the Effective Date by and between SyncToScale, Inc., a Delaware corporation ("Vendor"), and ${a.name} ("Customer"). This Agreement governs Customer's access to and use of the SyncToScale platform and related services as described in the accompanying Order Form.`;
+
+    // Dynamic clauses
+    document.getElementById('def-authorized-users').textContent =
+      `Customer's employees, contractors, or agents authorized to access the Platform under a purchased seat license. Customer's current licensed seat count is ${a.licensedSeats} seats.`;
+
+    document.getElementById('clause-seats').textContent =
+      `Customer's use is limited to ${a.licensedSeats} Authorized User seats. Additional seats may be purchased at $${c.pricePerSeat}/user/month by executing a written amendment to the Order Form.`;
+
+    document.getElementById('clause-fees').textContent =
+      `Customer agrees to pay $${arr} USD annually as specified in the Order Form. All fees are due within thirty (30) days of invoice date. Fees are non-refundable except as provided in Section 8.`;
+
+    document.getElementById('clause-support').textContent =
+      c.plan === 'Starter'
+        ? `Vendor shall provide Standard support: email access during business hours (8am–6pm PT, Mon–Fri) with an 8-hour response SLA for Severity 1 issues.`
+        : `Vendor shall provide Business support: email and Slack access during business hours (8am–6pm PT, Mon–Fri) with a 4-hour response SLA for Severity 1 issues.`;
+
+    // Cancellation warning
+    if (daysToDeadline <= 90) {
+      document.getElementById('cancel-warning-block').innerHTML = `
+        <div class="cancel-warning">
+          <div class="cancel-warning-icon">⚠</div>
+          <div>
+            <div class="cancel-warning-title">Cancellation Deadline ${daysToDeadline < 0 ? 'PASSED' : 'Approaching'}</div>
+            <div class="cancel-warning-text">
+              Non-renewal notice must be sent by <strong>${c.cancelDeadline}</strong> —
+              ${daysToDeadline > 0 ? `${daysToDeadline} days away.` : `<strong style="color:#e03040">deadline has passed.</strong>`}
+              Written notice required per Section 8.2.
+            </div>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById('clause-term').textContent =
+      `This Agreement commences on ${c.startDate} and continues for ${c.termYears} year${c.termYears !== 1 ? 's' : ''}. Following the Initial Term, this Agreement automatically renews for successive 12-month periods unless either party provides written notice per Section 8.2.`;
+
+    document.getElementById('clause-cancellation').textContent =
+      `Either party may elect not to renew by providing written notice no less than sixty (60) days prior to term end. For this Agreement, the cancellation deadline is ${c.cancelDeadline}. Notice must be delivered via email with written confirmation or certified mail. Verbal notice shall not constitute valid cancellation.`;
+
+    document.getElementById('clause-liability').textContent =
+      `VENDOR'S TOTAL LIABILITY SHALL NOT EXCEED THE TOTAL FEES PAID IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM ($${monthlyArr} USD × 12). NEITHER PARTY SHALL BE LIABLE FOR INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES.`;
+
+    // Verify footer
+    document.getElementById('verify-footer').innerHTML =
+      `<strong>Document Verification</strong><br>
+      Agreement Ref: ${c.msaRef} &nbsp;|&nbsp; Order Form Ref: ${c.orderRef}<br>
+      Executed via SyncToScale Contract Management System &nbsp;|&nbsp; contracts@synctoscale.com`;
+
+    // Doc footer
+    document.getElementById('footer-left').textContent =
+      `${a.name} & SyncToScale, Inc. — Master Subscription Agreement`;
+
+    // PDF download button
+    document.getElementById('btn-pdf-download').addEventListener('click', () => {
+      SyncDash.generateContract(a.id);
+    });
+  }
+
+  // ── SIGNATURE GRID HTML ───────────────────────────────────────────────────
+  function sigGrid(a, c) {
+    return [
+      { party: 'VENDOR — SyncToScale, Inc.', signer: c.signerVendor, company: 'SyncToScale, Inc.', sigId: c.sigIdVendor },
+      { party: `CUSTOMER — ${a.name}`,        signer: c.signerCustomer, company: a.name,            sigId: c.sigIdCustomer },
+    ].map(s => `
+      <div class="sig-box">
+        <div class="sig-party">${s.party}</div>
+        <div class="sig-cursive">${s.signer.name}</div>
+        <div class="sig-name">${s.signer.name}</div>
+        <div class="sig-title">${s.signer.title} — ${s.company}</div>
+        <div class="sig-timestamp">Signed: ${c.signedDate}</div>
+        <div class="sig-id">ID: ${s.sigId}</div>
+      </div>`).join('');
+  }
+</script>
+
+</body>
+</html>

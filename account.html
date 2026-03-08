@@ -712,13 +712,7 @@
     if (dlBtn) dlBtn.addEventListener('click', () => SyncDash.generateContract(a.id));
 
     const reopenBtn = document.getElementById('btn-contract-reopen');
-    if (reopenBtn) reopenBtn.addEventListener('click', () => {
-      const dataUri = SyncDash.generateContract(a.id, 'preview');
-      if (dataUri) {
-        const win = window.open();
-        win.document.write(`<iframe src="${dataUri}" style="width:100%;height:100%;border:none;position:fixed;top:0;left:0;" frameborder="0"></iframe>`);
-      }
-    });
+    if (reopenBtn) reopenBtn.addEventListener('click', () => openContractNewTab(a.id));
   }
 
   // ── CONTRACT SUMMARY CARD ────────────────────────────────────────────────
@@ -809,7 +803,22 @@
       </div>`;
   }
 
-  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function openContractNewTab(accountId) {
+    const { jsPDF } = window.jspdf || window;
+    // Re-run generator but grab blob directly
+    const account = SyncDash.getAccount(accountId);
+    if (!account) return;
+    const dataUri = SyncDash.generateContract(accountId, 'preview');
+    if (!dataUri) return;
+    // Convert data URI to blob
+    const byteString = atob(dataUri.split(',')[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+    const blob = new Blob([ab], { type: 'application/pdf' });
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+  }
   function formatRenewal(months) {
     if (months < 2)  return `${Math.round(months * 4)} weeks`;
     if (months < 12) return `${Math.round(months)} months`;
@@ -845,13 +854,7 @@
     // Open contract PDF in new tab on first click
     if (name === 'contract' && !showTab._contractOpened) {
       showTab._contractOpened = true;
-      setTimeout(() => {
-        const dataUri = SyncDash.generateContract(account.id, 'preview');
-        if (dataUri) {
-          const win = window.open();
-          win.document.write(`<iframe src="${dataUri}" style="width:100%;height:100%;border:none;position:fixed;top:0;left:0;" frameborder="0"></iframe>`);
-        }
-      }, 50);
+      setTimeout(() => openContractNewTab(account.id), 50);
     }
   }
 </script>

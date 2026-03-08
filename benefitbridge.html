@@ -809,8 +809,8 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
-      <button class="action-btn ghost" id="btn-contract">📄 Contract</button>
       <a class="action-btn teal" href="#">✦ Build QBR</a>
+      <button class="action-btn ghost" onclick="handleLogout()" style="color:var(--muted);">↩ Log out</button>
     </div>
   </div>
 
@@ -1427,6 +1427,12 @@
     window.location.replace('login.html');
   }
 
+  function handleLogout() {
+    localStorage.removeItem('syncdash_user');
+    localStorage.removeItem('syncdash_accounts');
+    window.location.replace('login.html');
+  }
+
   // ── WIRE FROM accounts.js ─────────────────────────────────────────────────
   const account = SyncDash.getAccount('benefitbridge');
 
@@ -1456,14 +1462,6 @@
     const exportJSON = document.getElementById('btn-export-json');
     if (exportCSV)  exportCSV.addEventListener('click',  () => SyncDash.exportAccount('benefitbridge', 'csv'));
     if (exportJSON) exportJSON.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'json'));
-
-    // Topbar contract button → switch to contract tab
-    const contractBtn = document.getElementById('btn-contract');
-    if (contractBtn) contractBtn.addEventListener('click', () => {
-      const tab = document.querySelector('.tab[onclick*="contract"]');
-      showTab('contract', tab);
-      document.getElementById('tab-contract').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
 
     // Render contract summary card
     renderContractSummary(account);

@@ -918,6 +918,7 @@
         <div class="user-role">Technical Account Manager</div>
       </div>
     </div>
+    <button onclick="handleLogout()" style="margin-top:10px;width:100%;padding:7px 0;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">↩ Log out</button>
   </div>
 </aside>
 
@@ -1201,8 +1202,13 @@
 
   // ── SESSION CHECK ─────────────────────────────────────────────────────────
   // If no session found, redirect to login page
-
   if (!localStorage.getItem('syncdash_user')) {
+    window.location.replace('login.html');
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('syncdash_user');
+    localStorage.removeItem('syncdash_accounts');
     window.location.replace('login.html');
   }
 

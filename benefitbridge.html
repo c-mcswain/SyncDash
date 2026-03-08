@@ -47,7 +47,6 @@
     /* ── SIDEBAR ─────────────────────────────── */
     .sidebar {
       width: var(--sidebar-w);
-      min-height: 100vh;
       background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex;
@@ -121,7 +120,7 @@
 
     .sidebar-nav {
       padding: 16px 12px;
-      flex: 1;
+      flex: 1; min-height: 0; overflow-y: auto;
     }
 
     .nav-label {
@@ -168,7 +167,7 @@
 
     .sidebar-footer {
       padding: 16px 20px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border); flex-shrink: 0;
     }
 
     .user-row { display: flex; align-items: center; gap: 10px; }

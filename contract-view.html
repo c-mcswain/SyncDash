@@ -773,4 +773,18 @@
         <div class="sig-party">${s.party}</div>
         <div class="sig-cursive">${s.signer.name}</div>
         <div class="sig-name">${s.signer.name}</div>
-      
+              <div class="sig-title">${s.signer.title} — ${s.company}</div>
+        <div class="sig-timestamp">Signed: ${c.signedDate}</div>
+        <div class="sig-id">ID: ${s.sigId}</div>
+      </div>`).join('');
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('syncdash_user');
+    localStorage.removeItem('syncdash_accounts');
+    window.location.replace('login.html');
+  }
+</script>
+
+</body>
+</html>

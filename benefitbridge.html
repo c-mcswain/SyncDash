@@ -1477,14 +1477,7 @@
   }
 
   function openContractNewTab(accountId) {
-    const dataUri = SyncDash.generateContract(accountId, 'preview');
-    if (!dataUri) return;
-    const byteString = atob(dataUri.split(',')[1]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-    const blob = new Blob([ab], { type: 'application/pdf' });
-    window.open(URL.createObjectURL(blob), '_blank');
+    window.open('contract-view.html?account=' + accountId, '_blank');
   }
 
   // ── CONTRACT SUMMARY + PREVIEW ────────────────────────────────────────────
@@ -1579,7 +1572,7 @@
     // Open contract PDF in new tab on first click
     if (name === 'contract' && !showTab._contractOpened) {
       showTab._contractOpened = true;
-      setTimeout(() => openContractNewTab('benefitbridge'), 50);
+      openContractNewTab('benefitbridge');
     }
   }
 </script>

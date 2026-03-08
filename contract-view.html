@@ -455,6 +455,7 @@
   <div style="display:flex;gap:8px;">
     <button class="btn-download" id="btn-pdf-download">⬇ Download PDF</button>
     <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+    <button class="btn-print" onclick="handleLogout()" style="background:#2a3545;">↩ Log out</button>
   </div>
 </div>
 
@@ -479,7 +480,7 @@
       <div class="party-box">
         <div class="party-label">Vendor</div>
         <div class="party-name">SyncToScale, Inc.</div>
-        <div class="party-detail">340 Pine Street, Suite 800<br>San Francisco, CA 94104<br>contracts@synctoscale.com</div>
+        <div class="party-detail">340 Pine Street, Suite 800<br>San Francisco, CA 94104<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9dfef2f3e9effcfee9eeddeee4f3fee9f2eefefcf1f8b3fef2f0">[email&#160;protected]</a></div>
       </div>
       <div class="party-box">
         <div class="party-label">Customer</div>
@@ -632,6 +633,7 @@
 
 </div>
 
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="accounts.js"></script>
 <script src="contract-generator.js"></script>
 <script>
@@ -771,12 +773,4 @@
         <div class="sig-party">${s.party}</div>
         <div class="sig-cursive">${s.signer.name}</div>
         <div class="sig-name">${s.signer.name}</div>
-        <div class="sig-title">${s.signer.title} — ${s.company}</div>
-        <div class="sig-timestamp">Signed: ${c.signedDate}</div>
-        <div class="sig-id">ID: ${s.sigId}</div>
-      </div>`).join('');
-  }
-</script>
-
-</body>
-</html>
+      

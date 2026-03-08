@@ -804,20 +804,7 @@
   }
 
   function openContractNewTab(accountId) {
-    const { jsPDF } = window.jspdf || window;
-    // Re-run generator but grab blob directly
-    const account = SyncDash.getAccount(accountId);
-    if (!account) return;
-    const dataUri = SyncDash.generateContract(accountId, 'preview');
-    if (!dataUri) return;
-    // Convert data URI to blob
-    const byteString = atob(dataUri.split(',')[1]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-    const blob = new Blob([ab], { type: 'application/pdf' });
-    const blobUrl = URL.createObjectURL(blob);
-    window.open(blobUrl, '_blank');
+    window.open('contract-view.html?account=' + accountId, '_blank');
   }
   function formatRenewal(months) {
     if (months < 2)  return `${Math.round(months * 4)} weeks`;

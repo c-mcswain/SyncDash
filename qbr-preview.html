@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — QBR</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b24;
+      --surface2: #1c2333;
+      --border:   #242d3d;
+      --border2:  #2e3a50;
+      --text:     #e2e8f0;
+      --muted:    #7a8ba3;
+      --faint:    #3d4f68;
+      --teal:     #00c9a7;
+      --teal-bg:  rgba(0,201,167,0.08);
+      --green:    #22d98a;
+      --green-bg: rgba(34,217,138,0.10);
+      --amber:    #f5a623;
+      --amber-bg: rgba(245,166,35,0.10);
+      --red:      #ff5c6a;
+      --red-bg:   rgba(255,92,106,0.10);
+      --blue:     #4da6ff;
+      --blue-bg:  rgba(77,166,255,0.08);
+      --sage:     #a78bfa;
+      --sage-bg:  rgba(167,139,250,0.08);
+      --sage-border: rgba(167,139,250,0.2);
+      --radius:   12px;
+      --radius-sm: 6px;
+      --slide-max: 860px;
+    }
+
+    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px; height: 54px; gap: 16px;
+    }
+
+    .topbar-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300; font-size: 17px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text); text-decoration: none;
+    }
+    .topbar-logo span { color: var(--teal); }
+
+    .topbar-divider { width: 1px; height: 20px; background: var(--border); }
+
+    .topbar-meta { flex: 1; }
+    .topbar-account { font-size: 13px; font-weight: 600; color: var(--text); }
+    .topbar-sub { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      font-size: 12.5px; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent; text-decoration: none;
+      transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+      background: none;
+    }
+    .btn-ghost { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+    .btn-sage { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
+    .btn-sage:hover { background: rgba(167,139,250,0.14); }
+    .btn-sage.active { background: rgba(167,139,250,0.16); border-color: var(--sage); }
+
+    /* ── SLIDE NAV ── */
+    .slide-nav {
+      position: sticky; top: 54px; z-index: 90;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px; gap: 4px;
+      overflow-x: auto;
+    }
+
+    .slide-nav::-webkit-scrollbar { height: 0; }
+
+    .nav-pill {
+      padding: 10px 16px;
+      font-size: 12px; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px; white-space: nowrap;
+      transition: all 0.15s; text-decoration: none;
+    }
+    .nav-pill:hover { color: var(--text); }
+    .nav-pill.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+    /* ── SLIDE WRAPPER ── */
+    .slides { padding: 40px 28px 80px; }
+
+    .slide {
+      max-width: var(--slide-max);
+      margin: 0 auto 48px;
+      scroll-margin-top: 120px;
+    }
+
+    .slide:last-child { margin-bottom: 0; }
+
+    /* ── SLIDE NUMBER ── */
+    .slide-num {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--faint); margin-bottom: 10px;
+    }
+
+    /* ── SLIDE CARD ── */
+    .slide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .slide-header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 16px;
+    }
+
+    .slide-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+
+    .slide-label {
+      font-size: 11px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-top: 4px;
+    }
+
+    .slide-body { padding: 28px 32px; }
+
+    /* ── SAGE PANEL ── */
+    .sage-toggle-row {
+      padding: 12px 32px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center;
+      justify-content: flex-end;
+      background: var(--surface2);
+    }
+
+    .sage-panel {
+      display: none;
+      padding: 20px 32px;
+      border-top: 1px solid var(--sage-border);
+      background: var(--sage-bg);
+      animation: fadeIn 0.2s ease both;
+    }
+
+    .sage-panel.open { display: block; }
+
+    .sage-panel-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--sage); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .sage-panel-label::before {
+      content: '✦';
+      font-size: 11px;
+    }
+
+    .sage-panel-text {
+      font-size: 13px; color: var(--text);
+      line-height: 1.65;
+    }
+
+    /* ── SLIDE 1: COVER ── */
+    .cover-body {
+      padding: 48px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .cover-account {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800;
+      color: var(--text); letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .cover-account span { color: var(--teal); }
+
+    .cover-meta { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+
+    .cover-meta-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12.5px; color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .cover-meta-row strong { color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; }
+
+    .cover-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .cover-stat {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+    }
+
+    .cover-stat-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 4px;
+    }
+
+    .cover-stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px; font-weight: 700;
+      line-height: 1;
+    }
+
+    .cover-stat-value.green { color: var(--green); }
+    .cover-stat-value.amber { color: var(--amber); }
+    .cover-stat-value.red   { color: var(--red); }
+
+    /* ── METRIC ROW ── */
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .metric-tile {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+
+    .metric-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px; font-weight: 700;
+      line-height: 1; color: var(--text);
+    }
+
+    .metric-value.green { color: var(--green); }
+    .metric-value.amber { color: var(--amber); }
+    .metric-value.red   { color: var(--red); }
+    .metric-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── HEALTH BAR ── */
+    .health-bar-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 10px;
+    }
+    .health-bar-row:last-child { margin-bottom: 0; }
+    .health-bar-label { font-size: 12.5px; color: var(--muted); width: 130px; flex-shrink: 0; }
+    .health-bar-wrap { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+    .health-bar-fill { height: 100%; border-radius: 3px; }
+    .health-bar-fill.green { background: var(--green); }
+    .health-bar-fill.amber { background: var(--amber); }
+    .health-bar-fill.red   { background: var(--red); }
+    .health-bar-score { font-family: 'DM Mono', monospace; font-size: 12px; width: 36px; text-align: right; }
+    .health-bar-score.green { color: var(--green); }
+    .health-bar-score.amber { color: var(--amber); }
+    .health-bar-score.red   { color: var(--red); }
+
+    /* ── WINS LIST ── */
+    .wins-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .wins-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13.5px; color: var(--text); line-height: 1.5;
+    }
+
+    .win-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--green-bg);
+      border: 1px solid rgba(34,217,138,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--green);
+      flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* ── RISK FLAGS ── */
+    .risk-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .risk-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-size: 13px; line-height: 1.5;
+    }
+
+    .risk-item.ok   { background: var(--green-bg); border-color: rgba(34,217,138,0.2); color: var(--green); }
+    .risk-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2);  color: var(--amber); }
+    .risk-item.crit { background: var(--red-bg);   border-color: rgba(255,92,106,0.2);  color: var(--red); }
+
+    .risk-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; margin-top: 5px; }
+
+    /* ── GOALS ── */
+    .goals-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .goals-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13.5px; color: var(--text); line-height: 1.5;
+    }
+
+    .goal-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      color: var(--teal); flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* ── RENEWAL BOX ── */
+    .renewal-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+
+    .renewal-box-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-bottom: 8px;
+    }
+
+    .renewal-box-text { font-size: 13.5px; color: var(--text); line-height: 1.6; }
+
+    /* ── TLDR GRID ── */
+    .tldr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .tldr-panel {
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      border: 1px solid transparent;
+    }
+
+    .tldr-panel.working  { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
+    .tldr-panel.attention { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
+    .tldr-panel.commit   { background: var(--teal-bg);  border-color: rgba(0,201,167,0.2); }
+
+    .tldr-icon { font-size: 20px; margin-bottom: 10px; }
+    .tldr-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .tldr-panel.working  .tldr-label { color: var(--green); }
+    .tldr-panel.attention .tldr-label { color: var(--amber); }
+    .tldr-panel.commit   .tldr-label { color: var(--teal); }
+
+    .tldr-text { font-size: 12.5px; color: var(--text); line-height: 1.6; }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-divider-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--faint); white-space: nowrap;
+    }
+
+    .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── FOOTER ── */
+    .deck-footer {
+      max-width: var(--slide-max);
+      margin: 40px auto 0;
+      padding: 0 0 40px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .deck-footer-left { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
+    .deck-footer-right { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 700px) {
+      .topbar { padding: 0 16px; }
+      .slide-nav { padding: 0 16px; }
+      .slides { padding: 24px 16px 60px; }
+      .slide-header { padding: 20px; }
+      .slide-body { padding: 20px; }
+      .sage-toggle-row { padding: 10px 20px; }
+      .sage-panel { padding: 16px 20px; }
+      .cover-body { grid-template-columns: 1fr; gap: 20px; }
+      .metric-row { grid-template-columns: 1fr 1fr; }
+      .tldr-grid { grid-template-columns: 1fr; }
+      .cover-stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="topbar-logo" href="dashboard.html">Sync<span>Dash</span></a>
+  <div class="topbar-divider"></div>
+  <div class="topbar-meta">
+    <div class="topbar-account" id="topbar-account">—</div>
+    <div class="topbar-sub" id="topbar-sub">Quarterly Business Review</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-sage" id="btn-sage-all" onclick="toggleAllSage()">✦ Prep Mode</button>
+    <a class="btn btn-ghost" id="btn-back" href="dashboard.html">← Back</a>
+  </div>
+</div>
+
+<!-- SLIDE NAV -->
+<nav class="slide-nav">
+  <a class="nav-pill active" href="#slide-cover"    onclick="setActive(this)">Cover</a>
+  <a class="nav-pill"        href="#slide-health"   onclick="setActive(this)">Health</a>
+  <a class="nav-pill"        href="#slide-adoption" onclick="setActive(this)">Adoption</a>
+  <a class="nav-pill"        href="#slide-wins"     onclick="setActive(this)">Wins</a>
+  <a class="nav-pill"        href="#slide-risks"    onclick="setActive(this)">Risks</a>
+  <a class="nav-pill"        href="#slide-renewal"  onclick="setActive(this)">Renewal</a>
+  <a class="nav-pill"        href="#slide-next"     onclick="setActive(this)">Next Steps</a>
+  <a class="nav-pill"        href="#slide-tldr"     onclick="setActive(this)">TL;DR</a>
+</nav>
+
+<!-- SLIDES -->
+<div class="slides">
+
+  <!-- ── SLIDE 1: COVER ── -->
+  <div class="slide" id="slide-cover">
+    <div class="slide-num">01 / 08</div>
+    <div class="slide-card">
+      <div class="cover-body">
+        <div>
+          <div class="cover-account" id="cover-account">—</div>
+          <div class="cover-meta" id="cover-meta"></div>
+        </div>
+        <div class="cover-stats" id="cover-stats"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: HEALTH ── -->
+  <div class="slide" id="slide-health">
+    <div class="slide-num">02 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Account Health</div>
+          <div class="slide-label">Overall health score breakdown</div>
+        </div>
+        <div id="health-badge-header"></div>
+      </div>
+      <div class="slide-body" id="slide-health-body"></div>
+      <div class="sage-toggle-row">
+        <button class="btn btn-sage" onclick="toggleSage('sage-health')">✦ Prep with Sage</button>
+      </div>
+      <div class="sage-panel" id="sage-health">
+        <div class="sage-panel-label">Sage — Health prep</div>
+        <div class="sage-panel-text" id="sage-health-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: ADOPTION ── -->
+  <div class="slide" id="slide-adoption">
+    <div class="slide-num">03 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Adoption & Usage</div>
+          <div class="slide-label">Platform engagement across the account</div>
+        </div>
+      </div>
+      <div class="slide-body" id="slide-adoption-body"></div>
+      <div class="sage-toggle-row">
+        <button class="btn btn-sage" onclick="toggleSage('sage-adoption')">✦ Prep with Sage</button>
+      </div>
+      <div class="sage-panel" id="sage-adoption">
+        <div class="sage-panel-label">Sage — Adoption prep</div>
+        <div class="sage-panel-text" id="sage-adoption-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: WINS ── -->
+  <div class="slide" id="slide-wins">
+    <div class="slide-num">04 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Wins This Quarter</div>
+          <div class="slide-label">What's working</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <ul class="wins-list" id="wins-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: RISKS ── -->
+  <div class="slide" id="slide-risks">
+    <div class="slide-num">05 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Risks & Open Items</div>
+          <div class="slide-label">What needs attention</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="risk-list" id="risks-list"></div>
+      </div>
+      <div class="sage-toggle-row">
+        <button class="btn btn-sage" onclick="toggleSage('sage-risks')">✦ Prep with Sage</button>
+      </div>
+      <div class="sage-panel" id="sage-risks">
+        <div class="sage-panel-label">Sage — Risks prep</div>
+        <div class="sage-panel-text" id="sage-risks-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: RENEWAL ── -->
+  <div class="slide" id="slide-renewal">
+    <div class="slide-num">06 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Renewal & Contract</div>
+          <div class="slide-label">Commercial context</div>
+        </div>
+      </div>
+      <div class="slide-body" id="slide-renewal-body"></div>
+      <div class="sage-toggle-row">
+        <button class="btn btn-sage" onclick="toggleSage('sage-renewal')">✦ Prep with Sage</button>
+      </div>
+      <div class="sage-panel" id="sage-renewal">
+        <div class="sage-panel-label">Sage — Renewal prep</div>
+        <div class="sage-panel-text" id="sage-renewal-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: NEXT STEPS ── -->
+  <div class="slide" id="slide-next">
+    <div class="slide-num">07 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Next Steps</div>
+          <div class="slide-label">Commitments for the quarter ahead</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <ul class="goals-list" id="goals-list"></ul>
+      </div>
+      <div class="sage-toggle-row">
+        <button class="btn btn-sage" onclick="toggleSage('sage-next')">✦ Prep with Sage</button>
+      </div>
+      <div class="sage-panel" id="sage-next">
+        <div class="sage-panel-label">Sage — Next steps prep</div>
+        <div class="sage-panel-text" id="sage-next-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: TL;DR ── -->
+  <div class="slide" id="slide-tldr">
+    <div class="slide-num">08 / 08</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">TL;DR</div>
+          <div class="slide-label">The short version</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="tldr-grid" id="tldr-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="deck-footer">
+    <div class="deck-footer-left" id="footer-left">SyncDash · Quarterly Business Review</div>
+    <div class="deck-footer-right" id="footer-right"></div>
+  </div>
+
+</div><!-- /slides -->
+
+<script src="accounts.js"></script>
+<script>
+  // ── SESSION CHECK ──────────────────────────────────────────────────────────
+  if (!localStorage.getItem('syncdash_user')) {
+    window.location.replace('login.html');
+  }
+
+  // ── LOAD ACCOUNT ──────────────────────────────────────────────────────────
+  const params  = new URLSearchParams(window.location.search);
+  const id      = params.get('account');
+  const account = id ? SyncDash.getAccount(id) : null;
+
+  if (!account || !account.qbr) {
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);">
+        <div style="font-size:32px;">◰</div>
+        <div style="font-size:16px;color:var(--text);">QBR not found</div>
+        <div style="font-size:13px;">No account or QBR data matching "${id || 'unknown'}".</div>
+        <a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a>
+      </div>`;
+  } else {
+    renderDeck(account);
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function tierColor(tier) {
+    return tier === 'green' ? 'var(--green)' : tier === 'red' ? 'var(--red)' : 'var(--amber)';
+  }
+
+  function tierClass(tier) {
+    return tier === 'green' ? 'green' : tier === 'red' ? 'red' : 'amber';
+  }
+
+  function formatRenewal(months) {
+    if (months < 2)  return `${Math.round(months * 4)} weeks`;
+    if (months < 12) return `${Math.round(months)} months`;
+    return `${(months / 12).toFixed(1)} years`;
+  }
+
+  function barColor(val) {
+    return val >= 70 ? 'green' : val >= 40 ? 'amber' : 'red';
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  function renderDeck(a) {
+    const q   = a.qbr;
+    const tier = a.healthTier;
+    const tc  = tierClass(tier);
+
+    document.title = `SyncDash — ${a.name} QBR`;
+
+    // Wire back button
+    document.getElementById('btn-back').href = `account.html?account=${a.id}`;
+
+    // Topbar
+    document.getElementById('topbar-account').textContent = `${a.name} — ${q.quarter}`;
+    document.getElementById('topbar-sub').textContent = `Prepared by ${q.preparedBy} · ${a.industry}`;
+
+    // Footer
+    document.getElementById('footer-left').textContent = `${a.name} · ${q.quarter} · SyncDash QBR`;
+    document.getElementById('footer-right').textContent = `Prepared by ${q.preparedBy}`;
+
+    // ── SLIDE 1: COVER ────────────────────────────────────────────────────
+    document.getElementById('cover-account').innerHTML =
+      `${a.name}<span>.</span>`;
+
+    document.getElementById('cover-meta').innerHTML = `
+      <div class="cover-meta-row">◷ <strong>${q.quarter}</strong></div>
+      <div class="cover-meta-row">◎ <strong>${a.industry}</strong></div>
+      <div class="cover-meta-row">⊞ <strong>${a.employees.toLocaleString()} employees · ${a.licensedSeats} seats</strong></div>
+      <div class="cover-meta-row">◈ Prepared by <strong>${q.preparedBy}</strong></div>
+    `;
+
+    document.getElementById('cover-stats').innerHTML = `
+      <div class="cover-stat">
+        <div class="cover-stat-label">Health Score</div>
+        <div class="cover-stat-value ${tc}">${a.healthScore}<span style="font-size:13px;color:var(--muted)">/100</span></div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-label">Adoption</div>
+        <div class="cover-stat-value ${tc}">${a.adoptionPct}%</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-label">ARR</div>
+        <div class="cover-stat-value" style="font-size:18px;">$${a.arr.toLocaleString()}</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-label">Renewal</div>
+        <div class="cover-stat-value ${tierClass(a.renewalTier)}" style="font-size:18px;">${formatRenewal(a.renewalMonths)}</div>
+      </div>
+    `;
+
+    // ── SLIDE 2: HEALTH ───────────────────────────────────────────────────
+    document.getElementById('health-badge-header').innerHTML = `
+      <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:${tierColor(tier)};">
+        ${a.healthScore}<span style="font-size:14px;color:var(--muted)">/100</span>
+      </div>`;
+
+    const supportScore = a.openTickets === 0 ? 90 : a.escalationOpen ? 20 : 50;
+    const touchScore   = Math.max(0, 100 - (a.lastTouchDays * 4));
+
+    document.getElementById('slide-health-body').innerHTML = `
+      <div class="metric-row">
+        <div class="metric-tile">
+          <div class="metric-label">Overall Score</div>
+          <div class="metric-value ${tc}">${a.healthScore}</div>
+          <div class="metric-sub">out of 100</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">NPS</div>
+          <div class="metric-value ${barColor(a.nps) === 'green' ? 'green' : barColor(a.nps)}">${a.nps}</div>
+          <div class="metric-sub">net promoter score</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">Open Tickets</div>
+          <div class="metric-value ${a.openTickets === 0 ? 'green' : a.escalationOpen ? 'red' : 'amber'}">${a.openTickets}</div>
+          <div class="metric-sub">${a.escalationOpen ? 'escalation open' : 'no escalation'}</div>
+        </div>
+      </div>
+      <div class="section-divider">
+        <div class="section-divider-label">Score Breakdown</div>
+        <div class="section-divider-line"></div>
+      </div>
+      ${[
+        { label: 'Adoption rate',  val: a.adoptionPct },
+        { label: 'NPS',            val: a.nps },
+        { label: 'Health score',   val: a.healthScore },
+        { label: 'Last touch',     val: touchScore },
+        { label: 'Support health', val: supportScore },
+      ].map(row => {
+        const bc = barColor(row.val);
+        return `
+          <div class="health-bar-row">
+            <div class="health-bar-label">${row.label}</div>
+            <div class="health-bar-wrap"><div class="health-bar-fill ${bc}" style="width:${row.val}%"></div></div>
+            <div class="health-bar-score ${bc}">${row.val}</div>
+          </div>`;
+      }).join('')}
+    `;
+
+    document.getElementById('sage-health-text').textContent = q.sagePrep.health;
+
+    // ── SLIDE 3: ADOPTION ─────────────────────────────────────────────────
+    const adoptTier = barColor(a.adoptionPct);
+    document.getElementById('slide-adoption-body').innerHTML = `
+      <div class="metric-row">
+        <div class="metric-tile">
+          <div class="metric-label">Overall Adoption</div>
+          <div class="metric-value ${adoptTier}">${a.adoptionPct}%</div>
+          <div class="metric-sub">of licensed seats active</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">Licensed Seats</div>
+          <div class="metric-value">${a.licensedSeats}</div>
+          <div class="metric-sub">of ${a.employees.toLocaleString()} employees</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">Last Activity</div>
+          <div class="metric-value ${a.lastTouchDays > 14 ? 'red' : a.lastTouchDays > 7 ? 'amber' : 'green'}" style="font-size:20px;">${a.lastTouchDays}d ago</div>
+          <div class="metric-sub">${a.lastTouchNote}</div>
+        </div>
+      </div>
+      <div class="section-divider">
+        <div class="section-divider-label">Adoption Signal</div>
+        <div class="section-divider-line"></div>
+      </div>
+      <div class="health-bar-row">
+        <div class="health-bar-label">Platform usage</div>
+        <div class="health-bar-wrap" style="height:10px;border-radius:5px;">
+          <div class="health-bar-fill ${adoptTier}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div>
+        </div>
+        <div class="health-bar-score ${adoptTier}">${a.adoptionPct}%</div>
+      </div>
+      <div style="margin-top:20px;">
+        ${(a.riskFlags || []).filter(f => f.type !== 'ok').length
+          ? (a.riskFlags || []).filter(f => f.type !== 'ok').map(f => `
+              <div class="risk-item ${f.type}" style="margin-bottom:8px;">
+                <div class="risk-dot"></div>
+                ${f.text}
+              </div>`).join('')
+          : `<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged — usage is stable.</div>`
+        }
+      </div>
+    `;
+
+    document.getElementById('sage-adoption-text').textContent = q.sagePrep.adoption;
+
+    // ── SLIDE 4: WINS ─────────────────────────────────────────────────────
+    document.getElementById('wins-list').innerHTML = q.wins.map(w => `
+      <li>
+        <div class="win-icon">✓</div>
+        ${w}
+      </li>`).join('');
+
+    // ── SLIDE 5: RISKS ────────────────────────────────────────────────────
+    document.getElementById('risks-list').innerHTML = q.risks.map(r => `
+      <div class="risk-item ${r.type}">
+        <div class="risk-dot"></div>
+        ${r.text}
+      </div>`).join('');
+
+    document.getElementById('sage-risks-text').textContent = q.sagePrep.risks;
+
+    // ── SLIDE 6: RENEWAL ──────────────────────────────────────────────────
+    const renewTier = tierClass(a.renewalTier);
+    document.getElementById('slide-renewal-body').innerHTML = `
+      <div class="metric-row">
+        <div class="metric-tile">
+          <div class="metric-label">Renewal Window</div>
+          <div class="metric-value ${renewTier}">${formatRenewal(a.renewalMonths)}</div>
+          <div class="metric-sub">until contract end</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">ARR</div>
+          <div class="metric-value" style="font-size:20px;">$${a.arr.toLocaleString()}</div>
+          <div class="metric-sub">${a.contract.plan} plan · $${a.contract.pricePerSeat}/seat/mo</div>
+        </div>
+        <div class="metric-tile">
+          <div class="metric-label">Contract End</div>
+          <div class="metric-value" style="font-size:16px;color:var(--text);">${a.contract.endDate}</div>
+          <div class="metric-sub">Auto-renew: ${a.contract.autoRenew ? 'On' : 'Off'}</div>
+        </div>
+      </div>
+      <div class="renewal-box">
+        <div class="renewal-box-label">Context</div>
+        <div class="renewal-box-text">${q.renewalNote}</div>
+      </div>
+    `;
+
+    document.getElementById('sage-renewal-text').textContent = q.sagePrep.renewal;
+
+    // ── SLIDE 7: NEXT STEPS ───────────────────────────────────────────────
+    document.getElementById('goals-list').innerHTML = q.goals.map((g, i) => `
+      <li>
+        <div class="goal-num">${i + 1}</div>
+        ${g}
+      </li>`).join('');
+
+    document.getElementById('sage-next-text').textContent = q.sagePrep.nextSteps;
+
+    // ── SLIDE 8: TL;DR ────────────────────────────────────────────────────
+    document.getElementById('tldr-grid').innerHTML = `
+      <div class="tldr-panel working">
+        <div class="tldr-icon">✓</div>
+        <div class="tldr-label">What's working</div>
+        <div class="tldr-text">${q.tldr.working}</div>
+      </div>
+      <div class="tldr-panel attention">
+        <div class="tldr-icon">⚠</div>
+        <div class="tldr-label">What needs attention</div>
+        <div class="tldr-text">${q.tldr.attention}</div>
+      </div>
+      <div class="tldr-panel commit">
+        <div class="tldr-icon">→</div>
+        <div class="tldr-label">What we're committing to</div>
+        <div class="tldr-text">${q.tldr.committing}</div>
+      </div>
+    `;
+  }
+
+  // ── SAGE TOGGLE ───────────────────────────────────────────────────────────
+  function toggleSage(id) {
+    const panel = document.getElementById(id);
+    const btn   = panel.previousElementSibling.querySelector('button');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    btn.classList.toggle('active', !isOpen);
+  }
+
+  let sageAllOpen = false;
+  function toggleAllSage() {
+    sageAllOpen = !sageAllOpen;
+    document.querySelectorAll('.sage-panel').forEach(p => p.classList.toggle('open', sageAllOpen));
+    document.querySelectorAll('.sage-toggle-row button').forEach(b => b.classList.toggle('active', sageAllOpen));
+    const btn = document.getElementById('btn-sage-all');
+    btn.textContent = sageAllOpen ? '✦ Exit Prep Mode' : '✦ Prep Mode';
+    btn.classList.toggle('active', sageAllOpen);
+  }
+
+  // ── SLIDE NAV ACTIVE STATE ────────────────────────────────────────────────
+  function setActive(el) {
+    setTimeout(() => {
+      document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+    }, 50);
+  }
+
+  // Auto-update nav pill on scroll
+  const slides = document.querySelectorAll('.slide');
+  const pills  = document.querySelectorAll('.nav-pill');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    slides.forEach(slide => {
+      if (window.scrollY >= slide.offsetTop - 180) current = slide.id;
+    });
+    pills.forEach(pill => {
+      pill.classList.toggle('active', pill.getAttribute('href') === `#${current}`);
+    });
+  });
+</script>
+
+</body>
+</html>

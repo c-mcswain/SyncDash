@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SyncDash — Account Health</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -81,9 +81,7 @@
       padding-left: 4px;
     }
 
-    .logo-wordmark span {
-      color: var(--teal);
-    }
+    .logo-wordmark span { color: var(--teal); }
 
     .logo-sub {
       font-size: 10px;
@@ -125,11 +123,7 @@
       50% { opacity: 0.4; }
     }
 
-    .sidebar-nav {
-      padding: 16px 12px;
-      flex: 1;
-      overflow-y: auto;
-    }
+    .sidebar-nav { padding: 16px 12px; flex: 1; overflow-y: auto; }
 
     .nav-label {
       font-size: 9.5px;
@@ -159,23 +153,9 @@
       text-decoration: none;
     }
 
-    .nav-item:hover {
-      background: var(--surface2);
-      color: var(--text);
-    }
-
-    .nav-item.active {
-      background: var(--teal-bg);
-      color: var(--teal);
-      font-weight: 500;
-    }
-
-    .nav-icon {
-      width: 16px;
-      text-align: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--teal-bg); color: var(--teal); font-weight: 500; }
+    .nav-icon { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
 
     .nav-badge {
       margin-left: auto;
@@ -188,51 +168,26 @@
       font-weight: 500;
     }
 
-    .sidebar-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-    }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
 
-    .user-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .user-row { display: flex; align-items: center; gap: 10px; }
 
     .user-avatar {
       width: 30px; height: 30px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--teal), #005f8a);
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
+      font-size: 12px; font-weight: 700; color: #fff;
       flex-shrink: 0;
       font-family: 'Syne', sans-serif;
     }
 
     .user-info { flex: 1; min-width: 0; }
-    .user-name {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .user-role {
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .user-name { font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 11px; color: var(--muted); }
 
     /* ── MAIN ────────────────────────────────── */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; min-width: 0; }
 
     /* ── TOPBAR ──────────────────────────────── */
     .topbar {
@@ -254,6 +209,7 @@
       font-weight: 700;
       color: var(--text);
       flex: 1;
+      min-width: 0;
     }
 
     .topbar-search {
@@ -265,6 +221,7 @@
       padding: 6px 12px;
       gap: 8px;
       width: 220px;
+      flex-shrink: 0;
     }
 
     .topbar-search input {
@@ -278,10 +235,8 @@
     }
 
     .topbar-search input::placeholder { color: var(--faint); }
-
     .search-icon { color: var(--faint); font-size: 13px; }
-
-    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .icon-btn {
       height: 32px;
@@ -299,7 +254,6 @@
       gap: 4px;
     }
     .icon-btn:hover { border-color: var(--border2); color: var(--text); }
-
     .notif-btn { position: relative; }
     .notif-dot {
       position: absolute;
@@ -311,10 +265,7 @@
     }
 
     /* ── CONTENT ─────────────────────────────── */
-    .content {
-      padding: 28px;
-      flex: 1;
-    }
+    .content { padding: 28px; flex: 1; min-width: 0; }
 
     /* ── PORTFOLIO SUMMARY ───────────────────── */
     .summary-strip {
@@ -356,11 +307,7 @@
     .summary-value.green { color: var(--green); }
     .summary-value.amber { color: var(--amber); }
     .summary-value.red   { color: var(--red); }
-
-    .summary-sub {
-      font-size: 11.5px;
-      color: var(--muted);
-    }
+    .summary-sub { font-size: 11.5px; color: var(--muted); }
 
     /* ── SECTION HEADER ──────────────────────── */
     .section-header {
@@ -368,6 +315,8 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .section-title {
@@ -377,11 +326,7 @@
       color: var(--text);
     }
 
-    .section-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .section-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
     .filter-btn {
       background: var(--surface2);
@@ -406,11 +351,12 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
+      width: 100%;
     }
 
     .table-head {
       display: grid;
-      grid-template-columns: 2fr 90px 100px 110px 110px 120px 100px;
+      grid-template-columns: 2fr 90px 100px 110px 110px 130px;
       padding: 10px 20px;
       border-bottom: 1px solid var(--border);
       background: var(--surface2);
@@ -427,11 +373,10 @@
 
     .account-row {
       display: grid;
-      grid-template-columns: 2fr 90px 100px 110px 110px 120px 100px;
+      grid-template-columns: 2fr 90px 100px 110px 110px 130px;
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       align-items: center;
-      cursor: pointer;
       transition: background 0.15s;
     }
 
@@ -440,10 +385,26 @@
 
     .account-info { display: flex; flex-direction: column; gap: 3px; }
 
-    .account-name {
+    /* Clickable account name */
+    .account-name-link {
       font-weight: 600;
       font-size: 13.5px;
       color: var(--text);
+      text-decoration: none;
+      transition: color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .account-name-link:hover { color: var(--teal); }
+    .account-name-link:hover .name-arrow { opacity: 1; transform: translateX(2px); }
+
+    .name-arrow {
+      font-size: 11px;
+      color: var(--teal);
+      opacity: 0;
+      transition: all 0.15s;
     }
 
     .account-meta {
@@ -452,15 +413,11 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
-    .account-meta-dot {
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: var(--faint);
-    }
+    .account-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
 
-    /* Health score */
     .health-score {
       font-family: 'DM Mono', monospace;
       font-size: 15px;
@@ -470,41 +427,17 @@
     .health-score.amber { color: var(--amber); }
     .health-score.red   { color: var(--red); }
 
-    /* Adoption bar */
     .adoption-cell { display: flex; flex-direction: column; gap: 4px; }
-    .adoption-pct {
-      font-size: 12px;
-      font-family: 'DM Mono', monospace;
-      color: var(--text);
-    }
-    .adoption-bar {
-      height: 4px;
-      background: var(--border2);
-      border-radius: 2px;
-      overflow: hidden;
-      width: 70px;
-    }
-    .adoption-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.6s ease;
-    }
+    .adoption-pct { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text); }
+    .adoption-bar { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; width: 70px; }
+    .adoption-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
     .adoption-fill.green { background: var(--green); }
     .adoption-fill.amber { background: var(--amber); }
     .adoption-fill.red   { background: var(--red); }
 
-    /* Generic cell text */
-    .cell-main {
-      font-size: 13px;
-      color: var(--text);
-    }
-    .cell-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .cell-main { font-size: 13px; color: var(--text); }
+    .cell-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    /* Renewal chip */
     .renewal-chip {
       display: inline-flex;
       align-items: center;
@@ -519,7 +452,6 @@
     .renewal-chip.amber { background: var(--amber-bg); color: var(--amber); }
     .renewal-chip.red   { background: var(--red-bg);   color: var(--red); }
 
-    /* Risk flags */
     .risk-flags { display: flex; flex-direction: column; gap: 3px; }
 
     .risk-flag {
@@ -532,39 +464,12 @@
     .risk-flag.warn { color: var(--amber); }
     .risk-flag.crit { color: var(--red); }
     .risk-flag.ok   { color: var(--green); }
-
     .risk-flag::before {
       content: '';
       width: 5px; height: 5px;
       border-radius: 50%;
       background: currentColor;
       flex-shrink: 0;
-    }
-
-    /* Action button */
-    .action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.15s;
-      font-family: 'DM Sans', sans-serif;
-      text-decoration: none;
-    }
-
-    .action-btn.teal {
-      background: var(--teal-bg);
-      border-color: rgba(0,201,167,0.25);
-      color: var(--teal);
-    }
-    .action-btn.teal:hover {
-      background: rgba(0,201,167,0.15);
-      border-color: var(--teal);
     }
 
     /* ── LOWER GRID ──────────────────────────── */
@@ -575,7 +480,6 @@
       margin-top: 20px;
     }
 
-    /* Activity feed */
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -598,12 +502,7 @@
       color: var(--text);
     }
 
-    .panel-link {
-      font-size: 11.5px;
-      color: var(--teal);
-      cursor: pointer;
-      text-decoration: none;
-    }
+    .panel-link { font-size: 11.5px; color: var(--teal); cursor: pointer; text-decoration: none; }
 
     .feed-item {
       display: flex;
@@ -628,21 +527,11 @@
     .feed-icon.red    { background: var(--red-bg);   color: var(--red); }
     .feed-icon.teal   { background: var(--teal-bg);  color: var(--teal); }
 
-    .feed-body { flex: 1; }
-    .feed-text {
-      font-size: 12.5px;
-      color: var(--text);
-      line-height: 1.4;
-    }
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-text { font-size: 12.5px; color: var(--text); line-height: 1.4; }
     .feed-text strong { color: var(--text); font-weight: 600; }
-    .feed-time {
-      font-size: 11px;
-      color: var(--faint);
-      font-family: 'DM Mono', monospace;
-      margin-top: 3px;
-    }
+    .feed-time { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 3px; }
 
-    /* Nova panel */
     .nova-panel { display: flex; flex-direction: column; }
 
     .nova-header {
@@ -662,12 +551,7 @@
     }
 
     .nova-title-block { flex: 1; }
-    .nova-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-    }
+    .nova-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
     .nova-status {
       font-size: 10.5px;
       color: var(--teal);
@@ -695,53 +579,20 @@
       border: 1px solid transparent;
     }
     .signal-item:last-child { margin-bottom: 0; }
+    .signal-item.crit { background: var(--red-bg);   border-color: rgba(255,92,106,0.2); }
+    .signal-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
+    .signal-item.info { background: var(--blue-bg);  border-color: rgba(77,166,255,0.15); }
 
-    .signal-item.crit {
-      background: var(--red-bg);
-      border-color: rgba(255,92,106,0.2);
-    }
-    .signal-item.warn {
-      background: var(--amber-bg);
-      border-color: rgba(245,166,35,0.2);
-    }
-    .signal-item.info {
-      background: var(--blue-bg);
-      border-color: rgba(77,166,255,0.15);
-    }
-
-    .signal-icon {
-      font-size: 14px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .signal-body { flex: 1; }
-    .signal-title {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
+    .signal-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .signal-body { flex: 1; min-width: 0; }
+    .signal-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
     .signal-item.crit .signal-title { color: var(--red); }
     .signal-item.warn .signal-title { color: var(--amber); }
     .signal-item.info .signal-title { color: var(--blue); }
+    .signal-text { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+    .signal-account { font-size: 10.5px; font-family: 'DM Mono', monospace; color: var(--faint); margin-top: 4px; }
 
-    .signal-text {
-      font-size: 11.5px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .signal-account {
-      font-size: 10.5px;
-      font-family: 'DM Mono', monospace;
-      color: var(--faint);
-      margin-top: 4px;
-    }
-
-    .nova-footer {
-      padding: 12px 18px;
-      border-top: 1px solid var(--border);
-    }
+    .nova-footer { padding: 12px 18px; border-top: 1px solid var(--border); }
 
     .nova-input-row {
       display: flex;
@@ -788,48 +639,41 @@
     .summary-card:nth-child(2) { animation-delay: 0.10s; }
     .summary-card:nth-child(3) { animation-delay: 0.15s; }
     .summary-card:nth-child(4) { animation-delay: 0.20s; }
-
     .accounts-table { animation: fadeUp 0.4s 0.25s ease both; }
     .lower-grid     { animation: fadeUp 0.4s 0.35s ease both; }
 
-    /* scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
     /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 900px) {
+      .table-head {
+        grid-template-columns: 2fr 80px 90px 100px 110px;
+      }
+      .account-row {
+        grid-template-columns: 2fr 80px 90px 100px 110px;
+      }
+      /* hide adoption on smaller screens */
+      .account-row > .adoption-cell,
+      .table-head .th:nth-child(3) { display: none; }
+    }
+
     @media (max-width: 768px) {
-      /* Hide sidebar, show top nav only */
       .sidebar { display: none; }
-      .mobile-logo { display: inline !important; }
-
       .main { margin-left: 0; }
-
-      /* Mobile topbar */
-      .topbar {
-        padding: 0 16px;
-        gap: 10px;
-      }
-
+      .topbar { padding: 0 16px; gap: 10px; }
       .topbar-search { display: none; }
-
-      .topbar-title {
-        font-size: 16px;
-      }
-
-      /* Content padding */
+      .topbar-title { font-size: 16px; }
       .content { padding: 16px; }
 
-      /* Summary strip — 2 columns */
       .summary-strip {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         margin-bottom: 16px;
       }
-
       .summary-value { font-size: 22px; }
 
-      /* Account table — simplified for mobile */
       .table-head { display: none; }
 
       .account-row {
@@ -838,22 +682,12 @@
         padding: 14px 16px;
       }
 
-      .adoption-cell { display: none; }
-
-      .account-row > div:nth-child(4),
-      .account-row > div:nth-child(5) { display: none; }
-
-      .account-row > div:nth-child(6) { justify-self: start; }
-      .account-row > div:nth-child(7) { justify-self: start; }
-
-      /* Lower grid — stack vertically */
       .lower-grid {
         grid-template-columns: 1fr;
         gap: 14px;
         margin-top: 14px;
       }
 
-      /* Nova panel full width */
       .nova-panel { min-height: 300px; }
     }
   </style>
@@ -868,48 +702,22 @@
     <div class="powered-badge">Powered by SyncToScale</div>
     <div style="font-size:8.5px;color:var(--faint);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:0.02em;white-space:nowrap;text-align:left;padding-bottom:8px;">Portfolio project · fictional data</div>
   </div>
-  <style>
-    .sidebar-logo { padding-bottom: 0; }
-  </style>
+  <style>.sidebar-logo { padding-bottom: 0; }</style>
 
   <nav class="sidebar-nav">
     <div class="nav-label">Workspace</div>
-    <a class="nav-item active" href="#">
-      <span class="nav-icon">◈</span> Dashboard
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◎</span> Accounts
-      <span class="nav-badge">1</span>
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◷</span> Activity
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◫</span> Tasks
-    </a>
-
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◎</span> Accounts <span class="nav-badge">1</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">◷</span> Activity</a>
+    <a class="nav-item" href="#"><span class="nav-icon">◫</span> Tasks</a>
     <div class="nav-label">Insights</div>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◉</span> Health Reports
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◑</span> Renewals
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">✦</span> Nova Signals
-      <span class="nav-badge">3</span>
-    </a>
-
+    <a class="nav-item" href="#"><span class="nav-icon">◉</span> Health Reports</a>
+    <a class="nav-item" href="#"><span class="nav-icon">◑</span> Renewals</a>
+    <a class="nav-item" href="#"><span class="nav-icon">✦</span> Nova Signals <span class="nav-badge">3</span></a>
     <div class="nav-label">Tools</div>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">◰</span> QBR Builder
-    </a>
-    <a class="nav-item" href="#">
-      <span class="nav-icon">⊞</span> Integrations
-    </a>
-    <a class="nav-item" href="https://www.synctoscale.me" target="_blank">
-      <span class="nav-icon">↗</span> SyncToScale
-    </a>
+    <a class="nav-item" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
+    <a class="nav-item" href="#"><span class="nav-icon">⊞</span> Integrations</a>
+    <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
   </nav>
 
   <div class="sidebar-footer">
@@ -927,7 +735,6 @@
 <!-- ── MAIN ────────────────────────────── -->
 <main class="main">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-title" style="display:flex;align-items:center;gap:10px;">
       <span style="font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;letter-spacing:0.14em;text-transform:uppercase;display:none;" class="mobile-logo"><span style="color:var(--text);">Sync</span><span style="color:var(--teal);">Dash</span></span>
@@ -940,21 +747,15 @@
     <div class="topbar-actions">
       <button class="icon-btn" id="export-csv" title="Export Book of Business (CSV)">⬇ CSV</button>
       <button class="icon-btn" id="export-json" title="Export Book of Business (JSON)">⬇ JSON</button>
-      <div class="icon-btn notif-btn">
-        🔔<span class="notif-dot"></span>
-      </div>
+      <div class="icon-btn notif-btn">🔔<span class="notif-dot"></span></div>
       <div class="icon-btn">⚙</div>
     </div>
   </div>
 
-  <!-- Content -->
   <div class="content">
 
-    <!-- Summary strip -->
-    <!-- Summary strip — rendered by accounts.js -->
     <div class="summary-strip" id="summary-strip"></div>
 
-    <!-- Accounts table -->
     <div class="section-header">
       <div class="section-title">Account Portfolio</div>
       <div class="section-controls">
@@ -973,13 +774,11 @@
         <div class="th">Last Touch</div>
         <div class="th">Contract</div>
         <div class="th">Renewal</div>
-        <div class="th">Action</div>
       </div>
       <div id="accounts-tbody"></div>
     </div>
 
     <div class="lower-grid">
-      <!-- Activity feed -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Recent Activity</div>
@@ -988,7 +787,6 @@
         <div id="activity-feed"></div>
       </div>
 
-      <!-- Nova signals -->
       <div class="panel nova-panel">
         <div class="nova-header">
           <div class="nova-avatar">✦</div>
@@ -1011,15 +809,9 @@
 
 <script src="accounts.js"></script>
 <script>
-  // ── HELPERS ───────────────────────────────────────────────────────────────
-
-  const TIER_COLORS = { green: 'green', amber: 'amber', red: 'red' };
-
   const SIGNAL_ICONS = { crit: '⚡', warn: '◎', info: '↑' };
 
-  function formatARR(n) {
-    return '$' + n.toLocaleString();
-  }
+  function formatARR(n) { return '$' + n.toLocaleString(); }
 
   function formatRenewal(months) {
     if (months < 2)  return `${Math.round(months * 4)} weeks`;
@@ -1040,9 +832,7 @@
     return `${diff} days ago`;
   }
 
-
   // ── SUMMARY STRIP ─────────────────────────────────────────────────────────
-
   function renderSummary() {
     const s = SyncDash.getPortfolioSummary();
     document.getElementById('summary-strip').innerHTML = `
@@ -1069,20 +859,27 @@
     `;
   }
 
-
   // ── ACCOUNT TABLE ─────────────────────────────────────────────────────────
+  function getAccountHref(a) {
+    return a.id === 'benefitbridge'
+      ? 'benefitbridge.html'
+      : `account.html?account=${a.id}`;
+  }
 
   function renderAccountRow(a) {
-    const tier    = a.healthTier;
-    const renewal = formatRenewal(a.renewalMonths);
-    const flags   = (a.riskFlags || []).map(f =>
+    const tier  = a.healthTier;
+    const href  = getAccountHref(a);
+    const flags = (a.riskFlags || []).map(f =>
       `<span class="risk-flag ${f.type}">${f.text}</span>`
     ).join('');
 
     return `
       <div class="account-row" data-tier="${tier}" data-id="${a.id}">
         <div class="account-info">
-          <div class="account-name">${a.name}</div>
+          <a class="account-name-link" href="${href}">
+            ${a.name}
+            <span class="name-arrow">→</span>
+          </a>
           <div class="account-meta">
             ${a.industry}
             <span class="account-meta-dot"></span>
@@ -1110,10 +907,7 @@
           <div class="cell-sub">ARR</div>
         </div>
         <div>
-          <span class="renewal-chip ${a.renewalTier}">● ${renewal}</span>
-        </div>
-        <div>
-          <a class="action-btn teal" href="${a.id === 'benefitbridge' ? 'benefitbridge.html' : 'account.html?account=' + a.id}">View →</a>
+          <span class="renewal-chip ${a.renewalTier}">● ${formatRenewal(a.renewalMonths)}</span>
         </div>
       </div>
     `;
@@ -1123,17 +917,14 @@
     const accounts = SyncDash.getAccounts();
     const filtered = filter === 'all' ? accounts : accounts.filter(a => a.healthTier === filter);
     document.getElementById('accounts-tbody').innerHTML =
-      filtered.length ? filtered.map(renderAccountRow).join('') :
-      `<div style="padding:24px 20px;color:var(--muted);font-size:13px;">No accounts match this filter.</div>`;
+      filtered.length
+        ? filtered.map(renderAccountRow).join('')
+        : `<div style="padding:24px 20px;color:var(--muted);font-size:13px;">No accounts match this filter.</div>`;
   }
 
-
   // ── ACTIVITY FEED ─────────────────────────────────────────────────────────
-
   function renderActivityFeed() {
     const accounts = SyncDash.getAccounts();
-
-    // Gather all activity items across accounts, sort newest first
     const items = accounts.flatMap(a =>
       (a.activityFeed || []).map(item => ({ ...item, accountName: a.name }))
     ).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1149,9 +940,7 @@
     `).join('');
   }
 
-
   // ── NOVA SIGNALS ──────────────────────────────────────────────────────────
-
   function renderNovaSignals() {
     const accounts = SyncDash.getAccounts();
     const signals  = accounts
@@ -1162,26 +951,22 @@
       });
 
     document.getElementById('nova-status').textContent = `${signals.length} active insights`;
-
     document.getElementById('nova-signals').innerHTML = signals.map(a => {
-      const s       = a.novaSignal;
-      const renewal = formatRenewal(a.renewalMonths);
+      const s = a.novaSignal;
       return `
         <div class="signal-item ${s.type}">
           <div class="signal-icon">${SIGNAL_ICONS[s.type] || '◎'}</div>
           <div class="signal-body">
             <div class="signal-title">${s.title}</div>
             <div class="signal-text">${s.text}</div>
-            <div class="signal-account">${a.name} · Score ${a.healthScore} · Renews in ${renewal}</div>
+            <div class="signal-account">${a.name} · Score ${a.healthScore} · Renews in ${formatRenewal(a.renewalMonths)}</div>
           </div>
         </div>
       `;
     }).join('');
   }
 
-
-  // ── FILTER BUTTONS ────────────────────────────────────────────────────────
-
+  // ── FILTERS ───────────────────────────────────────────────────────────────
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1190,20 +975,11 @@
     });
   });
 
-
-  // ── EXPORT BUTTONS ────────────────────────────────────────────────────────
-
-  document.getElementById('export-csv').addEventListener('click', () => {
-    SyncDash.exportBookOfBusiness('csv');
-  });
-
-  document.getElementById('export-json').addEventListener('click', () => {
-    SyncDash.exportBookOfBusiness('json');
-  });
-
+  // ── EXPORTS ───────────────────────────────────────────────────────────────
+  document.getElementById('export-csv').addEventListener('click',  () => SyncDash.exportBookOfBusiness('csv'));
+  document.getElementById('export-json').addEventListener('click', () => SyncDash.exportBookOfBusiness('json'));
 
   // ── SESSION CHECK ─────────────────────────────────────────────────────────
-  // If no session found, redirect to login page
   if (!localStorage.getItem('syncdash_user')) {
     window.location.replace('login.html');
   }
@@ -1214,9 +990,7 @@
     window.location.replace('login.html');
   }
 
-
   // ── INIT ──────────────────────────────────────────────────────────────────
-
   renderSummary();
   renderAccounts();
   renderActivityFeed();

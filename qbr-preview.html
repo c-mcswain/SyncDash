@@ -37,249 +37,107 @@
 
     html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; }
 
-    /* ── TOPBAR ── */
     .topbar {
       position: sticky; top: 0; z-index: 100;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 28px; height: 54px; gap: 16px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px; height: 54px; gap: 16px;
     }
-
-    .topbar-logo {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 300; font-size: 17px;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--text); text-decoration: none;
-    }
+    .topbar-logo { font-family: 'Outfit', sans-serif; font-weight: 300; font-size: 17px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); text-decoration: none; }
     .topbar-logo span { color: var(--teal); }
-
     .topbar-divider { width: 1px; height: 20px; background: var(--border); }
-
     .topbar-meta { flex: 1; }
     .topbar-account { font-size: 13px; font-weight: 600; color: var(--text); }
     .topbar-sub { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
-
-    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; position: relative; }
 
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: var(--radius-sm);
       font-size: 12.5px; font-weight: 500; cursor: pointer;
       border: 1px solid transparent; text-decoration: none;
-      transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-      background: none;
+      transition: all 0.15s; font-family: 'DM Sans', sans-serif; background: none;
     }
-    .btn-ghost { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+    .btn-ghost  { background: var(--surface2); border-color: var(--border); color: var(--muted); }
     .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
-    .btn-sage { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
-    .btn-sage:hover { background: rgba(167,139,250,0.14); }
+    .btn-sage   { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
+    .btn-sage:hover  { background: rgba(167,139,250,0.14); }
     .btn-sage.active { background: rgba(167,139,250,0.16); border-color: var(--sage); }
+    .btn-export { background: var(--teal-bg); border-color: rgba(0,201,167,0.25); color: var(--teal); }
+    .btn-export:hover { background: rgba(0,201,167,0.14); border-color: var(--teal); }
 
-    /* ── SLIDE NAV ── */
+    .export-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); min-width: 230px; z-index: 200;
+      display: none; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .export-dropdown.open { display: block; animation: fadeIn 0.15s ease both; }
+    .export-dropdown-header { padding: 10px 14px 6px; font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); border-bottom: 1px solid var(--border); }
+    .export-option { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; transition: background 0.12s; border-bottom: 1px solid var(--border); }
+    .export-option:last-child { border-bottom: none; }
+    .export-option:hover { background: var(--surface2); }
+    .export-option-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+    .export-option-icon.pdf  { background: rgba(255,92,106,0.12); color: var(--red); }
+    .export-option-icon.pptx { background: rgba(245,166,35,0.12); color: var(--amber); }
+    .export-option-icon.sage { background: var(--sage-bg); color: var(--sage); }
+    .export-option-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .export-option-desc  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
     .slide-nav {
       position: sticky; top: 54px; z-index: 90;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 28px; gap: 4px;
-      overflow-x: auto;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px; gap: 4px; overflow-x: auto;
     }
-
     .slide-nav::-webkit-scrollbar { height: 0; }
-
-    .nav-pill {
-      padding: 10px 16px;
-      font-size: 12px; font-weight: 500;
-      color: var(--muted); cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px; white-space: nowrap;
-      transition: all 0.15s; text-decoration: none;
-    }
+    .nav-pill { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all 0.15s; text-decoration: none; }
     .nav-pill:hover { color: var(--text); }
     .nav-pill.active { color: var(--teal); border-bottom-color: var(--teal); }
 
-    /* ── SLIDE WRAPPER ── */
     .slides { padding: 40px 28px 80px; }
-
-    .slide {
-      max-width: var(--slide-max);
-      margin: 0 auto 48px;
-      scroll-margin-top: 120px;
-    }
-
+    .slide { max-width: var(--slide-max); margin: 0 auto 48px; scroll-margin-top: 120px; }
     .slide:last-child { margin-bottom: 0; }
-
-    /* ── SLIDE NUMBER ── */
-    .slide-num {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--faint); margin-bottom: 10px;
-    }
-
-    /* ── SLIDE CARD ── */
-    .slide-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .slide-header {
-      padding: 28px 32px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: flex-start;
-      justify-content: space-between; gap: 16px;
-    }
-
-    .slide-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 22px; font-weight: 700;
-      color: var(--text); letter-spacing: -0.01em;
-    }
-
-    .slide-label {
-      font-size: 11px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--muted); margin-top: 4px;
-    }
-
+    .slide-num { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); margin-bottom: 10px; }
+    .slide-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .slide-header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .slide-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .slide-label { font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-top: 4px; }
     .slide-body { padding: 28px 32px; }
 
-    /* ── SAGE PANEL ── */
-    .sage-toggle-row {
-      padding: 12px 32px;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center;
-      justify-content: flex-end;
-      background: var(--surface2);
-    }
+    .sage-toggle-row { padding: 12px 32px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; background: var(--surface2); }
+    .sage-panel { display: none; padding: 20px 32px; border-top: 1px solid var(--sage-border); background: var(--sage-bg); }
+    .sage-panel.open { display: block; animation: fadeIn 0.2s ease both; }
+    .sage-panel-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .sage-panel-label::before { content: '✦'; font-size: 11px; }
+    .sage-panel-text { font-size: 13px; color: var(--text); line-height: 1.65; }
 
-    .sage-panel {
-      display: none;
-      padding: 20px 32px;
-      border-top: 1px solid var(--sage-border);
-      background: var(--sage-bg);
-      animation: fadeIn 0.2s ease both;
-    }
-
-    .sage-panel.open { display: block; }
-
-    .sage-panel-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--sage); margin-bottom: 8px;
-      display: flex; align-items: center; gap: 6px;
-    }
-
-    .sage-panel-label::before {
-      content: '✦';
-      font-size: 11px;
-    }
-
-    .sage-panel-text {
-      font-size: 13px; color: var(--text);
-      line-height: 1.65;
-    }
-
-    /* ── SLIDE 1: COVER ── */
-    .cover-body {
-      padding: 48px 32px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: center;
-    }
-
-    .cover-account {
-      font-family: 'Outfit', sans-serif;
-      font-size: 38px; font-weight: 800;
-      color: var(--text); letter-spacing: -0.02em;
-      line-height: 1.1;
-    }
-
+    .cover-body { padding: 48px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+    .cover-account { font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; }
     .cover-account span { color: var(--teal); }
-
     .cover-meta { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
-
-    .cover-meta-row {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12.5px; color: var(--muted);
-      font-family: 'DM Mono', monospace;
-    }
-
+    .cover-meta-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); font-family: 'DM Mono', monospace; }
     .cover-meta-row strong { color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; }
-
-    .cover-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .cover-stat {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-    }
-
-    .cover-stat-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--muted); margin-bottom: 4px;
-    }
-
-    .cover-stat-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: 22px; font-weight: 700;
-      line-height: 1;
-    }
-
+    .cover-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cover-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+    .cover-stat-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .cover-stat-value { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; line-height: 1; }
     .cover-stat-value.green { color: var(--green); }
     .cover-stat-value.amber { color: var(--amber); }
     .cover-stat-value.red   { color: var(--red); }
 
-    /* ── METRIC ROW ── */
-    .metric-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    .metric-tile {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 16px;
-    }
-
-    .metric-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--muted); margin-bottom: 6px;
-    }
-
-    .metric-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: 26px; font-weight: 700;
-      line-height: 1; color: var(--text);
-    }
-
+    .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .metric-tile { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+    .metric-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+    .metric-value { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 700; line-height: 1; color: var(--text); }
     .metric-value.green { color: var(--green); }
     .metric-value.amber { color: var(--amber); }
     .metric-value.red   { color: var(--red); }
     .metric-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-    /* ── HEALTH BAR ── */
-    .health-bar-row {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 10px;
-    }
+    .health-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .health-bar-row:last-child { margin-bottom: 0; }
     .health-bar-label { font-size: 12.5px; color: var(--muted); width: 130px; flex-shrink: 0; }
-    .health-bar-wrap { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
-    .health-bar-fill { height: 100%; border-radius: 3px; }
+    .health-bar-wrap  { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+    .health-bar-fill  { height: 100%; border-radius: 3px; }
     .health-bar-fill.green { background: var(--green); }
     .health-bar-fill.amber { background: var(--amber); }
     .health-bar-fill.red   { background: var(--red); }
@@ -288,129 +146,43 @@
     .health-bar-score.amber { color: var(--amber); }
     .health-bar-score.red   { color: var(--red); }
 
-    /* ── WINS LIST ── */
     .wins-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .wins-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; }
+    .win-icon { width: 20px; height: 20px; border-radius: 50%; background: var(--green-bg); border: 1px solid rgba(34,217,138,0.25); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--green); flex-shrink: 0; margin-top: 2px; }
 
-    .wins-list li {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 13.5px; color: var(--text); line-height: 1.5;
-    }
-
-    .win-icon {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--green-bg);
-      border: 1px solid rgba(34,217,138,0.25);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; color: var(--green);
-      flex-shrink: 0; margin-top: 2px;
-    }
-
-    /* ── RISK FLAGS ── */
     .risk-list { display: flex; flex-direction: column; gap: 10px; }
-
-    .risk-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid transparent;
-      font-size: 13px; line-height: 1.5;
-    }
-
+    .risk-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid transparent; font-size: 13px; line-height: 1.5; }
     .risk-item.ok   { background: var(--green-bg); border-color: rgba(34,217,138,0.2); color: var(--green); }
     .risk-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2);  color: var(--amber); }
     .risk-item.crit { background: var(--red-bg);   border-color: rgba(255,92,106,0.2);  color: var(--red); }
-
     .risk-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; margin-top: 5px; }
 
-    /* ── GOALS ── */
     .goals-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .goals-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text); line-height: 1.5; }
+    .goal-num { width: 22px; height: 22px; border-radius: 50%; background: var(--teal-bg); border: 1px solid rgba(0,201,167,0.25); display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--teal); flex-shrink: 0; margin-top: 2px; }
 
-    .goals-list li {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 13.5px; color: var(--text); line-height: 1.5;
-    }
-
-    .goal-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--teal-bg);
-      border: 1px solid rgba(0,201,167,0.25);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      color: var(--teal); flex-shrink: 0; margin-top: 2px;
-    }
-
-    /* ── RENEWAL BOX ── */
-    .renewal-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 20px 24px;
-      margin-top: 20px;
-    }
-
-    .renewal-box-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--muted); margin-bottom: 8px;
-    }
-
+    .renewal-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px 24px; margin-top: 20px; }
+    .renewal-box-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
     .renewal-box-text { font-size: 13.5px; color: var(--text); line-height: 1.6; }
 
-    /* ── TLDR GRID ── */
-    .tldr-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .tldr-panel {
-      border-radius: var(--radius-sm);
-      padding: 20px;
-      border: 1px solid transparent;
-    }
-
-    .tldr-panel.working  { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
+    .tldr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tldr-panel { border-radius: var(--radius-sm); padding: 20px; border: 1px solid transparent; }
+    .tldr-panel.working   { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
     .tldr-panel.attention { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
-    .tldr-panel.commit   { background: var(--teal-bg);  border-color: rgba(0,201,167,0.2); }
-
+    .tldr-panel.commit    { background: var(--teal-bg);  border-color: rgba(0,201,167,0.2); }
     .tldr-icon { font-size: 20px; margin-bottom: 10px; }
-    .tldr-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-    .tldr-panel.working  .tldr-label { color: var(--green); }
+    .tldr-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .tldr-panel.working   .tldr-label { color: var(--green); }
     .tldr-panel.attention .tldr-label { color: var(--amber); }
-    .tldr-panel.commit   .tldr-label { color: var(--teal); }
-
+    .tldr-panel.commit    .tldr-label { color: var(--teal); }
     .tldr-text { font-size: 12.5px; color: var(--text); line-height: 1.6; }
 
-    /* ── SECTION DIVIDER ── */
-    .section-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .section-divider-label {
-      font-size: 10px; font-family: 'DM Mono', monospace;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--faint); white-space: nowrap;
-    }
-
+    .section-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .section-divider-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); white-space: nowrap; }
     .section-divider-line { flex: 1; height: 1px; background: var(--border); }
 
-    /* ── FOOTER ── */
-    .deck-footer {
-      max-width: var(--slide-max);
-      margin: 40px auto 0;
-      padding: 0 0 40px;
-      display: flex; align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
-    }
-
-    .deck-footer-left { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
+    .deck-footer { max-width: var(--slide-max); margin: 40px auto 0; padding: 20px 0 40px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
+    .deck-footer-left  { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
     .deck-footer-right { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
 
     @keyframes fadeIn {
@@ -418,18 +190,50 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── PRINT (PDF export) ── */
+    @media print {
+      .topbar, .slide-nav, .sage-toggle-row, .sage-panel, .deck-footer { display: none !important; }
+      body { background: #fff; color: #1a1a2e; font-size: 12px; }
+      .slides { padding: 0; }
+      .slide { max-width: 100%; margin: 0; page-break-after: always; page-break-inside: avoid; }
+      .slide:last-child { page-break-after: avoid; }
+      .slide-num { color: #999; }
+      .slide-card { border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; box-shadow: none; min-height: 90vh; display: flex; flex-direction: column; }
+      .slide-header { padding: 24px 28px 16px; border-bottom: 1px solid #e2e8f0; }
+      .slide-title  { font-size: 20px; color: #1a1a2e; }
+      .slide-label  { color: #7a8ba3; }
+      .slide-body   { padding: 24px 28px; flex: 1; }
+      .cover-body   { background: #0d1117; border-radius: 8px; }
+      .metric-tile  { background: #f8fafc; border: 1px solid #e2e8f0; }
+      .metric-label { color: #7a8ba3; }
+      .metric-value { color: #1a1a2e; }
+      .health-bar-label { color: #7a8ba3; }
+      .health-bar-wrap  { background: #e2e8f0; }
+      .risk-item.ok   { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+      .risk-item.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+      .risk-item.crit { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+      .wins-list li { color: #1a1a2e; }
+      .win-icon { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+      .goals-list li { color: #1a1a2e; }
+      .goal-num { background: #f0fdfa; border-color: #99f6e4; color: #0f766e; }
+      .renewal-box { background: #f8fafc; border-color: #e2e8f0; }
+      .renewal-box-text { color: #1a1a2e; }
+      .tldr-panel.working   { background: #f0fdf4; border-color: #bbf7d0; }
+      .tldr-panel.attention { background: #fffbeb; border-color: #fde68a; }
+      .tldr-panel.commit    { background: #f0fdfa; border-color: #99f6e4; }
+      .tldr-panel.working   .tldr-label { color: #166534; }
+      .tldr-panel.attention .tldr-label { color: #92400e; }
+      .tldr-panel.commit    .tldr-label { color: #0f766e; }
+      .tldr-text { color: #1a1a2e; }
+    }
+
     @media (max-width: 700px) {
-      .topbar { padding: 0 16px; }
-      .slide-nav { padding: 0 16px; }
+      .topbar, .slide-nav { padding: 0 16px; }
       .slides { padding: 24px 16px 60px; }
-      .slide-header { padding: 20px; }
-      .slide-body { padding: 20px; }
-      .sage-toggle-row { padding: 10px 20px; }
-      .sage-panel { padding: 16px 20px; }
+      .slide-header, .slide-body { padding: 20px; }
+      .sage-toggle-row, .sage-panel { padding: 10px 20px; }
       .cover-body { grid-template-columns: 1fr; gap: 20px; }
-      .metric-row { grid-template-columns: 1fr 1fr; }
-      .tldr-grid { grid-template-columns: 1fr; }
-      .cover-stats { grid-template-columns: 1fr 1fr; }
+      .metric-row, .tldr-grid, .cover-stats { grid-template-columns: 1fr 1fr; }
     }
 
     ::-webkit-scrollbar { width: 6px; }
@@ -439,7 +243,6 @@
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <a class="topbar-logo" href="dashboard.html">Sync<span>Dash</span></a>
   <div class="topbar-divider"></div>
@@ -449,11 +252,26 @@
   </div>
   <div class="topbar-actions">
     <button class="btn btn-sage" id="btn-sage-all" onclick="toggleAllSage()">✦ Prep Mode</button>
+    <button class="btn btn-export" onclick="toggleExportMenu()">⬇ Export</button>
+    <div class="export-dropdown" id="export-dropdown">
+      <div class="export-dropdown-header">Export Options</div>
+      <div class="export-option" onclick="exportPDF()">
+        <div class="export-option-icon pdf">PDF</div>
+        <div><div class="export-option-label">Clean Deck — PDF</div><div class="export-option-desc">Print-ready, no prep notes</div></div>
+      </div>
+      <div class="export-option" onclick="exportPPTX()">
+        <div class="export-option-icon pptx">PPT</div>
+        <div><div class="export-option-label">Clean Deck — PPTX</div><div class="export-option-desc">Editable PowerPoint slides</div></div>
+      </div>
+      <div class="export-option" onclick="exportSageNotes()">
+        <div class="export-option-icon sage">✦</div>
+        <div><div class="export-option-label">Sage Prep Notes — PDF</div><div class="export-option-desc">Talking points reference sheet</div></div>
+      </div>
+    </div>
     <a class="btn btn-ghost" id="btn-back" href="dashboard.html">← Back</a>
   </div>
 </div>
 
-<!-- SLIDE NAV -->
 <nav class="slide-nav">
   <a class="nav-pill active" href="#slide-cover"    onclick="setActive(this)">Cover</a>
   <a class="nav-pill"        href="#slide-health"   onclick="setActive(this)">Health</a>
@@ -465,10 +283,8 @@
   <a class="nav-pill"        href="#slide-tldr"     onclick="setActive(this)">TL;DR</a>
 </nav>
 
-<!-- SLIDES -->
 <div class="slides">
 
-  <!-- ── SLIDE 1: COVER ── -->
   <div class="slide" id="slide-cover">
     <div class="slide-num">01 / 08</div>
     <div class="slide-card">
@@ -482,188 +298,105 @@
     </div>
   </div>
 
-  <!-- ── SLIDE 2: HEALTH ── -->
   <div class="slide" id="slide-health">
     <div class="slide-num">02 / 08</div>
     <div class="slide-card">
       <div class="slide-header">
-        <div>
-          <div class="slide-title">Account Health</div>
-          <div class="slide-label">Overall health score breakdown</div>
-        </div>
+        <div><div class="slide-title">Account Health</div><div class="slide-label">Overall health score breakdown</div></div>
         <div id="health-badge-header"></div>
       </div>
       <div class="slide-body" id="slide-health-body"></div>
-      <div class="sage-toggle-row">
-        <button class="btn btn-sage" onclick="toggleSage('sage-health')">✦ Prep with Sage</button>
-      </div>
-      <div class="sage-panel" id="sage-health">
-        <div class="sage-panel-label">Sage — Health prep</div>
-        <div class="sage-panel-text" id="sage-health-text"></div>
-      </div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-health')">✦ Prep with Sage</button></div>
+      <div class="sage-panel" id="sage-health"><div class="sage-panel-label">Sage — Health prep</div><div class="sage-panel-text" id="sage-health-text"></div></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 3: ADOPTION ── -->
   <div class="slide" id="slide-adoption">
     <div class="slide-num">03 / 08</div>
     <div class="slide-card">
       <div class="slide-header">
-        <div>
-          <div class="slide-title">Adoption & Usage</div>
-          <div class="slide-label">Platform engagement across the account</div>
-        </div>
+        <div><div class="slide-title">Adoption & Usage</div><div class="slide-label">Platform engagement across the account</div></div>
       </div>
       <div class="slide-body" id="slide-adoption-body"></div>
-      <div class="sage-toggle-row">
-        <button class="btn btn-sage" onclick="toggleSage('sage-adoption')">✦ Prep with Sage</button>
-      </div>
-      <div class="sage-panel" id="sage-adoption">
-        <div class="sage-panel-label">Sage — Adoption prep</div>
-        <div class="sage-panel-text" id="sage-adoption-text"></div>
-      </div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-adoption')">✦ Prep with Sage</button></div>
+      <div class="sage-panel" id="sage-adoption"><div class="sage-panel-label">Sage — Adoption prep</div><div class="sage-panel-text" id="sage-adoption-text"></div></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 4: WINS ── -->
   <div class="slide" id="slide-wins">
     <div class="slide-num">04 / 08</div>
     <div class="slide-card">
-      <div class="slide-header">
-        <div>
-          <div class="slide-title">Wins This Quarter</div>
-          <div class="slide-label">What's working</div>
-        </div>
-      </div>
-      <div class="slide-body">
-        <ul class="wins-list" id="wins-list"></ul>
-      </div>
+      <div class="slide-header"><div><div class="slide-title">Wins This Quarter</div><div class="slide-label">What's working</div></div></div>
+      <div class="slide-body"><ul class="wins-list" id="wins-list"></ul></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 5: RISKS ── -->
   <div class="slide" id="slide-risks">
     <div class="slide-num">05 / 08</div>
     <div class="slide-card">
-      <div class="slide-header">
-        <div>
-          <div class="slide-title">Risks & Open Items</div>
-          <div class="slide-label">What needs attention</div>
-        </div>
-      </div>
-      <div class="slide-body">
-        <div class="risk-list" id="risks-list"></div>
-      </div>
-      <div class="sage-toggle-row">
-        <button class="btn btn-sage" onclick="toggleSage('sage-risks')">✦ Prep with Sage</button>
-      </div>
-      <div class="sage-panel" id="sage-risks">
-        <div class="sage-panel-label">Sage — Risks prep</div>
-        <div class="sage-panel-text" id="sage-risks-text"></div>
-      </div>
+      <div class="slide-header"><div><div class="slide-title">Risks & Open Items</div><div class="slide-label">What needs attention</div></div></div>
+      <div class="slide-body"><div class="risk-list" id="risks-list"></div></div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-risks')">✦ Prep with Sage</button></div>
+      <div class="sage-panel" id="sage-risks"><div class="sage-panel-label">Sage — Risks prep</div><div class="sage-panel-text" id="sage-risks-text"></div></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 6: RENEWAL ── -->
   <div class="slide" id="slide-renewal">
     <div class="slide-num">06 / 08</div>
     <div class="slide-card">
-      <div class="slide-header">
-        <div>
-          <div class="slide-title">Renewal & Contract</div>
-          <div class="slide-label">Commercial context</div>
-        </div>
-      </div>
+      <div class="slide-header"><div><div class="slide-title">Renewal & Contract</div><div class="slide-label">Commercial context</div></div></div>
       <div class="slide-body" id="slide-renewal-body"></div>
-      <div class="sage-toggle-row">
-        <button class="btn btn-sage" onclick="toggleSage('sage-renewal')">✦ Prep with Sage</button>
-      </div>
-      <div class="sage-panel" id="sage-renewal">
-        <div class="sage-panel-label">Sage — Renewal prep</div>
-        <div class="sage-panel-text" id="sage-renewal-text"></div>
-      </div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-renewal')">✦ Prep with Sage</button></div>
+      <div class="sage-panel" id="sage-renewal"><div class="sage-panel-label">Sage — Renewal prep</div><div class="sage-panel-text" id="sage-renewal-text"></div></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 7: NEXT STEPS ── -->
   <div class="slide" id="slide-next">
     <div class="slide-num">07 / 08</div>
     <div class="slide-card">
-      <div class="slide-header">
-        <div>
-          <div class="slide-title">Next Steps</div>
-          <div class="slide-label">Commitments for the quarter ahead</div>
-        </div>
-      </div>
-      <div class="slide-body">
-        <ul class="goals-list" id="goals-list"></ul>
-      </div>
-      <div class="sage-toggle-row">
-        <button class="btn btn-sage" onclick="toggleSage('sage-next')">✦ Prep with Sage</button>
-      </div>
-      <div class="sage-panel" id="sage-next">
-        <div class="sage-panel-label">Sage — Next steps prep</div>
-        <div class="sage-panel-text" id="sage-next-text"></div>
-      </div>
+      <div class="slide-header"><div><div class="slide-title">Next Steps</div><div class="slide-label">Commitments for the quarter ahead</div></div></div>
+      <div class="slide-body"><ul class="goals-list" id="goals-list"></ul></div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-next')">✦ Prep with Sage</button></div>
+      <div class="sage-panel" id="sage-next"><div class="sage-panel-label">Sage — Next steps prep</div><div class="sage-panel-text" id="sage-next-text"></div></div>
     </div>
   </div>
 
-  <!-- ── SLIDE 8: TL;DR ── -->
   <div class="slide" id="slide-tldr">
     <div class="slide-num">08 / 08</div>
     <div class="slide-card">
-      <div class="slide-header">
-        <div>
-          <div class="slide-title">TL;DR</div>
-          <div class="slide-label">The short version</div>
-        </div>
-      </div>
-      <div class="slide-body">
-        <div class="tldr-grid" id="tldr-grid"></div>
-      </div>
+      <div class="slide-header"><div><div class="slide-title">TL;DR</div><div class="slide-label">The short version</div></div></div>
+      <div class="slide-body"><div class="tldr-grid" id="tldr-grid"></div></div>
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="deck-footer">
     <div class="deck-footer-left" id="footer-left">SyncDash · Quarterly Business Review</div>
     <div class="deck-footer-right" id="footer-right"></div>
   </div>
 
-</div><!-- /slides -->
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <script src="accounts.js"></script>
 <script>
-  // ── SESSION CHECK ──────────────────────────────────────────────────────────
-  if (!localStorage.getItem('syncdash_user')) {
-    window.location.replace('login.html');
-  }
+  if (!localStorage.getItem('syncdash_user')) window.location.replace('login.html');
 
-  // ── LOAD ACCOUNT ──────────────────────────────────────────────────────────
   const params  = new URLSearchParams(window.location.search);
   const id      = params.get('account');
   const account = id ? SyncDash.getAccount(id) : null;
 
   if (!account || !account.qbr) {
-    document.body.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);">
-        <div style="font-size:32px;">◰</div>
-        <div style="font-size:16px;color:var(--text);">QBR not found</div>
-        <div style="font-size:13px;">No account or QBR data matching "${id || 'unknown'}".</div>
-        <a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a>
-      </div>`;
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);"><div style="font-size:32px;">◰</div><div style="font-size:16px;color:var(--text);">QBR not found</div><div style="font-size:13px;">No account or QBR data matching "${id || 'unknown'}".</div><a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a></div>`;
   } else {
     renderDeck(account);
   }
 
-  // ── HELPERS ───────────────────────────────────────────────────────────────
-  function tierColor(tier) {
-    return tier === 'green' ? 'var(--green)' : tier === 'red' ? 'var(--red)' : 'var(--amber)';
-  }
-
-  function tierClass(tier) {
-    return tier === 'green' ? 'green' : tier === 'red' ? 'red' : 'amber';
-  }
+  function tierColor(t) { return t === 'green' ? 'var(--green)' : t === 'red' ? 'var(--red)' : 'var(--amber)'; }
+  function tierClass(t) { return t === 'green' ? 'green' : t === 'red' ? 'red' : 'amber'; }
+  function tierHex(t)   { return t === 'green' ? '22d98a' : t === 'red' ? 'ff5c6a' : 'f5a623'; }
+  function barColor(v)  { return v >= 70 ? 'green' : v >= 40 ? 'amber' : 'red'; }
+  function barHex(v)    { return v >= 70 ? '22d98a' : v >= 40 ? 'f5a623' : 'ff5c6a'; }
 
   function formatRenewal(months) {
     if (months < 2)  return `${Math.round(months * 4)} weeks`;
@@ -671,234 +404,80 @@
     return `${(months / 12).toFixed(1)} years`;
   }
 
-  function barColor(val) {
-    return val >= 70 ? 'green' : val >= 40 ? 'amber' : 'red';
-  }
-
-  // ── RENDER ────────────────────────────────────────────────────────────────
   function renderDeck(a) {
-    const q   = a.qbr;
-    const tier = a.healthTier;
-    const tc  = tierClass(tier);
-
+    const q = a.qbr, tier = a.healthTier, tc = tierClass(tier);
     document.title = `SyncDash — ${a.name} QBR`;
-
-    // Wire back button
     document.getElementById('btn-back').href = `account.html?account=${a.id}`;
-
-    // Topbar
     document.getElementById('topbar-account').textContent = `${a.name} — ${q.quarter}`;
     document.getElementById('topbar-sub').textContent = `Prepared by ${q.preparedBy} · ${a.industry}`;
-
-    // Footer
     document.getElementById('footer-left').textContent = `${a.name} · ${q.quarter} · SyncDash QBR`;
     document.getElementById('footer-right').textContent = `Prepared by ${q.preparedBy}`;
 
-    // ── SLIDE 1: COVER ────────────────────────────────────────────────────
-    document.getElementById('cover-account').innerHTML =
-      `${a.name}<span>.</span>`;
-
+    document.getElementById('cover-account').innerHTML = `${a.name}<span>.</span>`;
     document.getElementById('cover-meta').innerHTML = `
       <div class="cover-meta-row">◷ <strong>${q.quarter}</strong></div>
       <div class="cover-meta-row">◎ <strong>${a.industry}</strong></div>
       <div class="cover-meta-row">⊞ <strong>${a.employees.toLocaleString()} employees · ${a.licensedSeats} seats</strong></div>
-      <div class="cover-meta-row">◈ Prepared by <strong>${q.preparedBy}</strong></div>
-    `;
-
+      <div class="cover-meta-row">◈ Prepared by <strong>${q.preparedBy}</strong></div>`;
     document.getElementById('cover-stats').innerHTML = `
-      <div class="cover-stat">
-        <div class="cover-stat-label">Health Score</div>
-        <div class="cover-stat-value ${tc}">${a.healthScore}<span style="font-size:13px;color:var(--muted)">/100</span></div>
-      </div>
-      <div class="cover-stat">
-        <div class="cover-stat-label">Adoption</div>
-        <div class="cover-stat-value ${tc}">${a.adoptionPct}%</div>
-      </div>
-      <div class="cover-stat">
-        <div class="cover-stat-label">ARR</div>
-        <div class="cover-stat-value" style="font-size:18px;">$${a.arr.toLocaleString()}</div>
-      </div>
-      <div class="cover-stat">
-        <div class="cover-stat-label">Renewal</div>
-        <div class="cover-stat-value ${tierClass(a.renewalTier)}" style="font-size:18px;">${formatRenewal(a.renewalMonths)}</div>
-      </div>
-    `;
+      <div class="cover-stat"><div class="cover-stat-label">Health Score</div><div class="cover-stat-value ${tc}">${a.healthScore}<span style="font-size:13px;color:var(--muted)">/100</span></div></div>
+      <div class="cover-stat"><div class="cover-stat-label">Adoption</div><div class="cover-stat-value ${tc}">${a.adoptionPct}%</div></div>
+      <div class="cover-stat"><div class="cover-stat-label">ARR</div><div class="cover-stat-value" style="font-size:18px;">$${a.arr.toLocaleString()}</div></div>
+      <div class="cover-stat"><div class="cover-stat-label">Renewal</div><div class="cover-stat-value ${tierClass(a.renewalTier)}" style="font-size:18px;">${formatRenewal(a.renewalMonths)}</div></div>`;
 
-    // ── SLIDE 2: HEALTH ───────────────────────────────────────────────────
-    document.getElementById('health-badge-header').innerHTML = `
-      <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:${tierColor(tier)};">
-        ${a.healthScore}<span style="font-size:14px;color:var(--muted)">/100</span>
-      </div>`;
-
+    document.getElementById('health-badge-header').innerHTML = `<div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:${tierColor(tier)};">${a.healthScore}<span style="font-size:14px;color:var(--muted)">/100</span></div>`;
     const supportScore = a.openTickets === 0 ? 90 : a.escalationOpen ? 20 : 50;
     const touchScore   = Math.max(0, 100 - (a.lastTouchDays * 4));
-
     document.getElementById('slide-health-body').innerHTML = `
       <div class="metric-row">
-        <div class="metric-tile">
-          <div class="metric-label">Overall Score</div>
-          <div class="metric-value ${tc}">${a.healthScore}</div>
-          <div class="metric-sub">out of 100</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">NPS</div>
-          <div class="metric-value ${barColor(a.nps) === 'green' ? 'green' : barColor(a.nps)}">${a.nps}</div>
-          <div class="metric-sub">net promoter score</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">Open Tickets</div>
-          <div class="metric-value ${a.openTickets === 0 ? 'green' : a.escalationOpen ? 'red' : 'amber'}">${a.openTickets}</div>
-          <div class="metric-sub">${a.escalationOpen ? 'escalation open' : 'no escalation'}</div>
-        </div>
+        <div class="metric-tile"><div class="metric-label">Overall Score</div><div class="metric-value ${tc}">${a.healthScore}</div><div class="metric-sub">out of 100</div></div>
+        <div class="metric-tile"><div class="metric-label">NPS</div><div class="metric-value ${barColor(a.nps)}">${a.nps}</div><div class="metric-sub">net promoter score</div></div>
+        <div class="metric-tile"><div class="metric-label">Open Tickets</div><div class="metric-value ${a.openTickets===0?'green':a.escalationOpen?'red':'amber'}">${a.openTickets}</div><div class="metric-sub">${a.escalationOpen?'escalation open':'no escalation'}</div></div>
       </div>
-      <div class="section-divider">
-        <div class="section-divider-label">Score Breakdown</div>
-        <div class="section-divider-line"></div>
-      </div>
-      ${[
-        { label: 'Adoption rate',  val: a.adoptionPct },
-        { label: 'NPS',            val: a.nps },
-        { label: 'Health score',   val: a.healthScore },
-        { label: 'Last touch',     val: touchScore },
-        { label: 'Support health', val: supportScore },
-      ].map(row => {
-        const bc = barColor(row.val);
-        return `
-          <div class="health-bar-row">
-            <div class="health-bar-label">${row.label}</div>
-            <div class="health-bar-wrap"><div class="health-bar-fill ${bc}" style="width:${row.val}%"></div></div>
-            <div class="health-bar-score ${bc}">${row.val}</div>
-          </div>`;
-      }).join('')}
-    `;
-
+      <div class="section-divider"><div class="section-divider-label">Score Breakdown</div><div class="section-divider-line"></div></div>
+      ${[{label:'Adoption rate',val:a.adoptionPct},{label:'NPS',val:a.nps},{label:'Health score',val:a.healthScore},{label:'Last touch',val:touchScore},{label:'Support health',val:supportScore}].map(r=>{const bc=barColor(r.val);return `<div class="health-bar-row"><div class="health-bar-label">${r.label}</div><div class="health-bar-wrap"><div class="health-bar-fill ${bc}" style="width:${r.val}%"></div></div><div class="health-bar-score ${bc}">${r.val}</div></div>`;}).join('')}`;
     document.getElementById('sage-health-text').textContent = q.sagePrep.health;
 
-    // ── SLIDE 3: ADOPTION ─────────────────────────────────────────────────
-    const adoptTier = barColor(a.adoptionPct);
+    const at = barColor(a.adoptionPct);
     document.getElementById('slide-adoption-body').innerHTML = `
       <div class="metric-row">
-        <div class="metric-tile">
-          <div class="metric-label">Overall Adoption</div>
-          <div class="metric-value ${adoptTier}">${a.adoptionPct}%</div>
-          <div class="metric-sub">of licensed seats active</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">Licensed Seats</div>
-          <div class="metric-value">${a.licensedSeats}</div>
-          <div class="metric-sub">of ${a.employees.toLocaleString()} employees</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">Last Activity</div>
-          <div class="metric-value ${a.lastTouchDays > 14 ? 'red' : a.lastTouchDays > 7 ? 'amber' : 'green'}" style="font-size:20px;">${a.lastTouchDays}d ago</div>
-          <div class="metric-sub">${a.lastTouchNote}</div>
-        </div>
+        <div class="metric-tile"><div class="metric-label">Overall Adoption</div><div class="metric-value ${at}">${a.adoptionPct}%</div><div class="metric-sub">of licensed seats active</div></div>
+        <div class="metric-tile"><div class="metric-label">Licensed Seats</div><div class="metric-value">${a.licensedSeats}</div><div class="metric-sub">of ${a.employees.toLocaleString()} employees</div></div>
+        <div class="metric-tile"><div class="metric-label">Last Activity</div><div class="metric-value ${a.lastTouchDays>14?'red':a.lastTouchDays>7?'amber':'green'}" style="font-size:20px;">${a.lastTouchDays}d ago</div><div class="metric-sub">${a.lastTouchNote}</div></div>
       </div>
-      <div class="section-divider">
-        <div class="section-divider-label">Adoption Signal</div>
-        <div class="section-divider-line"></div>
-      </div>
-      <div class="health-bar-row">
-        <div class="health-bar-label">Platform usage</div>
-        <div class="health-bar-wrap" style="height:10px;border-radius:5px;">
-          <div class="health-bar-fill ${adoptTier}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div>
-        </div>
-        <div class="health-bar-score ${adoptTier}">${a.adoptionPct}%</div>
-      </div>
-      <div style="margin-top:20px;">
-        ${(a.riskFlags || []).filter(f => f.type !== 'ok').length
-          ? (a.riskFlags || []).filter(f => f.type !== 'ok').map(f => `
-              <div class="risk-item ${f.type}" style="margin-bottom:8px;">
-                <div class="risk-dot"></div>
-                ${f.text}
-              </div>`).join('')
-          : `<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged — usage is stable.</div>`
-        }
-      </div>
-    `;
-
+      <div class="section-divider"><div class="section-divider-label">Adoption Signal</div><div class="section-divider-line"></div></div>
+      <div class="health-bar-row"><div class="health-bar-label">Platform usage</div><div class="health-bar-wrap" style="height:10px;border-radius:5px;"><div class="health-bar-fill ${at}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div></div><div class="health-bar-score ${at}">${a.adoptionPct}%</div></div>
+      <div style="margin-top:20px;">${(a.riskFlags||[]).filter(f=>f.type!=='ok').length?(a.riskFlags||[]).filter(f=>f.type!=='ok').map(f=>`<div class="risk-item ${f.type}" style="margin-bottom:8px;"><div class="risk-dot"></div>${f.text}</div>`).join(''):`<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged.</div>`}</div>`;
     document.getElementById('sage-adoption-text').textContent = q.sagePrep.adoption;
 
-    // ── SLIDE 4: WINS ─────────────────────────────────────────────────────
-    document.getElementById('wins-list').innerHTML = q.wins.map(w => `
-      <li>
-        <div class="win-icon">✓</div>
-        ${w}
-      </li>`).join('');
-
-    // ── SLIDE 5: RISKS ────────────────────────────────────────────────────
-    document.getElementById('risks-list').innerHTML = q.risks.map(r => `
-      <div class="risk-item ${r.type}">
-        <div class="risk-dot"></div>
-        ${r.text}
-      </div>`).join('');
-
+    document.getElementById('wins-list').innerHTML = q.wins.map(w=>`<li><div class="win-icon">✓</div>${w}</li>`).join('');
+    document.getElementById('risks-list').innerHTML = q.risks.map(r=>`<div class="risk-item ${r.type}"><div class="risk-dot"></div>${r.text}</div>`).join('');
     document.getElementById('sage-risks-text').textContent = q.sagePrep.risks;
 
-    // ── SLIDE 6: RENEWAL ──────────────────────────────────────────────────
-    const renewTier = tierClass(a.renewalTier);
     document.getElementById('slide-renewal-body').innerHTML = `
       <div class="metric-row">
-        <div class="metric-tile">
-          <div class="metric-label">Renewal Window</div>
-          <div class="metric-value ${renewTier}">${formatRenewal(a.renewalMonths)}</div>
-          <div class="metric-sub">until contract end</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">ARR</div>
-          <div class="metric-value" style="font-size:20px;">$${a.arr.toLocaleString()}</div>
-          <div class="metric-sub">${a.contract.plan} plan · $${a.contract.pricePerSeat}/seat/mo</div>
-        </div>
-        <div class="metric-tile">
-          <div class="metric-label">Contract End</div>
-          <div class="metric-value" style="font-size:16px;color:var(--text);">${a.contract.endDate}</div>
-          <div class="metric-sub">Auto-renew: ${a.contract.autoRenew ? 'On' : 'Off'}</div>
-        </div>
+        <div class="metric-tile"><div class="metric-label">Renewal Window</div><div class="metric-value ${tierClass(a.renewalTier)}">${formatRenewal(a.renewalMonths)}</div><div class="metric-sub">until contract end</div></div>
+        <div class="metric-tile"><div class="metric-label">ARR</div><div class="metric-value" style="font-size:20px;">$${a.arr.toLocaleString()}</div><div class="metric-sub">${a.contract.plan} plan · $${a.contract.pricePerSeat}/seat/mo</div></div>
+        <div class="metric-tile"><div class="metric-label">Contract End</div><div class="metric-value" style="font-size:16px;color:var(--text);">${a.contract.endDate}</div><div class="metric-sub">Auto-renew: ${a.contract.autoRenew?'On':'Off'}</div></div>
       </div>
-      <div class="renewal-box">
-        <div class="renewal-box-label">Context</div>
-        <div class="renewal-box-text">${q.renewalNote}</div>
-      </div>
-    `;
-
+      <div class="renewal-box"><div class="renewal-box-label">Context</div><div class="renewal-box-text">${q.renewalNote}</div></div>`;
     document.getElementById('sage-renewal-text').textContent = q.sagePrep.renewal;
 
-    // ── SLIDE 7: NEXT STEPS ───────────────────────────────────────────────
-    document.getElementById('goals-list').innerHTML = q.goals.map((g, i) => `
-      <li>
-        <div class="goal-num">${i + 1}</div>
-        ${g}
-      </li>`).join('');
-
+    document.getElementById('goals-list').innerHTML = q.goals.map((g,i)=>`<li><div class="goal-num">${i+1}</div>${g}</li>`).join('');
     document.getElementById('sage-next-text').textContent = q.sagePrep.nextSteps;
 
-    // ── SLIDE 8: TL;DR ────────────────────────────────────────────────────
     document.getElementById('tldr-grid').innerHTML = `
-      <div class="tldr-panel working">
-        <div class="tldr-icon">✓</div>
-        <div class="tldr-label">What's working</div>
-        <div class="tldr-text">${q.tldr.working}</div>
-      </div>
-      <div class="tldr-panel attention">
-        <div class="tldr-icon">⚠</div>
-        <div class="tldr-label">What needs attention</div>
-        <div class="tldr-text">${q.tldr.attention}</div>
-      </div>
-      <div class="tldr-panel commit">
-        <div class="tldr-icon">→</div>
-        <div class="tldr-label">What we're committing to</div>
-        <div class="tldr-text">${q.tldr.committing}</div>
-      </div>
-    `;
+      <div class="tldr-panel working"><div class="tldr-icon">✓</div><div class="tldr-label">What's working</div><div class="tldr-text">${q.tldr.working}</div></div>
+      <div class="tldr-panel attention"><div class="tldr-icon">⚠</div><div class="tldr-label">What needs attention</div><div class="tldr-text">${q.tldr.attention}</div></div>
+      <div class="tldr-panel commit"><div class="tldr-icon">→</div><div class="tldr-label">What we're committing to</div><div class="tldr-text">${q.tldr.committing}</div></div>`;
   }
 
-  // ── SAGE TOGGLE ───────────────────────────────────────────────────────────
+  // ── SAGE ──────────────────────────────────────────────────────────────────
   function toggleSage(id) {
     const panel = document.getElementById(id);
     const btn   = panel.previousElementSibling.querySelector('button');
-    const isOpen = panel.classList.contains('open');
     panel.classList.toggle('open');
-    btn.classList.toggle('active', !isOpen);
+    btn.classList.toggle('active', panel.classList.contains('open'));
   }
 
   let sageAllOpen = false;
@@ -911,28 +490,197 @@
     btn.classList.toggle('active', sageAllOpen);
   }
 
-  // ── SLIDE NAV ACTIVE STATE ────────────────────────────────────────────────
-  function setActive(el) {
-    setTimeout(() => {
-      document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
-      el.classList.add('active');
-    }, 50);
+  // ── EXPORT DROPDOWN ───────────────────────────────────────────────────────
+  function toggleExportMenu() {
+    document.getElementById('export-dropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.topbar-actions')) document.getElementById('export-dropdown').classList.remove('open');
+  });
+
+  // ── EXPORT: PDF ───────────────────────────────────────────────────────────
+  function exportPDF() {
+    document.getElementById('export-dropdown').classList.remove('open');
+    document.querySelectorAll('.sage-panel').forEach(p => p.classList.remove('open'));
+    setTimeout(() => window.print(), 100);
   }
 
-  // Auto-update nav pill on scroll
-  const slides = document.querySelectorAll('.slide');
-  const pills  = document.querySelectorAll('.nav-pill');
+  // ── EXPORT: PPTX ─────────────────────────────────────────────────────────
+  function exportPPTX() {
+    document.getElementById('export-dropdown').classList.remove('open');
+    if (!account) return;
+    const a = account, q = a.qbr;
+    const BG='0d1117',SURF2='1c2333',BORDER='242d3d',TEXT='e2e8f0',MUTED='7a8ba3',TEAL='00c9a7',GREEN='22d98a',AMBER='f5a623',RED='ff5c6a';
+    const th=tierHex(a.healthTier), rth=tierHex(a.renewalTier);
+    const W=10, H=5.625;
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    slides.forEach(slide => {
-      if (window.scrollY >= slide.offsetTop - 180) current = slide.id;
+    let pres = new PptxGenJS();
+    pres.layout='LAYOUT_16x9'; pres.author=q.preparedBy; pres.title=`${a.name} QBR — ${q.quarter}`;
+
+    function base(title, sub) {
+      let s = pres.addSlide();
+      s.background = { color: BG };
+      s.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:W, h:0.06, fill:{color:TEAL}, line:{color:TEAL} });
+      if (title) s.addText(title, { x:0.5, y:0.18, w:W-1, h:0.5, fontSize:22, bold:true, color:TEXT, fontFace:'Calibri', margin:0 });
+      if (sub)   s.addText(sub,   { x:0.5, y:0.62, w:W-1, h:0.25, fontSize:10, color:MUTED, fontFace:'Calibri', charSpacing:2, margin:0 });
+      s.addShape(pres.shapes.RECTANGLE, { x:0, y:H-0.28, w:W, h:0.01, fill:{color:BORDER}, line:{color:BORDER} });
+      s.addText(`${a.name} · ${q.quarter} · SyncDash QBR`, { x:0.5, y:H-0.25, w:5, h:0.2, fontSize:8, color:MUTED, fontFace:'Calibri', margin:0 });
+      s.addText(`Prepared by ${q.preparedBy}`, { x:W-2.5, y:H-0.25, w:2, h:0.2, fontSize:8, color:MUTED, fontFace:'Calibri', align:'right', margin:0 });
+      return s;
+    }
+
+    function statBox(s,x,y,w,h,label,value,vc) {
+      s.addShape(pres.shapes.RECTANGLE,{x,y,w,h,fill:{color:SURF2},line:{color:BORDER,width:0.5}});
+      s.addText(label.toUpperCase(),{x:x+0.12,y:y+0.1,w:w-0.24,h:0.2,fontSize:8,color:MUTED,fontFace:'Calibri',charSpacing:1,margin:0});
+      s.addText(value,{x:x+0.12,y:y+0.3,w:w-0.24,h:0.45,fontSize:20,bold:true,color:vc||TEXT,fontFace:'Calibri',margin:0});
+    }
+
+    // Cover
+    let s1=pres.addSlide(); s1.background={color:BG};
+    s1.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.06,h:H,fill:{color:TEAL},line:{color:TEAL}});
+    s1.addText(a.name,{x:0.5,y:1.2,w:5,h:1.2,fontSize:44,bold:true,color:TEXT,fontFace:'Calibri',margin:0});
+    s1.addText('Quarterly Business Review',{x:0.5,y:2.3,w:5,h:0.4,fontSize:14,color:TEAL,fontFace:'Calibri',charSpacing:2,margin:0});
+    s1.addText([{text:`${q.quarter}`,options:{breakLine:true}},{text:`${a.industry}`,options:{breakLine:true}},{text:`${a.employees.toLocaleString()} employees · ${a.licensedSeats} seats`,options:{breakLine:true}},{text:`Prepared by ${q.preparedBy}`}],{x:0.5,y:2.85,w:5,h:1.2,fontSize:11,color:MUTED,fontFace:'Calibri',lineSpacingMultiple:1.4,margin:0});
+    statBox(s1,5.8,0.9,1.9,0.95,'Health Score',`${a.healthScore}/100`,th);
+    statBox(s1,7.8,0.9,1.9,0.95,'Adoption',`${a.adoptionPct}%`,th);
+    statBox(s1,5.8,1.95,1.9,0.95,'ARR',`$${(a.arr/1000).toFixed(0)}K`,TEXT);
+    statBox(s1,7.8,1.95,1.9,0.95,'Renewal',formatRenewal(a.renewalMonths),rth);
+    s1.addShape(pres.shapes.RECTANGLE,{x:0,y:H-0.28,w:W,h:0.01,fill:{color:BORDER},line:{color:BORDER}});
+    s1.addText('SyncDash · Quarterly Business Review',{x:0.5,y:H-0.25,w:5,h:0.2,fontSize:8,color:MUTED,fontFace:'Calibri',margin:0});
+
+    // Health
+    let s2=base('Account Health','OVERALL HEALTH SCORE BREAKDOWN');
+    const tc=tierClass(a.healthTier);
+    statBox(s2,0.5,0.95,2.8,0.85,'Overall Score',`${a.healthScore}/100`,th);
+    statBox(s2,3.5,0.95,2.8,0.85,'NPS',`${a.nps}`,barHex(a.nps));
+    statBox(s2,6.5,0.95,2.8,0.85,'Open Tickets',`${a.openTickets}`,a.openTickets===0?GREEN:RED);
+    const supportScore=a.openTickets===0?90:a.escalationOpen?20:50;
+    const touchScore=Math.max(0,100-(a.lastTouchDays*4));
+    [{label:'Adoption rate',val:a.adoptionPct},{label:'NPS',val:a.nps},{label:'Health score',val:a.healthScore},{label:'Last touch',val:touchScore},{label:'Support health',val:supportScore}].forEach((r,i)=>{
+      const by=2.05+i*0.5, bh=barHex(r.val);
+      s2.addText(r.label,{x:0.5,y:by,w:2,h:0.3,fontSize:10,color:MUTED,fontFace:'Calibri',margin:0});
+      s2.addShape(pres.shapes.RECTANGLE,{x:2.6,y:by+0.08,w:6.5,h:0.14,fill:{color:BORDER},line:{color:BORDER}});
+      s2.addShape(pres.shapes.RECTANGLE,{x:2.6,y:by+0.08,w:6.5*r.val/100,h:0.14,fill:{color:bh},line:{color:bh}});
+      s2.addText(`${r.val}`,{x:9.2,y:by,w:0.5,h:0.3,fontSize:10,color:bh,fontFace:'Calibri',align:'right',margin:0});
     });
-    pills.forEach(pill => {
-      pill.classList.toggle('active', pill.getAttribute('href') === `#${current}`);
+
+    // Adoption
+    let s3=base('Adoption & Usage','PLATFORM ENGAGEMENT');
+    const atHex=barHex(a.adoptionPct);
+    statBox(s3,0.5,0.95,2.8,0.85,'Overall Adoption',`${a.adoptionPct}%`,atHex);
+    statBox(s3,3.5,0.95,2.8,0.85,'Licensed Seats',`${a.licensedSeats}`,TEXT);
+    statBox(s3,6.5,0.95,2.8,0.85,'Last Activity',`${a.lastTouchDays}d ago`,a.lastTouchDays>14?RED:a.lastTouchDays>7?AMBER:GREEN);
+    s3.addShape(pres.shapes.RECTANGLE,{x:2.6,y:2.18,w:6.5,h:0.2,fill:{color:BORDER},line:{color:BORDER}});
+    s3.addShape(pres.shapes.RECTANGLE,{x:2.6,y:2.18,w:6.5*a.adoptionPct/100,h:0.2,fill:{color:atHex},line:{color:atHex}});
+    s3.addText('Platform usage',{x:0.5,y:2.1,w:2,h:0.3,fontSize:10,color:MUTED,fontFace:'Calibri',margin:0});
+    s3.addText(`${a.adoptionPct}%`,{x:9.2,y:2.1,w:0.5,h:0.3,fontSize:10,color:atHex,fontFace:'Calibri',align:'right',margin:0});
+    (a.riskFlags||[]).filter(f=>f.type!=='ok').forEach((f,i)=>{
+      const fc=f.type==='crit'?RED:AMBER;
+      s3.addShape(pres.shapes.OVAL,{x:0.5,y:2.65+i*0.42,w:0.12,h:0.12,fill:{color:fc},line:{color:fc}});
+      s3.addText(f.text,{x:0.72,y:2.6+i*0.42,w:8.8,h:0.3,fontSize:11,color:TEXT,fontFace:'Calibri',margin:0});
     });
+
+    // Wins
+    let s4=base('Wins This Quarter',"WHAT'S WORKING");
+    q.wins.forEach((w,i)=>{
+      const wy=0.98+i*0.55;
+      s4.addShape(pres.shapes.OVAL,{x:0.5,y:wy+0.05,w:0.22,h:0.22,fill:{color:GREEN,transparency:85},line:{color:GREEN,width:0.5}});
+      s4.addText('✓',{x:0.5,y:wy+0.04,w:0.22,h:0.22,fontSize:8,color:GREEN,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
+      s4.addText(w,{x:0.85,y:wy,w:8.8,h:0.4,fontSize:12,color:TEXT,fontFace:'Calibri',margin:0});
+    });
+
+    // Risks
+    let s5=base('Risks & Open Items','WHAT NEEDS ATTENTION');
+    q.risks.forEach((r,i)=>{
+      const ry=0.98+i*0.6, rc=r.type==='ok'?GREEN:r.type==='crit'?RED:AMBER;
+      s5.addShape(pres.shapes.RECTANGLE,{x:0.5,y:ry,w:9,h:0.45,fill:{color:rc,transparency:90},line:{color:rc,width:0.5}});
+      s5.addShape(pres.shapes.OVAL,{x:0.65,y:ry+0.15,w:0.12,h:0.12,fill:{color:rc},line:{color:rc}});
+      s5.addText(r.text,{x:0.9,y:ry+0.06,w:8.4,h:0.34,fontSize:11,color:rc,fontFace:'Calibri',margin:0});
+    });
+
+    // Renewal
+    let s6=base('Renewal & Contract','COMMERCIAL CONTEXT');
+    statBox(s6,0.5,0.95,2.8,0.85,'Renewal Window',formatRenewal(a.renewalMonths),rth);
+    statBox(s6,3.5,0.95,2.8,0.85,'ARR',`$${a.arr.toLocaleString()}`,TEXT);
+    statBox(s6,6.5,0.95,2.8,0.85,'Contract End',a.contract.endDate,TEXT);
+    s6.addShape(pres.shapes.RECTANGLE,{x:0.5,y:2.05,w:9,h:1.6,fill:{color:SURF2},line:{color:BORDER,width:0.5}});
+    s6.addText('CONTEXT',{x:0.7,y:2.12,w:3,h:0.2,fontSize:8,color:MUTED,fontFace:'Calibri',charSpacing:2,margin:0});
+    s6.addText(q.renewalNote,{x:0.7,y:2.35,w:8.6,h:1.2,fontSize:11,color:TEXT,fontFace:'Calibri',lineSpacingMultiple:1.4,margin:0});
+
+    // Next Steps
+    let s7=base('Next Steps','COMMITMENTS FOR THE QUARTER AHEAD');
+    q.goals.forEach((g,i)=>{
+      const gy=0.98+i*0.55;
+      s7.addShape(pres.shapes.OVAL,{x:0.5,y:gy+0.04,w:0.24,h:0.24,fill:{color:TEAL,transparency:85},line:{color:TEAL,width:0.5}});
+      s7.addText(`${i+1}`,{x:0.5,y:gy+0.04,w:0.24,h:0.24,fontSize:9,color:TEAL,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
+      s7.addText(g,{x:0.88,y:gy,w:8.7,h:0.4,fontSize:12,color:TEXT,fontFace:'Calibri',margin:0});
+    });
+
+    // TL;DR
+    let s8=base('TL;DR','THE SHORT VERSION');
+    [{label:"WHAT'S WORKING",text:q.tldr.working,icon:'✓',color:GREEN,bg:'22d98a',x:0.5},{label:'WHAT NEEDS ATTENTION',text:q.tldr.attention,icon:'⚠',color:AMBER,bg:'f5a623',x:3.6},{label:"WHAT WE'RE COMMITTING TO",text:q.tldr.committing,icon:'→',color:TEAL,bg:'00c9a7',x:6.7}].forEach(p=>{
+      s8.addShape(pres.shapes.RECTANGLE,{x:p.x,y:0.95,w:2.9,h:3.8,fill:{color:p.bg,transparency:90},line:{color:p.bg,width:0.5}});
+      s8.addText(p.icon,{x:p.x+0.15,y:1.05,w:0.4,h:0.4,fontSize:16,color:p.color,fontFace:'Calibri',margin:0});
+      s8.addText(p.label,{x:p.x+0.15,y:1.55,w:2.6,h:0.28,fontSize:8,color:p.color,fontFace:'Calibri',charSpacing:1,margin:0});
+      s8.addText(p.text,{x:p.x+0.15,y:1.9,w:2.6,h:2.6,fontSize:11,color:TEXT,fontFace:'Calibri',lineSpacingMultiple:1.4,margin:0});
+    });
+
+    pres.writeFile({ fileName: `${a.name}_QBR_${q.quarter.replace(' ','_')}.pptx` });
+  }
+
+  // ── EXPORT: SAGE NOTES PDF ────────────────────────────────────────────────
+  function exportSageNotes() {
+    document.getElementById('export-dropdown').classList.remove('open');
+    if (!account) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const a=account, q=a.qbr, W=210, ML=18, MR=18, CW=W-ML-MR;
+    let y=20;
+
+    doc.setFillColor(13,17,23);
+    doc.rect(0,0,W,28,'F');
+    doc.setFontSize(16); doc.setTextColor(0,201,167); doc.setFont('helvetica','bold');
+    doc.text('SyncDash',ML,12);
+    doc.setFontSize(10); doc.setTextColor(122,139,163); doc.setFont('helvetica','normal');
+    doc.text(`${a.name} · ${q.quarter} · Sage Prep Notes`,ML,20);
+    doc.text(`Prepared by ${q.preparedBy}`,W-MR,20,{align:'right'});
+    y=38;
+
+    const sections=[{title:'Health',key:'health'},{title:'Adoption & Usage',key:'adoption'},{title:'Risks & Open Items',key:'risks'},{title:'Renewal & Contract',key:'renewal'},{title:'Next Steps',key:'nextSteps'}];
+
+    sections.forEach(sec=>{
+      doc.setDrawColor(167,139,250); doc.setLineWidth(0.3);
+      doc.roundedRect(ML,y,CW,7,2,2,'S');
+      doc.setFontSize(8); doc.setTextColor(167,139,250); doc.setFont('helvetica','bold');
+      doc.text(`SAGE — ${sec.title.toUpperCase()}`,ML+3,y+4.8);
+      y+=11;
+      doc.setFontSize(10); doc.setTextColor(50,60,75); doc.setFont('helvetica','normal');
+      const lines=doc.splitTextToSize(q.sagePrep[sec.key],CW);
+      doc.text(lines,ML,y);
+      y+=lines.length*5.5+10;
+      if (y<260) { doc.setDrawColor(230,235,240); doc.setLineWidth(0.2); doc.line(ML,y-4,W-MR,y-4); }
+      if (y>260) { doc.addPage(); y=20; }
+    });
+
+    const pageCount=doc.internal.getNumberOfPages();
+    for (let i=1;i<=pageCount;i++) {
+      doc.setPage(i); doc.setFontSize(8); doc.setTextColor(150,160,175); doc.setFont('helvetica','normal');
+      doc.text(`${a.name} QBR Prep Notes · ${q.quarter} · Page ${i} of ${pageCount}`,ML,290);
+    }
+    doc.save(`${a.name}_QBR_Sage_Notes_${q.quarter.replace(' ','_')}.pdf`);
+  }
+
+  // ── NAV ───────────────────────────────────────────────────────────────────
+  function setActive(el) {
+    setTimeout(()=>{ document.querySelectorAll('.nav-pill').forEach(p=>p.classList.remove('active')); el.classList.add('active'); },50);
+  }
+
+  const slides=document.querySelectorAll('.slide'), pills=document.querySelectorAll('.nav-pill');
+  window.addEventListener('scroll',()=>{
+    let current='';
+    slides.forEach(s=>{ if (window.scrollY>=s.offsetTop-180) current=s.id; });
+    pills.forEach(p=>{ p.classList.toggle('active',p.getAttribute('href')===`#${current}`); });
   });
 </script>
-
 </body>
 </html>

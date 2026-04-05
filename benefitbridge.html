@@ -223,13 +223,8 @@
     }
 
     .breadcrumb a:hover { color: var(--text); }
-
     .breadcrumb-sep { color: var(--faint); }
-
-    .breadcrumb-current {
-      color: var(--text);
-      font-weight: 500;
-    }
+    .breadcrumb-current { color: var(--text); font-weight: 500; }
 
     .topbar-actions { display: flex; gap: 8px; }
 
@@ -340,13 +335,8 @@
     }
 
     .tab:hover { color: var(--text); }
+    .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
 
-    .tab.active {
-      color: var(--teal);
-      border-bottom-color: var(--teal);
-    }
-
-    /* ── TAB CONTENT ─────────────────────────── */
     .tab-content { display: none; padding: 24px 28px; }
     .tab-content.active { display: block; }
 
@@ -404,12 +394,7 @@
       overflow: hidden;
     }
 
-    .health-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.8s ease;
-    }
-
+    .health-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
     .health-bar-fill.green { background: var(--green); }
     .health-bar-fill.amber { background: var(--amber); }
     .health-bar-fill.red   { background: var(--red); }
@@ -454,20 +439,10 @@
     .stat-tile-value.amber { color: var(--amber); }
     .stat-tile-value.green { color: var(--green); }
     .stat-tile-value.red   { color: var(--red); }
-
-    .stat-tile-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .stat-tile-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
     /* ── CHART ───────────────────────────────── */
-    .chart-wrap {
-      padding: 16px 18px;
-      position: relative;
-      height: 180px;
-    }
-
+    .chart-wrap { padding: 16px 18px; position: relative; height: 180px; }
     .chart-svg { width: 100%; height: 100%; }
 
     /* ── SIGNAL ITEMS ────────────────────────── */
@@ -481,7 +456,6 @@
     }
 
     .signal-item:last-child { margin-bottom: 0; }
-
     .signal-item.crit { background: var(--red-bg); border-color: rgba(255,92,106,0.2); }
     .signal-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
     .signal-item.info { background: var(--blue-bg); border-color: rgba(77,166,255,0.15); }
@@ -510,9 +484,7 @@
       width: 26px; height: 26px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px;
-      flex-shrink: 0;
-      margin-top: 1px;
+      font-size: 11px; flex-shrink: 0; margin-top: 1px;
     }
 
     .feed-icon.blue  { background: var(--blue-bg);  color: var(--blue); }
@@ -538,18 +510,15 @@
 
     .dept-name { font-size: 13px; color: var(--text); width: 130px; flex-shrink: 0; }
     .dept-users { font-size: 11.5px; color: var(--muted); width: 60px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
-
     .dept-bar-wrap { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
     .dept-bar-fill { height: 100%; border-radius: 3px; }
     .dept-bar-fill.green { background: var(--green); }
     .dept-bar-fill.amber { background: var(--amber); }
     .dept-bar-fill.red   { background: var(--red); }
-
     .dept-pct { font-family: 'DM Mono', monospace; font-size: 12px; width: 36px; text-align: right; }
     .dept-pct.green { color: var(--green); }
     .dept-pct.amber { color: var(--amber); }
     .dept-pct.red   { color: var(--red); }
-
     .dept-trend { font-size: 11px; width: 50px; text-align: right; font-family: 'DM Mono', monospace; }
     .dept-trend.down { color: var(--red); }
     .dept-trend.up   { color: var(--green); }
@@ -573,11 +542,7 @@
       margin-bottom: 6px;
     }
 
-    .ticket-id {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--faint);
-    }
+    .ticket-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--faint); }
 
     .ticket-status {
       font-size: 11px;
@@ -613,11 +578,9 @@
       width: 36px; height: 36px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 13px; font-weight: 700;
       font-family: 'Outfit', sans-serif;
-      flex-shrink: 0;
-      color: #fff;
+      flex-shrink: 0; color: #fff;
     }
 
     .contact-avatar.teal  { background: linear-gradient(135deg, var(--teal), #005f8a); }
@@ -646,13 +609,6 @@
 
     .contact-last { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 6px; }
 
-    .contact-email {
-      font-size: 11.5px;
-      color: var(--teal);
-      text-decoration: none;
-      font-family: 'DM Mono', monospace;
-    }
-
     /* ── ACTIONS TAB ─────────────────────────── */
     .action-item {
       display: flex;
@@ -668,11 +624,8 @@
       width: 20px; height: 20px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-      flex-shrink: 0;
-      margin-top: 1px;
-      font-weight: 700;
-      font-family: 'DM Mono', monospace;
+      font-size: 10px; flex-shrink: 0; margin-top: 1px;
+      font-weight: 700; font-family: 'DM Mono', monospace;
     }
 
     .action-priority.p1 { background: var(--red-bg); color: var(--red); }
@@ -700,14 +653,8 @@
 
     .action-cta:hover { background: rgba(0,201,167,0.15); }
 
-    /* ── CONTRACT DETAILS ────────────────────── */
-    .contract-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .contract-item { }
+    /* ── CONTRACT ────────────────────────────── */
+    .contract-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
     .contract-label {
       font-size: 10.5px;
@@ -718,12 +665,7 @@
       margin-bottom: 4px;
     }
 
-    .contract-value {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
+    .contract-value { font-size: 14px; font-weight: 500; color: var(--text); }
     .contract-value.amber { color: var(--amber); }
     .contract-value.green { color: var(--green); }
 
@@ -748,7 +690,6 @@
       .contract-grid { grid-template-columns: 1fr; }
     }
 
-    /* scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -769,16 +710,16 @@
   <nav class="sidebar-nav">
     <div class="nav-label">Workspace</div>
     <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
-    <a class="nav-item active" href="#"><span class="nav-icon">◎</span> Accounts<span class="nav-badge">1</span></a>
-    <a class="nav-item" href="#"><span class="nav-icon">◷</span> Activity</a>
-    <a class="nav-item" href="#"><span class="nav-icon">◫</span> Tasks</a>
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon">◎</span> Accounts <span class="nav-badge">1</span></a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◷</span> Activity</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◫</span> Tasks</a>
     <div class="nav-label">Insights</div>
-    <a class="nav-item" href="#"><span class="nav-icon">◉</span> Health Reports</a>
-    <a class="nav-item" href="#"><span class="nav-icon">◑</span> Renewals</a>
-    <a class="nav-item" href="#"><span class="nav-icon">✦</span> Nova Signals<span class="nav-badge">3</span></a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◉</span> Health Reports</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◑</span> Renewals</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">✦</span> Nova Signals <span class="nav-badge">3</span></a>
     <div class="nav-label">Tools</div>
-    <a class="nav-item" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
-    <a class="nav-item" href="#"><span class="nav-icon">⊞</span> Integrations</a>
+    <a class="nav-item" href="qbr-preview.html?account=benefitbridge"><span class="nav-icon">◰</span> QBR Builder</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Integrations</a>
     <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
   </nav>
 
@@ -797,7 +738,6 @@
 <!-- MAIN -->
 <main class="main">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="breadcrumb">
       <a href="dashboard.html">Dashboard</a>
@@ -810,11 +750,10 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
-      <a class="action-btn teal" href="#">✦ Build QBR</a>
+      <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge">✦ Build QBR</a>
     </div>
   </div>
 
-  <!-- Account header -->
   <div class="account-header">
     <div class="account-title-block">
       <div class="account-name">BenefitBridge</div>
@@ -838,7 +777,6 @@
     </div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs-bar">
     <div class="tab active" onclick="showTab('overview', this)">Overview</div>
     <div class="tab" onclick="showTab('adoption', this)">Adoption</div>
@@ -849,8 +787,6 @@
 
   <!-- ── OVERVIEW TAB ─────────────────────── -->
   <div class="tab-content active" id="tab-overview">
-
-    <!-- Stat tiles -->
     <div class="three-col" style="margin-bottom:16px;">
       <div class="stat-tile">
         <div class="stat-tile-label">Overall Adoption</div>
@@ -871,8 +807,6 @@
 
     <div class="two-col">
       <div style="display:flex;flex-direction:column;gap:16px;">
-
-        <!-- Health breakdown -->
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">Health Score Breakdown</div>
@@ -907,11 +841,8 @@
           </div>
         </div>
 
-        <!-- Activity timeline -->
         <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Recent Activity</div>
-          </div>
+          <div class="panel-header"><div class="panel-title">Recent Activity</div></div>
           <div class="panel-body" style="padding-top:8px;padding-bottom:8px;">
             <div class="feed-item">
               <div class="feed-icon amber">⚠</div>
@@ -953,12 +884,8 @@
       </div>
 
       <div style="display:flex;flex-direction:column;gap:16px;">
-
-        <!-- Nova signals -->
         <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">✦ Nova Signals</div>
-          </div>
+          <div class="panel-header"><div class="panel-title">✦ Nova Signals</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
             <div class="signal-item warn">
               <div class="signal-icon">◎</div>
@@ -984,57 +911,27 @@
           </div>
         </div>
 
-        <!-- Contract details -->
         <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Contract Details</div>
-          </div>
+          <div class="panel-header"><div class="panel-title">Contract Details</div></div>
           <div class="panel-body">
             <div class="contract-grid">
-              <div class="contract-item">
-                <div class="contract-label">ARR</div>
-                <div class="contract-value">$52,000</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Contract Type</div>
-                <div class="contract-value">Annual</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Start Date</div>
-                <div class="contract-value">Jun 4, 2023</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Renewal Date</div>
-                <div class="contract-value amber">Jun 4, 2026</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Tier</div>
-                <div class="contract-value">Growth</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Seats</div>
-                <div class="contract-value">310 / 350</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Integrations</div>
-                <div class="contract-value">4 active</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Billing</div>
-                <div class="contract-value">Invoice — Net 30</div>
-              </div>
+              <div><div class="contract-label">ARR</div><div class="contract-value">$52,000</div></div>
+              <div><div class="contract-label">Contract Type</div><div class="contract-value">Annual</div></div>
+              <div><div class="contract-label">Start Date</div><div class="contract-value">Jun 4, 2023</div></div>
+              <div><div class="contract-label">Renewal Date</div><div class="contract-value amber">Jun 4, 2026</div></div>
+              <div><div class="contract-label">Tier</div><div class="contract-value">Growth</div></div>
+              <div><div class="contract-label">Seats</div><div class="contract-value">310 / 350</div></div>
+              <div><div class="contract-label">Integrations</div><div class="contract-value">4 active</div></div>
+              <div><div class="contract-label">Billing</div><div class="contract-value">Invoice — Net 30</div></div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
   <!-- ── ADOPTION TAB ──────────────────────── -->
   <div class="tab-content" id="tab-adoption">
-
-    <!-- Trend chart -->
     <div class="panel" style="margin-bottom:16px;">
       <div class="panel-header">
         <div class="panel-title">Adoption Trend — Last 6 Months</div>
@@ -1042,19 +939,14 @@
       </div>
       <div class="chart-wrap">
         <svg class="chart-svg" viewBox="0 0 600 140" preserveAspectRatio="none">
-          <!-- Grid lines -->
           <line x1="0" y1="28" x2="600" y2="28" stroke="#242d3d" stroke-width="1"/>
           <line x1="0" y1="56" x2="600" y2="56" stroke="#242d3d" stroke-width="1"/>
           <line x1="0" y1="84" x2="600" y2="84" stroke="#242d3d" stroke-width="1"/>
           <line x1="0" y1="112" x2="600" y2="112" stroke="#242d3d" stroke-width="1"/>
-
-          <!-- Y labels -->
           <text x="4" y="24" fill="#3d4f68" font-size="10" font-family="monospace">80%</text>
           <text x="4" y="52" fill="#3d4f68" font-size="10" font-family="monospace">70%</text>
           <text x="4" y="80" fill="#3d4f68" font-size="10" font-family="monospace">60%</text>
           <text x="4" y="108" fill="#3d4f68" font-size="10" font-family="monospace">50%</text>
-
-          <!-- Area fill -->
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#f5a623" stop-opacity="0.15"/>
@@ -1062,32 +954,20 @@
             </linearGradient>
           </defs>
           <polygon points="40,42 140,28 240,35 340,42 440,56 540,70 540,140 40,140" fill="url(#areaGrad)"/>
-
-          <!-- Overall line -->
-          <polyline points="40,42 140,28 240,35 340,42 440,56 540,70"
-            fill="none" stroke="#f5a623" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-
-          <!-- Finance dept line (declining) -->
-          <polyline points="40,42 140,35 240,42 340,56 440,84 540,98"
-            fill="none" stroke="#ff5c6a" stroke-width="1.5" stroke-dasharray="4,3" stroke-linejoin="round" stroke-linecap="round"/>
-
-          <!-- Data points -->
+          <polyline points="40,42 140,28 240,35 340,42 440,56 540,70" fill="none" stroke="#f5a623" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="40,42 140,35 240,42 340,56 440,84 540,98" fill="none" stroke="#ff5c6a" stroke-width="1.5" stroke-dasharray="4,3" stroke-linejoin="round" stroke-linecap="round"/>
           <circle cx="40"  cy="42" r="3.5" fill="#f5a623"/>
           <circle cx="140" cy="28" r="3.5" fill="#f5a623"/>
           <circle cx="240" cy="35" r="3.5" fill="#f5a623"/>
           <circle cx="340" cy="42" r="3.5" fill="#f5a623"/>
           <circle cx="440" cy="56" r="3.5" fill="#f5a623"/>
           <circle cx="540" cy="70" r="3.5" fill="#f5a623"/>
-
-          <!-- X labels -->
           <text x="30"  y="132" fill="#3d4f68" font-size="10" font-family="monospace">Oct</text>
           <text x="128" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Nov</text>
           <text x="228" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Dec</text>
           <text x="328" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Jan</text>
           <text x="428" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Feb</text>
           <text x="525" y="132" fill="#3d4f68" font-size="10" font-family="monospace">Mar</text>
-
-          <!-- Legend -->
           <line x1="380" y1="14" x2="400" y2="14" stroke="#f5a623" stroke-width="2"/>
           <text x="404" y="18" fill="#7a8ba3" font-size="10" font-family="monospace">Overall</text>
           <line x1="460" y1="14" x2="480" y2="14" stroke="#ff5c6a" stroke-width="1.5" stroke-dasharray="4,3"/>
@@ -1097,11 +977,8 @@
     </div>
 
     <div class="two-col">
-      <!-- Department breakdown -->
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Adoption by Department</div>
-        </div>
+        <div class="panel-header"><div class="panel-title">Adoption by Department</div></div>
         <div class="panel-body">
           <div class="dept-row">
             <div class="dept-name">HR & People Ops</div>
@@ -1148,7 +1025,6 @@
         </div>
       </div>
 
-      <!-- Open tickets -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Open Tickets</div>
@@ -1193,7 +1069,7 @@
               <span class="contact-tag champion">Champion</span>
               <span class="contact-tag economic">Economic Buyer</span>
             </div>
-            <div class="contact-last">Last contacted 11 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fd99d38f9884988ebd9f9893989b94899f8f94999a98d39e9290">[email&#160;protected]</a></div>
+            <div class="contact-last">Last contacted 11 days ago · d.reyes@benefitbridge.com</div>
           </div>
         </div>
 
@@ -1206,7 +1082,7 @@
               <span class="contact-tag economic">Economic Buyer</span>
               <span class="contact-tag inactive">Low Engagement</span>
             </div>
-            <div class="contact-last">Last contacted 45 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="97fab9fcfefad7f5f2f9f2f1fee3f5e5fef3f0f2b9f4f8fa">[email&#160;protected]</a></div>
+            <div class="contact-last">Last contacted 45 days ago · m.kim@benefitbridge.com</div>
           </div>
         </div>
 
@@ -1219,7 +1095,7 @@
               <span class="contact-tag champion">Power User</span>
               <span class="contact-tag end-user">End User</span>
             </div>
-            <div class="contact-last">Last contacted 8 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f3a9f7e6f3e2ebc7e5e2e9e2e1eef3e5f5eee3e0e2a9e4e8ea">[email&#160;protected]</a></div>
+            <div class="contact-last">Last contacted 8 days ago · t.patel@benefitbridge.com</div>
           </div>
         </div>
 
@@ -1237,40 +1113,20 @@
       </div>
 
       <div style="display:flex;flex-direction:column;gap:16px;">
-        <!-- Company info -->
         <div class="panel">
           <div class="panel-header"><div class="panel-title">Company Details</div></div>
           <div class="panel-body">
             <div class="contract-grid">
-              <div class="contract-item">
-                <div class="contract-label">Company</div>
-                <div class="contract-value">BenefitBridge</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Industry</div>
-                <div class="contract-value">Employee Benefits</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Headquarters</div>
-                <div class="contract-value">San Francisco, CA</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Employees</div>
-                <div class="contract-value">310</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Website</div>
-                <div class="contract-value" style="color:var(--teal);font-size:12px;">benefitbridge.com</div>
-              </div>
-              <div class="contract-item">
-                <div class="contract-label">Timezone</div>
-                <div class="contract-value">PT (UTC-8)</div>
-              </div>
+              <div><div class="contract-label">Company</div><div class="contract-value">BenefitBridge</div></div>
+              <div><div class="contract-label">Industry</div><div class="contract-value">Employee Benefits</div></div>
+              <div><div class="contract-label">Headquarters</div><div class="contract-value">San Francisco, CA</div></div>
+              <div><div class="contract-label">Employees</div><div class="contract-value">310</div></div>
+              <div><div class="contract-label">Website</div><div class="contract-value" style="color:var(--teal);font-size:12px;">benefitbridge.com</div></div>
+              <div><div class="contract-label">Timezone</div><div class="contract-value">PT (UTC-8)</div></div>
             </div>
           </div>
         </div>
 
-        <!-- Engagement summary -->
         <div class="panel">
           <div class="panel-header"><div class="panel-title">Engagement Summary</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
@@ -1337,7 +1193,7 @@
                 <div class="action-desc">With renewal on Jun 4, a QBR by April 15 gives time to address concerns, show progress on ticket resolution, and position renewal positively. Include Dana Reyes and Marcus Kim.</div>
                 <div class="action-due">Due: Apr 15 · Owner: Christy M.</div>
               </div>
-              <a class="action-cta" href="#">Build QBR deck</a>
+              <a class="action-cta" href="qbr-preview.html?account=benefitbridge">Build QBR deck</a>
             </div>
 
             <div class="action-item">
@@ -1365,17 +1221,15 @@
       </div>
 
       <div style="display:flex;flex-direction:column;gap:16px;">
-        <!-- QBR builder CTA -->
         <div class="panel" style="background:var(--teal-bg);border-color:rgba(0,201,167,0.2);">
           <div class="panel-body" style="text-align:center;padding:24px;">
             <div style="font-size:24px;margin-bottom:10px;">✦</div>
             <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal);margin-bottom:8px;">Build QBR Deck</div>
             <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;">Generate a pre-filled QBR deck for BenefitBridge using current health data, adoption trends, and recommended talking points.</div>
-            <a class="action-btn teal" href="#" style="display:inline-flex;justify-content:center;width:100%;">Generate QBR for BenefitBridge →</a>
+            <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge" style="display:inline-flex;justify-content:center;width:100%;">Generate QBR for BenefitBridge →</a>
           </div>
         </div>
 
-        <!-- Renewal risk summary -->
         <div class="panel">
           <div class="panel-header"><div class="panel-title">Renewal Risk Summary</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
@@ -1402,12 +1256,11 @@
             </div>
           </div>
         </div>
-    
       </div>
     </div>
   </div>
 
-  <!-- CONTRACT TAB -->
+  <!-- ── CONTRACT TAB ──────────────────────── -->
   <div class="tab-content" id="tab-contract">
     <div id="contract-summary-card" style="margin-bottom:16px;"></div>
     <div style="display:flex;gap:10px;">
@@ -1422,7 +1275,6 @@
 <script src="accounts.js"></script>
 <script src="contract-generator.js"></script>
 <script>
-  // ── SESSION CHECK ─────────────────────────────────────────────────────────
   if (!localStorage.getItem('syncdash_user')) {
     window.location.replace('login.html');
   }
@@ -1433,7 +1285,6 @@
     window.location.replace('login.html');
   }
 
-  // ── WIRE FROM accounts.js ─────────────────────────────────────────────────
   const account = SyncDash.getAccount('benefitbridge');
 
   if (account) {
@@ -1454,19 +1305,13 @@
     if (tiles[0]) tiles[0].textContent = account.adoptionPct + '%';
     if (tiles[2]) tiles[2].textContent = '$' + account.arr.toLocaleString();
 
-    const healthPanelScore = document.querySelector('.panel-header span[style*="amber"], .panel-header span[style*="green"], .panel-header span[style*="red"]');
-    if (healthPanelScore) healthPanelScore.textContent = account.healthScore + ' / 100';
-
-    // Export buttons
     const exportCSV  = document.getElementById('btn-export-csv');
     const exportJSON = document.getElementById('btn-export-json');
     if (exportCSV)  exportCSV.addEventListener('click',  () => SyncDash.exportAccount('benefitbridge', 'csv'));
     if (exportJSON) exportJSON.addEventListener('click', () => SyncDash.exportAccount('benefitbridge', 'json'));
 
-    // Render contract summary card
     renderContractSummary(account);
 
-    // In-tab buttons
     const dlBtn = document.getElementById('btn-contract-download-tab');
     if (dlBtn) dlBtn.addEventListener('click', () => SyncDash.generateContract('benefitbridge'));
 
@@ -1478,7 +1323,6 @@
     window.open('contract-view.html?account=' + accountId, '_blank');
   }
 
-  // ── CONTRACT SUMMARY + PREVIEW ────────────────────────────────────────────
   function renderContractSummary(a) {
     const c = a.contract;
     const el = document.getElementById('contract-summary-card');
@@ -1511,7 +1355,7 @@
         <div class="panel-body">
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;">
             ${summaryTile('Plan', c.plan, c.plan === 'Starter' ? 'var(--blue)' : 'var(--teal)')}
-            ${summaryTile('Licensed Seats', `${a.licensedSeats} seats`, 'var(--text)')}
+            ${summaryTile('Licensed Seats', a.licensedSeats + ' seats', 'var(--text)')}
             ${summaryTile('ARR', '$' + a.arr.toLocaleString(), 'var(--text)')}
             ${summaryTile('Price / Seat', '$' + c.pricePerSeat + '/mo', 'var(--text)')}
           </div>
@@ -1560,14 +1404,12 @@
     </div>`;
   }
 
-  // ── TABS ──────────────────────────────────────────────────────────────────
   function showTab(name, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     el.classList.add('active');
 
-    // Open contract PDF in new tab on first click
     if (name === 'contract' && !showTab._contractOpened) {
       showTab._contractOpened = true;
       openContractNewTab('benefitbridge');
@@ -1575,4 +1417,5 @@
   }
 </script>
 
-</body></html>
+</body>
+</html>

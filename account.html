@@ -415,16 +415,16 @@
   <nav class="sidebar-nav">
     <div class="nav-label">Workspace</div>
     <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
-    <a class="nav-item active" href="#"><span class="nav-icon">◎</span> Accounts</a>
-    <a class="nav-item" href="#"><span class="nav-icon">◷</span> Activity</a>
-    <a class="nav-item" href="#"><span class="nav-icon">◫</span> Tasks</a>
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon">◎</span> Accounts</a>
+    <a class="nav-item" href="dashboard.html#activity"><span class="nav-icon">◷</span> Activity</a>
+    <a class="nav-item" href="dashboard.html#tasks"><span class="nav-icon">◫</span> Tasks</a>
     <div class="nav-label">Insights</div>
-    <a class="nav-item" href="#"><span class="nav-icon">◉</span> Health Reports</a>
-    <a class="nav-item" href="#"><span class="nav-icon">◑</span> Renewals</a>
-    <a class="nav-item" href="#"><span class="nav-icon">✦</span> Nova Signals</a>
+    <a class="nav-item" href="dashboard.html#health"><span class="nav-icon">◉</span> Health Reports</a>
+    <a class="nav-item" href="dashboard.html#renewals"><span class="nav-icon">◑</span> Renewals</a>
+    <a class="nav-item" href="dashboard.html#signals"><span class="nav-icon">✦</span> Nova Signals</a>
     <div class="nav-label">Tools</div>
-    <a class="nav-item" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
-    <a class="nav-item" href="#"><span class="nav-icon">⊞</span> Integrations</a>
+    <a class="nav-item" id="nav-qbr-builder" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
+    <a class="nav-item" href="dashboard.html#integrations"><span class="nav-icon">⊞</span> Integrations</a>
     <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
   </nav>
 
@@ -455,7 +455,7 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
-      <a class="action-btn teal" href="#">✦ Build QBR</a>
+      <a class="action-btn teal" id="btn-build-qbr" href="#">✦ Build QBR</a>
     </div>
   </div>
 
@@ -583,6 +583,10 @@
 
     document.title = `SyncDash — ${a.name}`;
 
+    // Wire QBR button and sidebar QBR link dynamically to this account
+    document.getElementById('btn-build-qbr').href = `qbr-preview.html?account=${a.id}`;
+    document.getElementById('nav-qbr-builder').href = `qbr-preview.html?account=${a.id}`;
+
     // Header
     document.getElementById('breadcrumb-name').textContent = a.name;
     document.getElementById('account-name').textContent = a.name;
@@ -676,18 +680,6 @@
     // Contract tab — summary card
     renderContractSummary(a);
 
-    // Adoption panel
-    document.getElementById('adoption-panel') && (document.getElementById('adoption-panel').innerHTML = `
-      <div class="health-row">
-        <div class="health-label">Overall</div>
-        <div class="health-bar-wrap"><div class="health-bar-fill ${tier}" style="width:${a.adoptionPct}%"></div></div>
-        <div class="health-score-sm ${tier}">${a.adoptionPct}%</div>
-      </div>
-      <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8;">
-        ${(a.riskFlags || []).filter(f => f.type !== 'ok').map(f => `<div>· ${f.text}</div>`).join('') || '<div>No adoption concerns flagged.</div>'}
-      </div>
-    `);
-
     // Activity feed
     const feed = a.activityFeed || [];
     document.getElementById('activity-feed').innerHTML = feed.length
@@ -705,7 +697,7 @@
     document.getElementById('btn-export-csv').addEventListener('click',  () => SyncDash.exportAccount(a.id, 'csv'));
     document.getElementById('btn-export-json').addEventListener('click', () => SyncDash.exportAccount(a.id, 'json'));
 
-    // In-tab buttons
+    // In-tab contract buttons
     const dlBtn = document.getElementById('btn-contract-download-tab');
     if (dlBtn) dlBtn.addEventListener('click', () => SyncDash.generateContract(a.id));
 
@@ -719,7 +711,6 @@
     const el = document.getElementById('contract-summary-card');
     if (!el || !c) return;
 
-    // Cancellation warning — amber if deadline within 90 days
     const deadlineDate = new Date(c.cancelDeadline);
     const daysToDeadline = Math.round((deadlineDate - Date.now()) / 86400000);
     const showWarning = daysToDeadline <= 90;
@@ -744,14 +735,12 @@
           <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);">${c.orderRef}</span>
         </div>
         <div class="panel-body">
-
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;">
             ${summaryTile('Plan', `${c.plan}`, c.plan === 'Starter' ? 'var(--blue)' : 'var(--teal)')}
             ${summaryTile('Licensed Seats', `${a.licensedSeats} seats`, 'var(--text)')}
             ${summaryTile('ARR', `$${a.arr.toLocaleString()}`, 'var(--text)')}
             ${summaryTile('Price / Seat', `$${c.pricePerSeat}/mo`, 'var(--text)')}
           </div>
-
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div>
               <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">TERM & DATES</div>
@@ -772,15 +761,15 @@
               ${contractRow('MSA Reference', c.msaRef, 'var(--muted)', true)}
             </div>
           </div>
-
           <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
             <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;">MODULES INCLUDED</div>
             <div style="font-size:12.5px;color:var(--text);">
               ${c.modules.split(', ').map(m => `<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;margin:2px;font-size:11.5px;">${m}</span>`).join('')}
             </div>
-            ${c.novaAddon ? `<div style="margin-top:8px;"><span style="display:inline-block;background:var(--teal-bg);border:1px solid rgba(0,201,167,0.25);border-radius:4px;padding:2px 8px;font-size:11.5px;color:var(--teal);">✦ Nova AI Add-On (+$15/seat/mo)</span></div>` : `<div style="margin-top:6px;font-size:11px;color:var(--faint);">Nova AI Add-On not included — available at +$15/user/month</div>`}
+            ${c.novaAddon
+              ? `<div style="margin-top:8px;"><span style="display:inline-block;background:var(--teal-bg);border:1px solid rgba(0,201,167,0.25);border-radius:4px;padding:2px 8px;font-size:11.5px;color:var(--teal);">✦ Nova AI Add-On (+$15/seat/mo)</span></div>`
+              : `<div style="margin-top:6px;font-size:11px;color:var(--faint);">Nova AI Add-On not included — available at +$15/user/month</div>`}
           </div>
-
         </div>
       </div>`;
   }
@@ -804,6 +793,7 @@
   function openContractNewTab(accountId) {
     window.open('contract-view.html?account=' + accountId, '_blank');
   }
+
   function formatRenewal(months) {
     if (months < 2)  return `${Math.round(months * 4)} weeks`;
     if (months < 12) return `${Math.round(months)} months`;
@@ -836,7 +826,6 @@
     document.getElementById('tab-' + name).classList.add('active');
     el.classList.add('active');
 
-    // Open contract PDF in new tab on first click
     if (name === 'contract' && !showTab._contractOpened) {
       showTab._contractOpened = true;
       openContractNewTab(account.id);

@@ -467,9 +467,28 @@
         <div class="metric-tile"><div class="metric-label">Licensed Seats</div><div class="metric-value">${a.licensedSeats}</div><div class="metric-sub">of ${a.employees.toLocaleString()} employees</div></div>
         <div class="metric-tile"><div class="metric-label">Last Activity</div><div class="metric-value ${a.lastTouchDays>14?'red':a.lastTouchDays>7?'amber':'green'}" style="font-size:20px;">${a.lastTouchDays}d ago</div><div class="metric-sub">${a.lastTouchNote}</div></div>
       </div>
-      <div class="section-divider"><div class="section-divider-label">Adoption Signal</div><div class="section-divider-line"></div></div>
-      <div class="health-bar-row"><div class="health-bar-label">Platform usage</div><div class="health-bar-wrap" style="height:10px;border-radius:5px;"><div class="health-bar-fill ${at}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div></div><div class="health-bar-score ${at}">${a.adoptionPct}%</div></div>
-      <div style="margin-top:20px;">${(a.riskFlags||[]).filter(f=>f.type!=='ok').length?(a.riskFlags||[]).filter(f=>f.type!=='ok').map(f=>`<div class="risk-item ${f.type}" style="margin-bottom:8px;"><div class="risk-dot"></div>${f.text}</div>`).join(''):`<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged.</div>`}</div>`;
+      <div class="section-divider"><div class="section-divider-label">Department Breakdown</div><div class="section-divider-line"></div></div>
+      ${(a.departments||[]).map(d => {
+        const dc = d.adoptionPct >= 70 ? 'green' : d.adoptionPct >= 40 ? 'amber' : 'red';
+        const trendIcon = d.trend === 'up' ? '↑' : d.trend === 'down' ? '↓' : '→';
+        const trendColor = d.trend === 'up' ? 'var(--green)' : d.trend === 'down' ? 'var(--red)' : 'var(--muted)';
+        const trendText = d.trend === 'flat' ? 'flat' : `${d.trendPct}%`;
+        return `<div class="health-bar-row" style="margin-bottom:12px;">
+          <div class="health-bar-label" style="width:160px;display:flex;flex-direction:column;gap:1px;">
+            <span style="font-size:12.5px;color:var(--text);">${d.name}</span>
+            <span style="font-size:10px;color:var(--muted);">${d.users} users</span>
+          </div>
+          <div class="health-bar-wrap" style="height:8px;border-radius:4px;">
+            <div class="health-bar-fill ${dc}" style="width:${d.adoptionPct}%;height:100%;border-radius:4px;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;min-width:80px;justify-content:flex-end;">
+            <div class="health-bar-score ${dc}" style="width:36px;">${d.adoptionPct}%</div>
+            <div style="font-size:11px;color:${trendColor};font-family:'DM Mono',monospace;width:36px;text-align:right;">${trendIcon} ${trendText}</div>
+          </div>
+        </div>`;
+      }).join('')}
+      ${(a.riskFlags||[]).filter(f=>f.type!=='ok').length ? `<div style="margin-top:16px;">${(a.riskFlags||[]).filter(f=>f.type!=='ok').map(f=>`<div class="risk-item ${f.type}" style="margin-bottom:8px;"><div class="risk-dot"></div>${f.text}</div>`).join('')}</div>` : ''}
+    `;
     document.getElementById('sage-adoption-text').textContent = q.sagePrep.adoption;
     renderPrompts('sage-adoption', 'adoption', q.prompts?.adoption || []);
 

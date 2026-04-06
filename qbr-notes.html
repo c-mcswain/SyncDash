@@ -248,13 +248,17 @@
 
   const params     = new URLSearchParams(window.location.search);
   const id         = params.get('account');
+  const type       = params.get('type') || sessionStorage.getItem('syncdash_qbr_type') || 'internal';
+  const isClient   = type === 'client';
   const account    = id ? SyncDash.getAccount(id) : null;
   const selections = JSON.parse(sessionStorage.getItem('syncdash_qbr_selections') || '{}');
 
-  if (!account || !account.qbr) {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:#64748b;font-family:'DM Sans',sans-serif;"><div style="font-size:32px;">◈</div><div style="font-size:16px;color:#1e293b;">Notes not found</div><div style="font-size:13px;">No account matching "${id || 'unknown'}".</div><a href="dashboard.html" style="margin-top:8px;color:#0d9488;font-size:13px;text-decoration:none;">← Back to dashboard</a></div>`;
+  const qbrData = account ? (isClient ? account.qbrClient : account.qbr) : null;
+
+  if (!account || !qbrData) {
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:#64748b;font-family:'DM Sans',sans-serif;"><div style="font-size:32px;">◈</div><div style="font-size:16px;color:#1e293b;">Notes not found</div><div style="font-size:13px;">No ${isClient ? 'client' : 'internal'} QBR data for "${id || 'unknown'}".</div><a href="dashboard.html" style="margin-top:8px;color:#0d9488;font-size:13px;text-decoration:none;">← Back to dashboard</a></div>`;
   } else {
-    renderNotes(account);
+    renderNotes(account, qbrData, isClient);
   }
 
   function tierClass(t) { return t === 'green' ? 'green' : t === 'red' ? 'red' : 'amber'; }
@@ -265,14 +269,21 @@
     return `${(months / 12).toFixed(1)} years`;
   }
 
-  function sectionStatus(key, a) {
+  function sectionStatus(key, a, isClient) {
     const tc = tierClass(a.healthTier);
     const rc = tierClass(a.renewalTier);
+    if (isClient) {
+      switch(key) {
+        case 'highlights':   return { label: `${a.qbrClient.highlights.length} highlights`, cls: 'green' };
+        case 'focus':        return { label: `${a.qbrClient.focus.length} focus areas`, cls: 'muted' };
+        case 'commitments':  return { label: `${a.qbrClient.commitments.length} commitments`, cls: 'muted' };
+        case 'renewal':      return { label: `${formatRenewal(a.renewalMonths)} remaining`, cls: rc };
+        default:             return { label: '', cls: 'muted' };
+      }
+    }
     switch(key) {
-      case 'health':
-        return { label: `${a.healthScore}/100 — ${a.healthTier === 'green' ? 'Healthy' : a.healthTier === 'red' ? 'Critical' : 'At Risk'}`, cls: tc };
-      case 'adoption':
-        return { label: `${a.adoptionPct}% overall adoption`, cls: tierClass(a.adoptionPct >= 70 ? 'green' : a.adoptionPct >= 40 ? 'amber' : 'red') };
+      case 'health':    return { label: `${a.healthScore}/100 — ${a.healthTier === 'green' ? 'Healthy' : a.healthTier === 'red' ? 'Critical' : 'At Risk'}`, cls: tc };
+      case 'adoption':  return { label: `${a.adoptionPct}% overall adoption`, cls: tierClass(a.adoptionPct >= 70 ? 'green' : a.adoptionPct >= 40 ? 'amber' : 'red') };
       case 'risks': {
         const critCount = (a.riskFlags || []).filter(f => f.type === 'crit').length;
         const warnCount = (a.riskFlags || []).filter(f => f.type === 'warn').length;
@@ -280,25 +291,25 @@
         if (warnCount) return { label: `${warnCount} warning${warnCount > 1 ? 's' : ''}`, cls: 'amber' };
         return { label: 'No active flags', cls: 'green' };
       }
-      case 'renewal':
-        return { label: `${formatRenewal(a.renewalMonths)} remaining`, cls: rc };
-      case 'nextSteps':
-        return { label: `${a.qbr.goals.length} action items`, cls: 'muted' };
-      default:
-        return { label: '', cls: 'muted' };
+      case 'renewal':   return { label: `${formatRenewal(a.renewalMonths)} remaining`, cls: rc };
+      case 'nextSteps': return { label: `${a.qbr.goals.length} action items`, cls: 'muted' };
+      default:          return { label: '', cls: 'muted' };
     }
   }
 
-  function renderNotes(a) {
-    const q = a.qbr;
+  function renderNotes(a, q, isClient) {
     const today = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const deckFile = isClient ? `qbr-client.html?account=${a.id}` : `qbr-preview.html?account=${a.id}`;
+    const typeLabel = isClient ? 'Client Meeting Prep' : 'Internal Prep';
+    const confidentialLabel = isClient ? 'Your Eyes Only — Not for Distribution' : 'Internal Only — Not for Distribution';
 
-    document.title = `${a.name} — QBR Prep Notes`;
+    document.title = `${a.name} — QBR ${typeLabel} Notes`;
     document.getElementById('doc-account').textContent = a.name;
-    document.getElementById('doc-subtitle').textContent = `${q.quarter} · Quarterly Business Review — Internal Prep`;
-    document.getElementById('topbar-label').textContent = `${a.name} · ${q.quarter} · Internal Prep Notes`;
-    document.getElementById('back-deck').href = `qbr-preview.html?account=${a.id}`;
-    document.getElementById('back-link').href = `qbr-preview.html?account=${a.id}`;
+    document.getElementById('doc-subtitle').textContent = `${q.quarter} · Quarterly Business Review — ${typeLabel}`;
+    document.getElementById('topbar-label').textContent = `${a.name} · ${q.quarter} · ${typeLabel} Notes`;
+    document.getElementById('back-deck').href = deckFile;
+    document.getElementById('back-link').href = deckFile;
+    document.querySelector('.doc-confidential').textContent = confidentialLabel;
 
     document.getElementById('doc-meta').innerHTML = `
       <div class="doc-meta-item">Quarter <strong>${q.quarter}</strong></div>
@@ -309,26 +320,34 @@
       <div class="doc-meta-item">ARR <strong>$${a.arr.toLocaleString()}</strong></div>
     `;
 
-    const sections = [
-      { key: 'health',    title: 'Account Health',      prepKey: 'health',    promptKey: 'health',    placeholder: 'Notes from internal discussion — how does the team feel about this score? Any context to add before the client call?' },
-      { key: 'adoption',  title: 'Adoption & Usage',    prepKey: 'adoption',  promptKey: 'adoption',  placeholder: 'Which departments came up? Any internal context about why certain teams are lagging or leading?' },
-      { key: 'risks',     title: 'Risks & Open Items',  prepKey: 'risks',     promptKey: 'risks',     placeholder: 'Internal alignment on risks — what does the team think is most important to address? Any escalation decisions?' },
-      { key: 'renewal',   title: 'Renewal & Contract',  prepKey: 'renewal',   promptKey: 'renewal',   placeholder: 'Internal renewal stance — what are we hoping for? Any pricing or term flexibility discussed?' },
-      { key: 'nextSteps', title: 'Next Steps',          prepKey: 'nextSteps', promptKey: 'nextSteps', placeholder: 'Final alignment — what commitments are we walking into the client call ready to make?' },
+    const internalSections = [
+      { key: 'health',    title: 'Account Health',     prepKey: 'health',    promptKey: 'health',    placeholder: 'Team discussion notes — are we aligned on the score? Who owns what before the client call?' },
+      { key: 'adoption',  title: 'Adoption & Usage',   prepKey: 'adoption',  promptKey: 'adoption',  placeholder: 'Which departments came up? Any internal context about why certain teams are lagging or leading?' },
+      { key: 'risks',     title: 'Risks & Open Items', prepKey: 'risks',     promptKey: 'risks',     placeholder: 'Ownership decisions — who is accountable for each risk item and what is the resolution plan?' },
+      { key: 'renewal',   title: 'Renewal & Contract', prepKey: 'renewal',   promptKey: 'renewal',   placeholder: 'Internal renewal stance — what are we hoping for? Any pricing or flexibility approved internally?' },
+      { key: 'nextSteps', title: 'Next Steps',         prepKey: 'nextSteps', promptKey: 'nextSteps', placeholder: 'Final alignment — what commitments are we walking into the client call ready to make?' },
     ];
 
+    const clientSections = [
+      { key: 'highlights',  title: 'What\'s Going Well',              prepKey: 'highlights',  promptKey: 'highlights',  placeholder: 'Notes from the highlights discussion — what resonated? What did they push back on?' },
+      { key: 'focus',       title: 'What We\'re Focused On Together', prepKey: 'focus',       promptKey: 'focus',       placeholder: 'How did they respond to the focus areas? Anything to follow up on?' },
+      { key: 'commitments', title: 'Our Commitments',                 prepKey: 'commitments', promptKey: 'commitments', placeholder: 'Did they add any commitments on their side? Any adjustments to what we offered?' },
+      { key: 'renewal',     title: 'Looking Ahead',                   prepKey: 'renewal',     promptKey: 'renewal',     placeholder: 'How did they respond to the renewal framing? Any signals about their intent?' },
+    ];
+
+    const sections = isClient ? clientSections : internalSections;
     const container = document.getElementById('sections-container');
 
     sections.forEach(sec => {
-      const status  = sectionStatus(sec.key, a);
+      const status  = sectionStatus(sec.key, a, isClient);
       const context = q.sagePrep[sec.prepKey];
       const prompts = q.prompts?.[sec.promptKey] || [];
       const sel     = selections[sec.promptKey] || [];
+      const selectedPrompts = prompts.filter((p, i) => sel.includes(i));
 
       const div = document.createElement('div');
       div.className = 'section';
 
-      // Header
       div.innerHTML = `
         <div class="section-header">
           <div class="section-title">${sec.title}</div>
@@ -336,20 +355,20 @@
         </div>
         <div class="section-body">
           <div class="sage-context">
-            <div class="sage-context-label">Sage Context</div>
+            <div class="sage-context-label">Sage — ${isClient ? 'How to present this' : 'Internal prep'}</div>
             <div class="sage-context-text">${context}</div>
           </div>
-          ${prompts.length && sel.length ? `
+          ${selectedPrompts.length ? `
           <div class="prompts-section">
-            <div class="prompts-label">Selected Discussion Prompts</div>
-            ${prompts.filter((p, i) => sel.includes(i)).map(p => `
+            <div class="prompts-label">Selected ${isClient ? 'Discussion' : 'Team'} Prompts</div>
+            ${selectedPrompts.map(p => `
               <div class="prompt-row selected">
                 <div class="prompt-check">✓</div>
                 <span>${p}</span>
               </div>`).join('')}
           </div>` : ''}
           <div class="notes-area">
-            <div class="notes-label">Internal Notes / Team Feedback</div>
+            <div class="notes-label">${isClient ? 'Client Meeting Notes' : 'Internal Notes / Team Feedback'}</div>
             <textarea class="notes-textarea" placeholder="${sec.placeholder}" data-section="${sec.key}"></textarea>
           </div>
         </div>
@@ -358,14 +377,14 @@
       container.appendChild(div);
     });
 
-    // Restore any saved notes from sessionStorage
-    const savedNotes = JSON.parse(sessionStorage.getItem('syncdash_qbr_notes') || '{}');
+    // Restore saved notes
+    const savedNotes = JSON.parse(sessionStorage.getItem(`syncdash_qbr_notes_${type}`) || '{}');
     document.querySelectorAll('.notes-textarea').forEach(ta => {
       const key = ta.dataset.section;
       if (savedNotes[key]) ta.value = savedNotes[key];
       ta.addEventListener('input', () => {
         savedNotes[key] = ta.value;
-        sessionStorage.setItem('syncdash_qbr_notes', JSON.stringify(savedNotes));
+        sessionStorage.setItem(`syncdash_qbr_notes_${type}`, JSON.stringify(savedNotes));
       });
     });
   }

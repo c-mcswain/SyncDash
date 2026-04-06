@@ -456,7 +456,7 @@
       <div class="section-divider"><div class="section-divider-label">Score Breakdown</div><div class="section-divider-line"></div></div>
       ${[{label:'Adoption rate',val:a.adoptionPct},{label:'NPS',val:a.nps},{label:'Health score',val:a.healthScore},{label:'Last touch',val:touchScore},{label:'Support health',val:supportScore}].map(r=>{const bc=barColor(r.val);return `<div class="health-bar-row"><div class="health-bar-label">${r.label}</div><div class="health-bar-wrap"><div class="health-bar-fill ${bc}" style="width:${r.val}%"></div></div><div class="health-bar-score ${bc}">${r.val}</div></div>`;}).join('')}`;
     document.getElementById('sage-health-text').textContent = q.sagePrep.health;
-    renderPrompts('sage-health', 'health', q.prompts.health);
+    renderPrompts('sage-health', 'health', q.prompts?.health || []);
 
     const at = barColor(a.adoptionPct);
     document.getElementById('slide-adoption-body').innerHTML = `
@@ -469,12 +469,12 @@
       <div class="health-bar-row"><div class="health-bar-label">Platform usage</div><div class="health-bar-wrap" style="height:10px;border-radius:5px;"><div class="health-bar-fill ${at}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div></div><div class="health-bar-score ${at}">${a.adoptionPct}%</div></div>
       <div style="margin-top:20px;">${(a.riskFlags||[]).filter(f=>f.type!=='ok').length?(a.riskFlags||[]).filter(f=>f.type!=='ok').map(f=>`<div class="risk-item ${f.type}" style="margin-bottom:8px;"><div class="risk-dot"></div>${f.text}</div>`).join(''):`<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged.</div>`}</div>`;
     document.getElementById('sage-adoption-text').textContent = q.sagePrep.adoption;
-    renderPrompts('sage-adoption', 'adoption', q.prompts.adoption);
+    renderPrompts('sage-adoption', 'adoption', q.prompts?.adoption || []);
 
     document.getElementById('wins-list').innerHTML = q.wins.map(w=>`<li><div class="win-icon">✓</div>${w}</li>`).join('');
     document.getElementById('risks-list').innerHTML = q.risks.map(r=>`<div class="risk-item ${r.type}"><div class="risk-dot"></div>${r.text}</div>`).join('');
     document.getElementById('sage-risks-text').textContent = q.sagePrep.risks;
-    renderPrompts('sage-risks', 'risks', q.prompts.risks);
+    renderPrompts('sage-risks', 'risks', q.prompts?.risks || []);
 
     document.getElementById('slide-renewal-body').innerHTML = `
       <div class="metric-row">
@@ -484,11 +484,11 @@
       </div>
       <div class="renewal-box"><div class="renewal-box-label">Context</div><div class="renewal-box-text">${q.renewalNote}</div></div>`;
     document.getElementById('sage-renewal-text').textContent = q.sagePrep.renewal;
-    renderPrompts('sage-renewal', 'renewal', q.prompts.renewal);
+    renderPrompts('sage-renewal', 'renewal', q.prompts?.renewal || []);
 
     document.getElementById('goals-list').innerHTML = q.goals.map((g,i)=>`<li><div class="goal-num">${i+1}</div>${g}</li>`).join('');
     document.getElementById('sage-next-text').textContent = q.sagePrep.nextSteps;
-    renderPrompts('sage-next', 'nextSteps', q.prompts.nextSteps);
+    renderPrompts('sage-next', 'nextSteps', q.prompts?.nextSteps || []);
 
     document.getElementById('tldr-grid').innerHTML = `
       <div class="tldr-panel working"><div class="tldr-icon">✓</div><div class="tldr-label">What's working</div><div class="tldr-text">${q.tldr.working}</div></div>

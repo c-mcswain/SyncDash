@@ -750,7 +750,8 @@
       <a class="action-btn ghost" href="dashboard.html">← Back</a>
       <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
       <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
-      <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge">✦ Build QBR</a>
+      <a class="action-btn ghost" href="qbr-client.html?account=benefitbridge">◎ Client QBR</a>
+      <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge">✦ Internal QBR</a>
     </div>
   </div>
 
@@ -1069,7 +1070,7 @@
               <span class="contact-tag champion">Champion</span>
               <span class="contact-tag economic">Economic Buyer</span>
             </div>
-            <div class="contact-last">Last contacted 11 days ago · d.reyes@benefitbridge.com</div>
+            <div class="contact-last">Last contacted 11 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a0e44180f130f192a080f040f0c031e0818030e0d0f44090507">[email&#160;protected]</a></div>
           </div>
         </div>
 
@@ -1082,7 +1083,7 @@
               <span class="contact-tag economic">Economic Buyer</span>
               <span class="contact-tag inactive">Low Engagement</span>
             </div>
-            <div class="contact-last">Last contacted 45 days ago · m.kim@benefitbridge.com</div>
+            <div class="contact-last">Last contacted 45 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9c487c2c0c4e9cbccc7cccfc0ddcbdbc0cdcecc87cac6c4">[email&#160;protected]</a></div>
           </div>
         </div>
 
@@ -1095,7 +1096,7 @@
               <span class="contact-tag champion">Power User</span>
               <span class="contact-tag end-user">End User</span>
             </div>
-            <div class="contact-last">Last contacted 8 days ago · t.patel@benefitbridge.com</div>
+            <div class="contact-last">Last contacted 8 days ago · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb8fd58b9a8f9e97bb999e959e9d928f9989929f9c9ed5989496">[email&#160;protected]</a></div>
           </div>
         </div>
 
@@ -1193,7 +1194,8 @@
                 <div class="action-desc">With renewal on Jun 4, a QBR by April 15 gives time to address concerns, show progress on ticket resolution, and position renewal positively. Include Dana Reyes and Marcus Kim.</div>
                 <div class="action-due">Due: Apr 15 · Owner: Christy M.</div>
               </div>
-              <a class="action-cta" href="qbr-preview.html?account=benefitbridge">Build QBR deck</a>
+              <a class="action-cta" href="qbr-preview.html?account=benefitbridge">Internal QBR</a>
+              <a class="action-cta" href="qbr-client.html?account=benefitbridge" style="background:var(--surface2);border-color:var(--border);color:var(--muted);">Client QBR</a>
             </div>
 
             <div class="action-item">
@@ -1226,7 +1228,8 @@
             <div style="font-size:24px;margin-bottom:10px;">✦</div>
             <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal);margin-bottom:8px;">Build QBR Deck</div>
             <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;">Generate a pre-filled QBR deck for BenefitBridge using current health data, adoption trends, and recommended talking points.</div>
-            <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge" style="display:inline-flex;justify-content:center;width:100%;">Generate QBR for BenefitBridge →</a>
+            <a class="action-btn teal" href="qbr-preview.html?account=benefitbridge" style="display:inline-flex;justify-content:center;width:100%;margin-bottom:8px;">✦ Internal QBR →</a>
+            <a class="action-btn ghost" href="qbr-client.html?account=benefitbridge" style="display:inline-flex;justify-content:center;width:100%;">◎ Client QBR →</a>
           </div>
         </div>
 
@@ -1271,7 +1274,7 @@
 
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="accounts.js"></script>
 <script src="contract-generator.js"></script>
 <script>
@@ -1401,21 +1404,4 @@
     return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);">
       <span style="font-size:11.5px;color:var(--muted);flex-shrink:0;margin-right:8px;">${label}</span>
       <span style="font-size:11.5px;color:${color};text-align:right;${mono ? "font-family:'DM Mono',monospace;font-size:10px;" : ''}">${value}</span>
-    </div>`;
-  }
-
-  function showTab(name, el) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    el.classList.add('active');
-
-    if (name === 'contract' && !showTab._contractOpened) {
-      showTab._contractOpened = true;
-      openContractNewTab('benefitbridge');
-    }
-  }
-</script>
-
-</body>
-</html>
+    </div

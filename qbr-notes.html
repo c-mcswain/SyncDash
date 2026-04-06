@@ -339,16 +339,14 @@
             <div class="sage-context-label">Sage Context</div>
             <div class="sage-context-text">${context}</div>
           </div>
-          ${prompts.length ? `
+          ${prompts.length && sel.length ? `
           <div class="prompts-section">
-            <div class="prompts-label">Discussion Prompts</div>
-            ${prompts.map((p, i) => {
-              const isSelected = sel.includes(i);
-              return `<div class="prompt-row ${isSelected ? 'selected' : ''}">
-                <div class="prompt-check">${isSelected ? '✓' : ''}</div>
+            <div class="prompts-label">Selected Discussion Prompts</div>
+            ${prompts.filter((p, i) => sel.includes(i)).map(p => `
+              <div class="prompt-row selected">
+                <div class="prompt-check">✓</div>
                 <span>${p}</span>
-              </div>`;
-            }).join('')}
+              </div>`).join('')}
           </div>` : ''}
           <div class="notes-area">
             <div class="notes-label">Internal Notes / Team Feedback</div>

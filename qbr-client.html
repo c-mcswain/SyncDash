@@ -475,10 +475,8 @@
   // ── GENERATE NOTES ────────────────────────────────────────────────────────
   function generateNotes() {
     if (!account) return;
-    sessionStorage.setItem('syncdash_qbr_account',   account.id);
-    sessionStorage.setItem('syncdash_qbr_selections', JSON.stringify(selectedPrompts));
-    sessionStorage.setItem('syncdash_qbr_type', 'client');
-    window.open(`qbr-notes.html?account=${account.id}&type=client`, '_blank');
+    const encoded = encodeURIComponent(JSON.stringify(selectedPrompts));
+    window.open(`qbr-notes.html?account=${account.id}&type=client&sel=${encoded}`, '_blank');
   }
 
   // ── SAGE TOGGLE ───────────────────────────────────────────────────────────

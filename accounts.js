@@ -141,6 +141,60 @@ const SyncDash = (() => {
           ],
         },
       },
+      qbrClient: {
+        quarter:    'Q1 2026',
+        preparedBy: 'Christy M.',
+        intro: 'This quarter we wanted to take a moment to reflect on how far you\'ve come and talk about what\'s ahead. PayFlow has been one of our strongest partnerships — and we want to make sure it stays that way.',
+        highlights: [
+          'Platform adoption is at 88% — one of the highest across our entire customer base',
+          'Your Finance and HR teams have become genuine power users of the platform',
+          'Zero support escalations this quarter — the team is running smoothly',
+          'We\'re excited to support your UK expansion as it takes shape',
+        ],
+        focus: [
+          { area: 'UK Entity Expansion', detail: 'We\'d love to get ahead of your UK timeline and make sure the platform is ready to support that team from day one.' },
+          { area: 'Sales Team Adoption', detail: 'Your Sales team is slightly below your other departments — we want to make sure they\'re getting full value.' },
+        ],
+        commitments: [
+          'Work with you to scope the UK entity setup by end of Q2',
+          'Connect with your Sales team lead to understand how we can better support them',
+          'Keep you informed on any product updates that affect your current workflows',
+        ],
+        renewalNote: 'Your contract runs through March 2027 — we\'re not here to rush anything. We just want to make sure that when the time comes, renewing feels like an easy yes.',
+        tldr: {
+          working: 'Adoption is strong, your team is fully embedded in the platform, and there are zero open issues. This is what a healthy partnership looks like.',
+          focus:   'The UK expansion is the most exciting thing on the horizon. We want to be part of that from the start.',
+          next:    'Let\'s align on the UK timeline and make sure your Sales team has everything they need.',
+        },
+        sagePrep: {
+          intro:       'Open warm and confident. This is a relationship call, not a status check. Lead with genuine appreciation for how engaged their team has been.',
+          highlights:  'Let the 88% adoption number land before moving on. Most companies aren\'t anywhere near that. Let them feel proud of it.',
+          focus:       'Frame the UK expansion as something you\'re excited to be part of — not a sales opportunity. Ask about their timeline before you offer anything.',
+          commitments: 'Keep commitments specific and light. Two or three concrete things is better than a long list.',
+          renewal:     'Float it naturally — "we\'re not rushing anything, just want renewal to feel easy when it comes." Then move on quickly.',
+        },
+        prompts: {
+          intro: [
+            'How has the team been feeling about the platform day-to-day?',
+            'Is there anything you wish you\'d had earlier that would have helped you get value faster?',
+          ],
+          highlights: [
+            'Your Finance team has been incredible with adoption — what do you think made it click for them?',
+            'What\'s been the biggest workflow win for your team this quarter?',
+          ],
+          focus: [
+            'Where are you in the UK expansion timeline? We\'d love to start thinking about how to support that team early.',
+            'Is your Sales team using the platform the way you hoped? We want to make sure they\'re getting as much value as the other teams.',
+          ],
+          commitments: [
+            'Does this feel like the right set of next steps, or is there something more pressing?',
+            'Who on your team should we be coordinating with for the UK setup?',
+          ],
+          renewal: [
+            'Is there anything about the partnership you\'d want to see evolve heading into next year?',
+          ],
+        },
+      },
     },
 
     {
@@ -264,6 +318,61 @@ const SyncDash = (() => {
           ],
         },
       },
+      qbrClient: {
+        quarter:    'Q1 2026',
+        preparedBy: 'Christy M.',
+        intro: 'We wanted to connect this quarter to share what\'s been going well, be transparent about something we\'re actively working on, and make sure we\'re set up for a strong Q2 together.',
+        highlights: [
+          'Your HR and Benefits Admin teams are at 91% and 86% adoption — among the strongest we see across our customer base',
+          'Compliance Reporting is fully active and audit-ready',
+          'Your API integrations have been stable all quarter with no disruptions',
+          'When an issue came up, we escalated it the same day — that\'s the response standard we hold ourselves to',
+        ],
+        focus: [
+          { area: 'Finance Team Workflow', detail: 'We\'re aware of a workflow issue that\'s been affecting your Finance team\'s experience. We\'re actively resolving it and wanted to address it directly with you today.' },
+          { area: 'Renewal Planning', detail: 'Your contract is coming up in a few months and we want to make sure we\'ve earned the renewal — starting with fixing what needs fixing.' },
+        ],
+        commitments: [
+          'Resolve the Finance team workflow issue within the next two weeks',
+          'Follow up with you directly once it\'s confirmed resolved',
+          'Schedule a dedicated renewal conversation before end of April',
+        ],
+        renewalNote: 'We know the timing is tight and we\'re not taking that lightly. We want the renewal to be a confident yes — and that starts with getting the Finance workflow sorted.',
+        tldr: {
+          working: 'HR, Benefits Admin, and your API integrations are all strong. The foundation of this partnership is solid.',
+          focus:   'The Finance workflow issue is our top priority and we\'re on it. We\'re here to make sure it doesn\'t affect your confidence in the platform.',
+          next:    'Two weeks to resolve the Finance issue, then a dedicated renewal conversation. That\'s our commitment.',
+        },
+        sagePrep: {
+          intro:       'Don\'t open with the bad news but don\'t bury it either. Start by acknowledging the relationship and the things that are working, then signal you\'re going to address the Finance situation directly.',
+          highlights:  'Let HR and Benefits Admin numbers breathe — those are real. Then use the same-day escalation as proof that your process works even when something goes wrong.',
+          focus:       'Own the Finance issue cleanly. "We know this has affected your team\'s experience and we\'re not here to spin it — we\'re here to fix it and show you what that looks like." Then move to resolution.',
+          commitments: 'Be specific about the two-week timeline. Vague commitments erode trust here. Name the date if you can.',
+          renewal:     'Don\'t hide from the renewal pressure. Naming it directly — "we know the timing is tight" — actually builds trust. They know it too.',
+        },
+        prompts: {
+          intro: [
+            'Before we get into the deck — how has the team been feeling about things overall?',
+            'We wanted to connect in person this quarter. Is there anything on your mind heading into this conversation?',
+          ],
+          highlights: [
+            'Your HR team has been exceptional with adoption — what do you think has made the rollout so successful there?',
+            'How has the compliance reporting been working for your team? Is it giving you what you need for audits?',
+          ],
+          focus: [
+            'I want to address the Finance situation directly — can you share what you\'re hearing from that team about their experience?',
+            'Has the workflow issue been affecting other parts of the business beyond Finance, or has it been contained?',
+          ],
+          commitments: [
+            'Does a two-week resolution timeline feel reasonable from your end, or is there more urgency we should know about?',
+            'For the renewal conversation — who needs to be part of that discussion on your side?',
+          ],
+          renewal: [
+            'What would need to be true for this renewal to feel like an easy decision?',
+            'Is there anything about how we\'ve been working together that you\'d want to see change?',
+          ],
+        },
+      },
     },
 
     {
@@ -382,6 +491,60 @@ const SyncDash = (() => {
             'Can we get 30 minutes on the calendar next week with whoever is now responsible for this platform decision?',
             'We\'d like to do a re-onboarding session with your Scheduling and Operations teams if you\'re open to it. Would that be valuable?',
             'What would you need to see from us in the next 4 weeks to feel confident about continuing?',
+          ],
+        },
+      },
+      qbrClient: {
+        quarter:    'Q1 2026',
+        preparedBy: 'Christy M.',
+        intro: 'We wanted to reach out and connect — it\'s been a little while since we\'ve spoken and we felt it was important to check in, hear how things are going, and be here in person for this conversation.',
+        highlights: [
+          'Your compliance workflows were configured and are audit-ready from day one',
+          'Shift Management was built out to support your core scheduling operations',
+          'Your initial implementation was completed on time and to spec',
+          'We\'re here today because this partnership matters to us and we want to get it right',
+        ],
+        focus: [
+          { area: 'Understanding Where Things Stand', detail: 'We\'ve noticed some changes in platform activity and want to hear directly from you about what\'s been happening and what your team needs.' },
+          { area: 'Finding the Right Path Forward', detail: 'Whether that\'s re-engaging, adjusting how we work together, or something else — we\'re here to figure that out with you, not for you.' },
+        ],
+        commitments: [
+          'Listen first and understand what\'s changed for your team before proposing anything',
+          'Follow up within one week with a clear plan based on what we hear today',
+          'Be honest with you about what we can and can\'t do — no overpromising',
+        ],
+        renewalNote: 'We know the contract window is close. We\'re not here to pressure a decision — we\'re here because we want to make sure whatever happens next is the right fit for your team.',
+        tldr: {
+          working: 'The platform was set up correctly and your compliance workflows are solid. The foundation is there.',
+          focus:   'We want to hear from you. What\'s changed, what\'s not working, and what would need to be true for this to be the right tool for your team.',
+          next:    'One conversation, one week, one clear plan. That\'s what we\'re committing to today.',
+        },
+        sagePrep: {
+          intro:       'Come in humble and curious. You\'re not presenting — you\'re listening. Open with genuine acknowledgment that you\'re here because things haven\'t been as connected as they should be.',
+          highlights:  'Keep highlights brief. The client may be disengaged and a long win list will feel tone-deaf. Pick one or two and move quickly to the focus areas.',
+          focus:       'Ask before you tell. "We\'ve noticed some changes in activity — can you help us understand what\'s been happening?" Let them lead. You\'ll learn more in two minutes of listening than ten minutes of presenting.',
+          commitments: 'Commitments should be about listening and following up, not fixing. You don\'t know enough yet to promise solutions. Promise responsiveness.',
+          renewal:     'Name the elephant. "We know the contract is coming up and we\'re not here to pressure you." That\'s it. Then let them respond.',
+        },
+        prompts: {
+          intro: [
+            'Thanks for making time today. Before we get into anything prepared — how are things going from your perspective?',
+            'We wanted to connect in person. Is there something specific that\'s been on your mind about the platform?',
+          ],
+          highlights: [
+            'Your compliance setup is solid — is your team actually using those reports, or has that fallen to the side too?',
+          ],
+          focus: [
+            'We\'ve seen a gap in platform activity over the past few weeks. Can you help us understand what changed?',
+            'Who is now the right person for us to be working with day-to-day? We want to make sure we\'re talking to the right people.',
+            'What would need to be different about the platform or our partnership for your team to re-engage with it?',
+          ],
+          commitments: [
+            'If we could do one thing in the next two weeks to demonstrate we\'re taking this seriously, what would that be?',
+            'Are there specific teams — Scheduling, Operations — where a re-onboarding session would be valuable?',
+          ],
+          renewal: [
+            'We\'re not here to push a renewal. We\'re here to understand if there\'s a path that makes sense for both of us. What does that look like from your end?',
           ],
         },
       },

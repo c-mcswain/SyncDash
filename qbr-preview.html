@@ -405,13 +405,13 @@
   const id      = params.get('account');
   const account = id ? SyncDash.getAccount(id) : null;
 
+  const selectedPrompts = {};
+
   if (!account || !account.qbr) {
     document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);"><div style="font-size:32px;">◰</div><div style="font-size:16px;color:var(--text);">QBR not found</div><div style="font-size:13px;">No account or QBR data matching "${id || 'unknown'}".</div><a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a></div>`;
   } else {
     renderDeck(account);
   }
-
-  const selectedPrompts = {};
 
   function tierColor(t) { return t === 'green' ? 'var(--green)' : t === 'red' ? 'var(--red)' : 'var(--amber)'; }
   function tierClass(t) { return t === 'green' ? 'green' : t === 'red' ? 'red' : 'amber'; }

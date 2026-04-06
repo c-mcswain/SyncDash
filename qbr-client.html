@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SyncDash — Client QBR</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b24;
+      --surface2: #1c2333;
+      --border:   #242d3d;
+      --border2:  #2e3a50;
+      --text:     #e2e8f0;
+      --muted:    #7a8ba3;
+      --faint:    #3d4f68;
+      --teal:     #00c9a7;
+      --teal-bg:  rgba(0,201,167,0.08);
+      --green:    #22d98a;
+      --green-bg: rgba(34,217,138,0.10);
+      --amber:    #f5a623;
+      --amber-bg: rgba(245,166,35,0.10);
+      --red:      #ff5c6a;
+      --red-bg:   rgba(255,92,106,0.10);
+      --sage:     #a78bfa;
+      --sage-bg:  rgba(167,139,250,0.08);
+      --sage-border: rgba(167,139,250,0.2);
+      --radius:   12px;
+      --radius-sm: 6px;
+      --slide-max: 860px;
+    }
+
+    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px; height: 54px; gap: 16px;
+    }
+    .topbar-logo { font-family: 'Outfit', sans-serif; font-weight: 300; font-size: 17px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); text-decoration: none; }
+    .topbar-logo span { color: var(--teal); }
+    .topbar-badge { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 3px; background: var(--teal-bg); border: 1px solid rgba(0,201,167,0.25); color: var(--teal); }
+    .topbar-divider { width: 1px; height: 20px; background: var(--border); }
+    .topbar-meta { flex: 1; }
+    .topbar-account { font-size: 13px; font-weight: 600; color: var(--text); }
+    .topbar-sub { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; position: relative; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      font-size: 12.5px; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent; text-decoration: none;
+      transition: all 0.15s; font-family: 'DM Sans', sans-serif; background: none;
+    }
+    .btn-ghost  { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+    .btn-sage   { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
+    .btn-sage:hover  { background: rgba(167,139,250,0.14); }
+    .btn-sage.active { background: rgba(167,139,250,0.16); border-color: var(--sage); }
+    .btn-export { background: var(--teal-bg); border-color: rgba(0,201,167,0.25); color: var(--teal); }
+    .btn-export:hover { background: rgba(0,201,167,0.14); border-color: var(--teal); }
+    .btn-notes { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
+    .btn-notes:hover { background: rgba(167,139,250,0.14); border-color: var(--sage); }
+
+    .sage-prompts { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .sage-prompts-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage); margin-bottom: 4px; opacity: 0.7; }
+    .prompt-chip {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--sage-border);
+      background: rgba(167,139,250,0.04);
+      cursor: pointer; transition: all 0.15s;
+      font-size: 12.5px; color: var(--muted); line-height: 1.5;
+      text-align: left; width: 100%; font-family: 'DM Sans', sans-serif;
+    }
+    .prompt-chip:hover { background: rgba(167,139,250,0.10); color: var(--text); border-color: var(--sage); }
+    .prompt-chip.selected { background: rgba(167,139,250,0.16); color: var(--text); border-color: var(--sage); }
+    .prompt-chip-check { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--sage-border); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.15s; }
+    .prompt-chip.selected .prompt-chip-check { background: var(--sage); border-color: var(--sage); color: #fff; }
+
+    .export-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); min-width: 230px; z-index: 200;
+      display: none; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .export-dropdown.open { display: block; animation: fadeIn 0.15s ease both; }
+    .export-dropdown-header { padding: 10px 14px 6px; font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); border-bottom: 1px solid var(--border); }
+    .export-option { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; transition: background 0.12s; border-bottom: 1px solid var(--border); }
+    .export-option:last-child { border-bottom: none; }
+    .export-option:hover { background: var(--surface2); }
+    .export-option-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+    .export-option-icon.pdf  { background: rgba(255,92,106,0.12); color: var(--red); }
+    .export-option-icon.pptx { background: rgba(245,166,35,0.12); color: var(--amber); }
+    .export-option-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .export-option-desc  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .slide-nav {
+      position: sticky; top: 54px; z-index: 90;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px; gap: 4px; overflow-x: auto;
+    }
+    .slide-nav::-webkit-scrollbar { height: 0; }
+    .nav-pill { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all 0.15s; text-decoration: none; }
+    .nav-pill:hover { color: var(--text); }
+    .nav-pill.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+    .slides { padding: 40px 28px 80px; }
+    .slide { max-width: var(--slide-max); margin: 0 auto 48px; scroll-margin-top: 120px; }
+    .slide:last-child { margin-bottom: 0; }
+    .slide-num { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--faint); margin-bottom: 10px; }
+    .slide-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .slide-header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .slide-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .slide-label { font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-top: 4px; }
+    .slide-body { padding: 28px 32px; }
+
+    .sage-toggle-row { padding: 12px 32px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; background: var(--surface2); }
+    .sage-panel { display: none; padding: 20px 32px; border-top: 1px solid var(--sage-border); background: var(--sage-bg); }
+    .sage-panel.open { display: block; animation: fadeIn 0.2s ease both; }
+    .sage-panel-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .sage-panel-label::before { content: '✦'; font-size: 11px; }
+    .sage-panel-text { font-size: 13px; color: var(--text); line-height: 1.65; }
+
+    /* ── COVER ── */
+    .cover-body { padding: 48px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+    .cover-account { font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; }
+    .cover-account span { color: var(--teal); }
+    .cover-tagline { font-size: 14px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+    .cover-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .cover-meta-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .cover-meta-row strong { color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; }
+    .cover-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cover-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+    .cover-stat-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+    .cover-stat-value { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 700; line-height: 1; color: var(--teal); }
+    .cover-stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── HIGHLIGHT LIST ── */
+    .highlight-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .highlight-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 13.5px; color: var(--text); line-height: 1.5; }
+    .highlight-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--teal-bg); border: 1px solid rgba(0,201,167,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--teal); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── FOCUS AREAS ── */
+    .focus-list { display: flex; flex-direction: column; gap: 14px; }
+    .focus-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 20px; border-left: 3px solid var(--teal); }
+    .focus-area { font-size: 13px; font-weight: 600; color: var(--teal); margin-bottom: 6px; }
+    .focus-detail { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+    /* ── COMMITMENTS ── */
+    .commitment-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .commitment-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 13.5px; color: var(--text); line-height: 1.5; }
+    .commitment-num { width: 22px; height: 22px; border-radius: 50%; background: var(--teal-bg); border: 1px solid rgba(0,201,167,0.25); display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--teal); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── RENEWAL BOX ── */
+    .renewal-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px 24px; }
+    .renewal-box-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+    .renewal-box-text { font-size: 13.5px; color: var(--text); line-height: 1.6; }
+
+    /* ── TLDR ── */
+    .tldr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tldr-panel { border-radius: var(--radius-sm); padding: 20px; border: 1px solid transparent; }
+    .tldr-panel.working { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
+    .tldr-panel.focus   { background: var(--teal-bg);  border-color: rgba(0,201,167,0.2); }
+    .tldr-panel.next    { background: var(--sage-bg);   border-color: var(--sage-border); }
+    .tldr-icon { font-size: 20px; margin-bottom: 10px; }
+    .tldr-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .tldr-panel.working .tldr-label { color: var(--green); }
+    .tldr-panel.focus   .tldr-label { color: var(--teal); }
+    .tldr-panel.next    .tldr-label { color: var(--sage); }
+    .tldr-text { font-size: 12.5px; color: var(--text); line-height: 1.6; }
+
+    .section-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .section-divider-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); white-space: nowrap; }
+    .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+    .deck-footer { max-width: var(--slide-max); margin: 40px auto 0; padding: 20px 0 40px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
+    .deck-footer-left  { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
+    .deck-footer-right { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media print {
+      .topbar, .slide-nav, .sage-toggle-row, .sage-panel, .deck-footer { display: none !important; }
+      body { background: #fff; color: #1a1a2e; font-size: 12px; }
+      .slides { padding: 0; }
+      .slide { max-width: 100%; margin: 0 0 24px; page-break-inside: avoid; }
+      .slide-card { border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; box-shadow: none; }
+      .slide-header { padding: 20px 24px 14px; border-bottom: 1px solid #e2e8f0; }
+      .slide-title { font-size: 18px; color: #1a1a2e; }
+      .slide-body { padding: 20px 24px; }
+      .cover-body { background: #0d1117; border-radius: 8px; }
+      .focus-item { background: #f8fafc; border-color: #e2e8f0; border-left-color: #0d9488; }
+      .focus-area { color: #0d9488; }
+      .highlight-icon { background: #f0fdfa; border-color: #99f6e4; color: #0f766e; }
+      .commitment-num { background: #f0fdfa; border-color: #99f6e4; color: #0f766e; }
+      .renewal-box { background: #f8fafc; border-color: #e2e8f0; }
+      .tldr-panel.working { background: #f0fdf4; border-color: #bbf7d0; }
+      .tldr-panel.focus   { background: #f0fdfa; border-color: #99f6e4; }
+      .tldr-panel.next    { background: #faf5ff; border-color: #e9d5ff; }
+      .tldr-panel.working .tldr-label { color: #166534; }
+      .tldr-panel.focus   .tldr-label { color: #0f766e; }
+      .tldr-panel.next    .tldr-label { color: #6d28d9; }
+      .tldr-text, .highlight-list li, .commitment-list li, .focus-detail, .renewal-box-text { color: #1a1a2e; }
+    }
+
+    @media (max-width: 700px) {
+      .topbar, .slide-nav { padding: 0 16px; }
+      .slides { padding: 24px 16px 60px; }
+      .slide-header, .slide-body { padding: 20px; }
+      .sage-toggle-row, .sage-panel { padding: 10px 20px; }
+      .cover-body { grid-template-columns: 1fr; gap: 20px; }
+      .tldr-grid, .cover-stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="dashboard.html">Sync<span>Dash</span></a>
+  <span class="topbar-badge">Client Deck</span>
+  <div class="topbar-divider"></div>
+  <div class="topbar-meta">
+    <div class="topbar-account" id="topbar-account">—</div>
+    <div class="topbar-sub" id="topbar-sub">Quarterly Business Review</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-sage" id="btn-sage-all" onclick="toggleAllSage()">✦ Sage Notes</button>
+    <button class="btn btn-notes" onclick="generateNotes()">◈ Generate Notes</button>
+    <button class="btn btn-export" onclick="toggleExportMenu()">⬇ Export</button>
+    <div class="export-dropdown" id="export-dropdown">
+      <div class="export-dropdown-header">Export Options</div>
+      <div class="export-option" onclick="exportPDF()">
+        <div class="export-option-icon pdf">PDF</div>
+        <div><div class="export-option-label">Client Deck — PDF</div><div class="export-option-desc">Clean, ready to share</div></div>
+      </div>
+      <div class="export-option" onclick="exportPPTX()">
+        <div class="export-option-icon pptx">PPT</div>
+        <div><div class="export-option-label">Client Deck — PPTX</div><div class="export-option-desc">Editable PowerPoint slides</div></div>
+      </div>
+    </div>
+    <a class="btn btn-ghost" id="btn-back" href="dashboard.html">← Back</a>
+  </div>
+</div>
+
+<nav class="slide-nav">
+  <a class="nav-pill active" href="#slide-cover"       onclick="setActive(this)">Cover</a>
+  <a class="nav-pill"        href="#slide-highlights"  onclick="setActive(this)">Highlights</a>
+  <a class="nav-pill"        href="#slide-focus"       onclick="setActive(this)">What We're Working On</a>
+  <a class="nav-pill"        href="#slide-commitments" onclick="setActive(this)">Our Commitments</a>
+  <a class="nav-pill"        href="#slide-renewal"     onclick="setActive(this)">Looking Ahead</a>
+  <a class="nav-pill"        href="#slide-tldr"        onclick="setActive(this)">TL;DR</a>
+</nav>
+
+<div class="slides">
+
+  <!-- COVER -->
+  <div class="slide" id="slide-cover">
+    <div class="slide-num">01 / 06</div>
+    <div class="slide-card">
+      <div class="cover-body">
+        <div>
+          <div class="cover-account" id="cover-account">—</div>
+          <div class="cover-tagline" id="cover-tagline"></div>
+          <div class="cover-meta" id="cover-meta"></div>
+        </div>
+        <div class="cover-stats" id="cover-stats"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIGHLIGHTS -->
+  <div class="slide" id="slide-highlights">
+    <div class="slide-num">02 / 06</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div><div class="slide-title">What's Going Well</div><div class="slide-label">Highlights from this quarter</div></div>
+      </div>
+      <div class="slide-body"><ul class="highlight-list" id="highlights-list"></ul></div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-highlights')">✦ Sage Notes</button></div>
+      <div class="sage-panel" id="sage-highlights">
+        <div class="sage-panel-label">Sage — How to present this</div>
+        <div class="sage-panel-text" id="sage-highlights-text"></div>
+        <div class="sage-prompts" id="sage-highlights-prompts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOCUS -->
+  <div class="slide" id="slide-focus">
+    <div class="slide-num">03 / 06</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div><div class="slide-title">What We're Focused On Together</div><div class="slide-label">Areas we're actively working on</div></div>
+      </div>
+      <div class="slide-body"><div class="focus-list" id="focus-list"></div></div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-focus')">✦ Sage Notes</button></div>
+      <div class="sage-panel" id="sage-focus">
+        <div class="sage-panel-label">Sage — How to present this</div>
+        <div class="sage-panel-text" id="sage-focus-text"></div>
+        <div class="sage-prompts" id="sage-focus-prompts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMITMENTS -->
+  <div class="slide" id="slide-commitments">
+    <div class="slide-num">04 / 06</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div><div class="slide-title">Our Commitments to You</div><div class="slide-label">What we're owning going forward</div></div>
+      </div>
+      <div class="slide-body"><ul class="commitment-list" id="commitment-list"></ul></div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-commitments')">✦ Sage Notes</button></div>
+      <div class="sage-panel" id="sage-commitments">
+        <div class="sage-panel-label">Sage — How to present this</div>
+        <div class="sage-panel-text" id="sage-commitments-text"></div>
+        <div class="sage-prompts" id="sage-commitments-prompts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RENEWAL / LOOKING AHEAD -->
+  <div class="slide" id="slide-renewal">
+    <div class="slide-num">05 / 06</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div><div class="slide-title">Looking Ahead</div><div class="slide-label">Partnership & what's next</div></div>
+      </div>
+      <div class="slide-body">
+        <div class="renewal-box" id="renewal-box"></div>
+      </div>
+      <div class="sage-toggle-row"><button class="btn btn-sage" onclick="toggleSage('sage-renewal')">✦ Sage Notes</button></div>
+      <div class="sage-panel" id="sage-renewal">
+        <div class="sage-panel-label">Sage — How to present this</div>
+        <div class="sage-panel-text" id="sage-renewal-text"></div>
+        <div class="sage-prompts" id="sage-renewal-prompts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TLDR -->
+  <div class="slide" id="slide-tldr">
+    <div class="slide-num">06 / 06</div>
+    <div class="slide-card">
+      <div class="slide-header">
+        <div><div class="slide-title">TL;DR</div><div class="slide-label">The short version</div></div>
+      </div>
+      <div class="slide-body">
+        <div class="tldr-grid" id="tldr-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deck-footer">
+    <div class="deck-footer-left" id="footer-left">SyncDash · Quarterly Business Review</div>
+    <div class="deck-footer-right" id="footer-right"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="accounts.js"></script>
+<script>
+  if (!localStorage.getItem('syncdash_user')) window.location.replace('login.html');
+
+  const params  = new URLSearchParams(window.location.search);
+  const id      = params.get('account');
+  const account = id ? SyncDash.getAccount(id) : null;
+
+  const selectedPrompts = {};
+
+  if (!account || !account.qbrClient) {
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);"><div style="font-size:32px;">◰</div><div style="font-size:16px;color:var(--text);">Client QBR not found</div><div style="font-size:13px;">No client QBR data for "${id || 'unknown'}".</div><a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a></div>`;
+  } else {
+    renderDeck(account);
+  }
+
+  function renderDeck(a) {
+    const q = a.qbrClient;
+    document.title = `SyncDash — ${a.name} Client QBR`;
+    document.getElementById('btn-back').href = `account.html?account=${a.id}`;
+    document.getElementById('topbar-account').textContent = `${a.name} — ${q.quarter}`;
+    document.getElementById('topbar-sub').textContent = `${a.industry} · Client-Facing Deck`;
+    document.getElementById('footer-left').textContent = `${a.name} · ${q.quarter} · SyncToScale Partnership Review`;
+    document.getElementById('footer-right').textContent = `Prepared by ${q.preparedBy}`;
+
+    // Cover
+    document.getElementById('cover-account').innerHTML = `${a.name}<span>.</span>`;
+    document.getElementById('cover-tagline').textContent = q.intro;
+    document.getElementById('cover-meta').innerHTML = `
+      <div class="cover-meta-row">◷ <strong>${q.quarter}</strong></div>
+      <div class="cover-meta-row">◎ <strong>${a.industry}</strong></div>
+      <div class="cover-meta-row">◈ Presented by <strong>${q.preparedBy}</strong></div>`;
+    document.getElementById('cover-stats').innerHTML = `
+      <div class="cover-stat"><div class="cover-stat-label">Platform Adoption</div><div class="cover-stat-value">${a.adoptionPct}%</div><div class="cover-stat-sub">of licensed seats active</div></div>
+      <div class="cover-stat"><div class="cover-stat-label">Partnership Since</div><div class="cover-stat-value" style="font-size:16px;padding-top:4px;">${a.contract.startDate.split(',')[0]}</div><div class="cover-stat-sub">${a.contract.plan} plan</div></div>
+      <div class="cover-stat"><div class="cover-stat-label">NPS Score</div><div class="cover-stat-value">${a.nps}</div><div class="cover-stat-sub">net promoter score</div></div>
+      <div class="cover-stat"><div class="cover-stat-label">Team Size</div><div class="cover-stat-value" style="font-size:18px;">${a.employees.toLocaleString()}</div><div class="cover-stat-sub">${a.licensedSeats} licensed seats</div></div>`;
+
+    // Highlights
+    document.getElementById('highlights-list').innerHTML = q.highlights.map(h =>
+      `<li><div class="highlight-icon">✓</div>${h}</li>`).join('');
+    document.getElementById('sage-highlights-text').textContent = q.sagePrep.highlights;
+    renderPrompts('sage-highlights-prompts', 'highlights', q.prompts.highlights);
+
+    // Focus
+    document.getElementById('focus-list').innerHTML = q.focus.map(f =>
+      `<div class="focus-item"><div class="focus-area">${f.area}</div><div class="focus-detail">${f.detail}</div></div>`).join('');
+    document.getElementById('sage-focus-text').textContent = q.sagePrep.focus;
+    renderPrompts('sage-focus-prompts', 'focus', q.prompts.focus);
+
+    // Commitments
+    document.getElementById('commitment-list').innerHTML = q.commitments.map((c, i) =>
+      `<li><div class="commitment-num">${i + 1}</div>${c}</li>`).join('');
+    document.getElementById('sage-commitments-text').textContent = q.sagePrep.commitments;
+    renderPrompts('sage-commitments-prompts', 'commitments', q.prompts.commitments);
+
+    // Renewal
+    document.getElementById('renewal-box').innerHTML = `<div class="renewal-box-label">A Note on Our Partnership</div><div class="renewal-box-text">${q.renewalNote}</div>`;
+    document.getElementById('sage-renewal-text').textContent = q.sagePrep.renewal;
+    renderPrompts('sage-renewal-prompts', 'renewal', q.prompts.renewal);
+
+    // TL;DR
+    document.getElementById('tldr-grid').innerHTML = `
+      <div class="tldr-panel working"><div class="tldr-icon">✓</div><div class="tldr-label">What's working</div><div class="tldr-text">${q.tldr.working}</div></div>
+      <div class="tldr-panel focus"><div class="tldr-icon">→</div><div class="tldr-label">What we're focused on</div><div class="tldr-text">${q.tldr.focus}</div></div>
+      <div class="tldr-panel next"><div class="tldr-icon">◈</div><div class="tldr-label">What's next</div><div class="tldr-text">${q.tldr.next}</div></div>`;
+  }
+
+  // ── PROMPT CHIPS ──────────────────────────────────────────────────────────
+  function renderPrompts(containerId, sectionKey, prompts) {
+    if (!prompts || !prompts.length) return;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (!selectedPrompts[sectionKey]) selectedPrompts[sectionKey] = [];
+
+    container.innerHTML = `<div class="sage-prompts-label">Discussion Prompts — select the ones that fit</div>`;
+
+    prompts.forEach((text, i) => {
+      const chip = document.createElement('button');
+      chip.className = 'prompt-chip';
+      chip.innerHTML = `<span class="prompt-chip-check"></span><span>${text}</span>`;
+      chip.addEventListener('click', () => togglePrompt(sectionKey, i, chip));
+      container.appendChild(chip);
+    });
+  }
+
+  function togglePrompt(sectionKey, index, chip) {
+    if (!selectedPrompts[sectionKey]) selectedPrompts[sectionKey] = [];
+    const arr = selectedPrompts[sectionKey];
+    const pos = arr.indexOf(index);
+    if (pos === -1) {
+      arr.push(index);
+      chip.classList.add('selected');
+      chip.querySelector('.prompt-chip-check').textContent = '✓';
+    } else {
+      arr.splice(pos, 1);
+      chip.classList.remove('selected');
+      chip.querySelector('.prompt-chip-check').textContent = '';
+    }
+  }
+
+  // ── GENERATE NOTES ────────────────────────────────────────────────────────
+  function generateNotes() {
+    if (!account) return;
+    sessionStorage.setItem('syncdash_qbr_account',   account.id);
+    sessionStorage.setItem('syncdash_qbr_selections', JSON.stringify(selectedPrompts));
+    sessionStorage.setItem('syncdash_qbr_type', 'client');
+    window.open(`qbr-notes.html?account=${account.id}&type=client`, '_blank');
+  }
+
+  // ── SAGE TOGGLE ───────────────────────────────────────────────────────────
+  function toggleSage(id) {
+    const panel = document.getElementById(id);
+    const btn   = panel.previousElementSibling.querySelector('button');
+    panel.classList.toggle('open');
+    btn.classList.toggle('active', panel.classList.contains('open'));
+  }
+
+  let sageAllOpen = false;
+  function toggleAllSage() {
+    sageAllOpen = !sageAllOpen;
+    document.querySelectorAll('.sage-panel').forEach(p => p.classList.toggle('open', sageAllOpen));
+    document.querySelectorAll('.sage-toggle-row button').forEach(b => b.classList.toggle('active', sageAllOpen));
+    const btn = document.getElementById('btn-sage-all');
+    btn.textContent = sageAllOpen ? '✦ Close Sage' : '✦ Sage Notes';
+    btn.classList.toggle('active', sageAllOpen);
+  }
+
+  // ── EXPORT DROPDOWN ───────────────────────────────────────────────────────
+  function toggleExportMenu() {
+    document.getElementById('export-dropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.topbar-actions')) document.getElementById('export-dropdown').classList.remove('open');
+  });
+
+  function exportPDF() {
+    document.getElementById('export-dropdown').classList.remove('open');
+    document.querySelectorAll('.sage-panel').forEach(p => p.classList.remove('open'));
+    setTimeout(() => window.print(), 100);
+  }
+
+  function exportPPTX() {
+    document.getElementById('export-dropdown').classList.remove('open');
+    if (!account) return;
+    const a = account, q = a.qbrClient;
+    const BG='0d1117',SURF2='1c2333',BORDER='242d3d',TEXT='e2e8f0',MUTED='7a8ba3',TEAL='00c9a7',GREEN='22d98a';
+    const W=10, H=5.625;
+
+    let pres = new PptxGenJS();
+    pres.layout='LAYOUT_16x9'; pres.author=q.preparedBy; pres.title=`${a.name} — ${q.quarter} Partnership Review`;
+
+    function base(title, sub) {
+      let s = pres.addSlide();
+      s.background = { color: BG };
+      s.addShape(pres.shapes.RECTANGLE, { x:0, y:0, w:W, h:0.06, fill:{color:TEAL}, line:{color:TEAL} });
+      if (title) s.addText(title, { x:0.5, y:0.18, w:W-1, h:0.5, fontSize:22, bold:true, color:TEXT, fontFace:'Calibri', margin:0 });
+      if (sub)   s.addText(sub,   { x:0.5, y:0.62, w:W-1, h:0.25, fontSize:10, color:MUTED, fontFace:'Calibri', charSpacing:2, margin:0 });
+      s.addShape(pres.shapes.RECTANGLE, { x:0, y:H-0.28, w:W, h:0.01, fill:{color:BORDER}, line:{color:BORDER} });
+      s.addText(`${a.name} · ${q.quarter} · Partnership Review`, { x:0.5, y:H-0.25, w:5, h:0.2, fontSize:8, color:MUTED, fontFace:'Calibri', margin:0 });
+      s.addText(`Presented by ${q.preparedBy}`, { x:W-2.5, y:H-0.25, w:2, h:0.2, fontSize:8, color:MUTED, fontFace:'Calibri', align:'right', margin:0 });
+      return s;
+    }
+
+    // Cover
+    let s1 = pres.addSlide(); s1.background = { color: BG };
+    s1.addShape(pres.shapes.RECTANGLE, {x:0,y:0,w:0.06,h:H,fill:{color:TEAL},line:{color:TEAL}});
+    s1.addText(a.name, {x:0.5,y:0.9,w:5.5,h:1.1,fontSize:44,bold:true,color:TEXT,fontFace:'Calibri',margin:0});
+    s1.addText('Quarterly Business Review', {x:0.5,y:1.9,w:5.5,h:0.4,fontSize:14,color:TEAL,fontFace:'Calibri',charSpacing:2,margin:0});
+    s1.addText(q.intro, {x:0.5,y:2.45,w:5.5,h:1.4,fontSize:11,color:MUTED,fontFace:'Calibri',lineSpacingMultiple:1.4,margin:0});
+    [['Platform Adoption',`${a.adoptionPct}%`,5.8,0.9],['NPS Score',`${a.nps}`,7.8,0.9],['Team Size',`${a.employees}`,5.8,1.95],['Licensed Seats',`${a.licensedSeats}`,7.8,1.95]].forEach(([label,val,x,y])=>{
+      s1.addShape(pres.shapes.RECTANGLE,{x,y,w:1.9,h:0.95,fill:{color:SURF2},line:{color:BORDER,width:0.5}});
+      s1.addText(label.toUpperCase(),{x:x+0.12,y:y+0.1,w:1.66,h:0.2,fontSize:7,color:MUTED,fontFace:'Calibri',charSpacing:1,margin:0});
+      s1.addText(val,{x:x+0.12,y:y+0.3,w:1.66,h:0.45,fontSize:22,bold:true,color:TEAL,fontFace:'Calibri',margin:0});
+    });
+    s1.addShape(pres.shapes.RECTANGLE,{x:0,y:H-0.28,w:W,h:0.01,fill:{color:BORDER},line:{color:BORDER}});
+    s1.addText('SyncToScale Partnership Review',{x:0.5,y:H-0.25,w:5,h:0.2,fontSize:8,color:MUTED,fontFace:'Calibri',margin:0});
+
+    // Highlights
+    let s2 = base("What's Going Well", 'HIGHLIGHTS FROM THIS QUARTER');
+    q.highlights.forEach((h, i) => {
+      const hy = 0.98 + i * 0.55;
+      s2.addShape(pres.shapes.OVAL,{x:0.5,y:hy+0.05,w:0.22,h:0.22,fill:{color:TEAL,transparency:85},line:{color:TEAL,width:0.5}});
+      s2.addText('✓',{x:0.5,y:hy+0.04,w:0.22,h:0.22,fontSize:8,color:TEAL,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
+      s2.addText(h,{x:0.85,y:hy,w:8.8,h:0.4,fontSize:12,color:TEXT,fontFace:'Calibri',margin:0});
+    });
+
+    // Focus
+    let s3 = base("What We're Focused On Together", 'AREAS WE ARE ACTIVELY WORKING ON');
+    q.focus.forEach((f, i) => {
+      const fy = 0.98 + i * 1.1;
+      s3.addShape(pres.shapes.RECTANGLE,{x:0.5,y:fy,w:9,h:0.95,fill:{color:SURF2},line:{color:TEAL,width:0.5}});
+      s3.addShape(pres.shapes.RECTANGLE,{x:0.5,y:fy,w:0.06,h:0.95,fill:{color:TEAL},line:{color:TEAL}});
+      s3.addText(f.area,{x:0.72,y:fy+0.08,w:8.6,h:0.25,fontSize:11,bold:true,color:TEAL,fontFace:'Calibri',margin:0});
+      s3.addText(f.detail,{x:0.72,y:fy+0.38,w:8.6,h:0.5,fontSize:11,color:TEXT,fontFace:'Calibri',lineSpacingMultiple:1.3,margin:0});
+    });
+
+    // Commitments
+    let s4 = base('Our Commitments to You', 'WHAT WE ARE OWNING GOING FORWARD');
+    q.commitments.forEach((c, i) => {
+      const cy = 0.98 + i * 0.6;
+      s4.addShape(pres.shapes.OVAL,{x:0.5,y:cy+0.04,w:0.24,h:0.24,fill:{color:TEAL,transparency:85},line:{color:TEAL,width:0.5}});
+      s4.addText(`${i+1}`,{x:0.5,y:cy+0.04,w:0.24,h:0.24,fontSize:9,color:TEAL,fontFace:'Calibri',align:'center',valign:'middle',margin:0});
+      s4.addText(c,{x:0.88,y:cy,w:8.7,h:0.45,fontSize:12,color:TEXT,fontFace:'Calibri',margin:0});
+    });
+
+    // Looking Ahead
+    let s5 = base('Looking Ahead', 'PARTNERSHIP AND WHAT IS NEXT');
+    s5.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.95,w:9,h:2.0,fill:{color:SURF2},line:{color:BORDER,width:0.5}});
+    s5.addText('A NOTE ON OUR PARTNERSHIP',{x:0.7,y:1.02,w:8,h:0.2,fontSize:8,color:MUTED,fontFace:'Calibri',charSpacing:2,margin:0});
+    s5.addText(q.renewalNote,{x:0.7,y:1.28,w:8.6,h:1.5,fontSize:11,color:TEXT,fontFace:'Calibri',lineSpacingMultiple:1.5,margin:0});
+
+    // TL;DR
+    let s6 = base('TL;DR', 'THE SHORT VERSION');
+    [{label:"WHAT'S WORKING",text:q.tldr.working,color:GREEN,bg:'22d98a',x:0.5},{label:"WHAT WE'RE FOCUSED ON",text:q.tldr.focus,color:TEAL,bg:'00c9a7',x:3.6},{label:"WHAT'S NEXT",text:q.tldr.next,color:'a78bfa',bg:'a78bfa',x:6.7}].forEach(p=>{
+      s6.addShape(pres.shapes.RECTANGLE,{x:p.x,y:0.95,w:2.9,h:3.8,fill:{color:p.bg,transparency:90},line:{color:p.bg,width:0.5}});
+      s6.addText(p.label,{x:p.x+0.15,y:1.1,w:2.6,h:0.28,fontSize:8,color:p.color,fontFace:'Calibri',charSpacing:1,margin:0});
+      s6.addText(p.text,{x:p.x+0.15,y:1.5,w:2.6,h:2.8,fontSize:11,color:TEXT,fontFace:'Calibri',lineSpacingMultiple:1.4,margin:0});
+    });
+
+    pres.writeFile({ fileName: `${a.name}_Client_QBR_${q.quarter.replace(' ','_')}.pptx` });
+  }
+
+  // ── NAV ───────────────────────────────────────────────────────────────────
+  function setActive(el) {
+    setTimeout(()=>{ document.querySelectorAll('.nav-pill').forEach(p=>p.classList.remove('active')); el.classList.add('active'); },50);
+  }
+
+  const slides = document.querySelectorAll('.slide'), pills = document.querySelectorAll('.nav-pill');
+  window.addEventListener('scroll',()=>{
+    let current='';
+    slides.forEach(s=>{ if (window.scrollY>=s.offsetTop-180) current=s.id; });
+    pills.forEach(p=>{ p.classList.toggle('active',p.getAttribute('href')===`#${current}`); });
+  });
+</script>
+</body>
+</html>

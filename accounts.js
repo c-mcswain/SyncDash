@@ -45,6 +45,14 @@ const SyncDash = (() => {
         { type: 'ok', text: 'Fully onboarded across all departments' },
         { type: 'ok', text: 'Expansion signal — UK entity in planning' },
       ],
+      departments: [
+        { name: 'Finance',           users: 68, adoptionPct: 94, trend: 'up',   trendPct: 2  },
+        { name: 'HR & People Ops',   users: 52, adoptionPct: 91, trend: 'up',   trendPct: 1  },
+        { name: 'Operations',        users: 48, adoptionPct: 88, trend: 'flat', trendPct: 0  },
+        { name: 'Engineering / IT',  users: 41, adoptionPct: 85, trend: 'up',   trendPct: 3  },
+        { name: 'Sales & Revenue',   users: 35, adoptionPct: 79, trend: 'down', trendPct: 1  },
+        { name: 'Legal & Compliance',users: 22, adoptionPct: 72, trend: 'flat', trendPct: 0  },
+      ],
       novaSignal: {
         type:  'info',
         title: 'Expansion Opportunity',
@@ -100,7 +108,7 @@ const SyncDash = (() => {
         },
         sagePrep: {
           health:    'This is a strong account — open with that confidence. Let them hear the 91 score before anything else. Set a high tone early.',
-          adoption:  '88% is genuinely impressive. Name the departments that are all-in. If there are any laggards, you can acknowledge them lightly — but don\'t make it a problem if it isn\'t one.',
+          adoption:  'Finance leads at 94% and Engineering is trending up at 85% — name both. Sales is your only mild laggard at 79% and down 1%. Worth a light mention: "Sales is slightly below the rest — anything we can do to support that team?" Don\'t dwell on it. The story here is strength.',
           risks:     'There are no real risks here. Use this slide to reinforce stability, not to manufacture concern. You can use the time to ask what\'s coming up internally for them.',
           renewal:   'Eight months out is the sweet spot — early enough to plan, not so early it feels like a sales call. Float the UK expansion conversation naturally here.',
           nextSteps: 'Keep the ask light. This account doesn\'t need pressure — it needs to feel valued. Confirm the Q2 expansion scoping call and thank them for being a strong partner.',
@@ -128,6 +136,14 @@ const SyncDash = (() => {
       riskFlags: [
         { type: 'warn', text: 'Adoption dropped 14% (Finance dept)' },
         { type: 'warn', text: '2 open support tickets — workflow blocked' },
+      ],
+      departments: [
+        { name: 'HR & People Ops',   users: 82, adoptionPct: 91, trend: 'up',   trendPct: 3  },
+        { name: 'Benefits Admin',    users: 44, adoptionPct: 86, trend: 'flat', trendPct: 0  },
+        { name: 'Operations',        users: 61, adoptionPct: 72, trend: 'down', trendPct: 4  },
+        { name: 'Engineering / IT',  users: 58, adoptionPct: 65, trend: 'up',   trendPct: 2  },
+        { name: 'Finance',           users: 38, adoptionPct: 34, trend: 'down', trendPct: 14 },
+        { name: 'Sales & Revenue',   users: 27, adoptionPct: 59, trend: 'down', trendPct: 2  },
       ],
       novaSignal: {
         type:  'warn',
@@ -188,7 +204,7 @@ const SyncDash = (() => {
         },
         sagePrep: {
           health:    'The 63 score will be visible — don\'t avoid it. Acknowledge it directly and immediately connect it to the specific cause (Finance workflow block). Owning it builds more trust than softening it.',
-          adoption:  'Lead with what\'s working — HR and Ops at 80%+. Then address Finance honestly. Ask: "What\'s getting in the way for your Finance team?" before offering solutions. Curiosity first.',
+          adoption:  'Lead with HR at 91% and Benefits Admin at 86% — those are your proof points that the platform works. Then pivot: "Finance is where we need to focus." Finance dropped from ~48% to 34% — a 14-point fall tied directly to the blocked workflow in ticket #1042. Operations is also slipping at 72% and down 4%. Ask: "What\'s getting in the way for your Finance team?" before you offer anything. Let them tell you.',
           risks:     'Two risks, both connected: the ticket and the adoption drop. Frame them as one story, not two separate problems. You caught it, you escalated it, you\'re here talking about it. That\'s the point.',
           renewal:   'Three months out with a past cancellation deadline is tight. Don\'t hide that. Be direct: "I want to make sure we earn the renewal — let\'s talk about what that looks like." Then listen.',
           nextSteps: 'You need two firm commitments from them: a follow-up call in two weeks on the ticket resolution, and a renewal conversation before end of April. Get both on the calendar before you leave.',
@@ -216,6 +232,14 @@ const SyncDash = (() => {
       riskFlags: [
         { type: 'crit', text: 'No logins in 23 days' },
         { type: 'crit', text: 'Champion contact left company' },
+      ],
+      departments: [
+        { name: 'Operations',        users: 54, adoptionPct: 31, trend: 'down', trendPct: 18 },
+        { name: 'Scheduling',        users: 48, adoptionPct: 28, trend: 'down', trendPct: 22 },
+        { name: 'HR & People Ops',   users: 32, adoptionPct: 24, trend: 'down', trendPct: 9  },
+        { name: 'Legal & Compliance',users: 18, adoptionPct: 38, trend: 'down', trendPct: 5  },
+        { name: 'Finance',           users: 22, adoptionPct: 19, trend: 'down', trendPct: 8  },
+        { name: 'Engineering / IT',  users: 16, adoptionPct: 12, trend: 'down', trendPct: 11 },
       ],
       novaSignal: {
         type:  'crit',
@@ -274,7 +298,7 @@ const SyncDash = (() => {
         },
         sagePrep: {
           health:    'A 31 score is hard to spin — don\'t try. Come in with honesty: "We\'re concerned about what we\'re seeing, and we wanted to be here in person to understand it." That\'s the only credible opening.',
-          adoption:  '28% adoption and a 23-day login gap means the platform is essentially abandoned. Don\'t present adoption data as a metric — present it as a question. "Can you help us understand what changed?"',
+          adoption:  'Every department is in decline. Scheduling dropped 22 points, Operations 18, Engineering 11. The only department above 30% is Legal & Compliance at 38% — and even that is down 5%. Don\'t present this as a metrics slide. Present it as a question: "We can see usage across every team has dropped significantly since [date]. Can you help us understand what changed internally?" You need them to tell you the story, not the other way around.',
           risks:     'Everything on this slide is critical. Don\'t soften the language. The goal isn\'t to make them feel bad — it\'s to show that you see the situation clearly and aren\'t pretending otherwise.',
           renewal:   'Six weeks out with a past cancellation deadline. This is not a standard renewal conversation — it\'s a decision point. Be direct: "We want to earn the next term, but we need to understand where things stand first."',
           nextSteps: 'The only goal of this meeting is to identify the new decision-maker and schedule a follow-up within one week. Don\'t try to close anything today. Listen more than you talk.',

@@ -411,6 +411,8 @@
     renderDeck(account);
   }
 
+  const selectedPrompts = {};
+
   function tierColor(t) { return t === 'green' ? 'var(--green)' : t === 'red' ? 'var(--red)' : 'var(--amber)'; }
   function tierClass(t) { return t === 'green' ? 'green' : t === 'red' ? 'red' : 'amber'; }
   function tierHex(t)   { return t === 'green' ? '22d98a' : t === 'red' ? 'ff5c6a' : 'f5a623'; }
@@ -497,8 +499,6 @@
   }
 
   // ── PROMPT CHIPS ──────────────────────────────────────────────────────────
-  // selectedPrompts: { sectionKey: [index, index, ...] }
-  const selectedPrompts = {};
 
   function renderPrompts(panelId, sectionKey, prompts) {
     if (!prompts || !prompts.length) return;

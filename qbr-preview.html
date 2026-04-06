@@ -64,6 +64,24 @@
     .btn-sage.active { background: rgba(167,139,250,0.16); border-color: var(--sage); }
     .btn-export { background: var(--teal-bg); border-color: rgba(0,201,167,0.25); color: var(--teal); }
     .btn-export:hover { background: rgba(0,201,167,0.14); border-color: var(--teal); }
+    .btn-notes { background: var(--sage-bg); border-color: var(--sage-border); color: var(--sage); }
+    .btn-notes:hover { background: rgba(167,139,250,0.14); border-color: var(--sage); }
+
+    .sage-prompts { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .sage-prompts-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage); margin-bottom: 4px; opacity: 0.7; }
+    .prompt-chip {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--sage-border);
+      background: rgba(167,139,250,0.04);
+      cursor: pointer; transition: all 0.15s;
+      font-size: 12.5px; color: var(--muted); line-height: 1.5;
+      text-align: left; width: 100%; font-family: 'DM Sans', sans-serif;
+    }
+    .prompt-chip:hover { background: rgba(167,139,250,0.10); color: var(--text); border-color: var(--sage); }
+    .prompt-chip.selected { background: rgba(167,139,250,0.16); color: var(--text); border-color: var(--sage); }
+    .prompt-chip-check { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--sage-border); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.15s; }
+    .prompt-chip.selected .prompt-chip-check { background: var(--sage); border-color: var(--sage); color: #fff; }
 
     .export-dropdown {
       position: absolute; top: calc(100% + 8px); right: 0;
@@ -252,6 +270,7 @@
   </div>
   <div class="topbar-actions">
     <button class="btn btn-sage" id="btn-sage-all" onclick="toggleAllSage()">✦ Prep Mode</button>
+    <button class="btn btn-notes" onclick="generateNotes()">◈ Generate Notes</button>
     <button class="btn btn-export" onclick="toggleExportMenu()">⬇ Export</button>
     <div class="export-dropdown" id="export-dropdown">
       <div class="export-dropdown-header">Export Options</div>
@@ -437,6 +456,7 @@
       <div class="section-divider"><div class="section-divider-label">Score Breakdown</div><div class="section-divider-line"></div></div>
       ${[{label:'Adoption rate',val:a.adoptionPct},{label:'NPS',val:a.nps},{label:'Health score',val:a.healthScore},{label:'Last touch',val:touchScore},{label:'Support health',val:supportScore}].map(r=>{const bc=barColor(r.val);return `<div class="health-bar-row"><div class="health-bar-label">${r.label}</div><div class="health-bar-wrap"><div class="health-bar-fill ${bc}" style="width:${r.val}%"></div></div><div class="health-bar-score ${bc}">${r.val}</div></div>`;}).join('')}`;
     document.getElementById('sage-health-text').textContent = q.sagePrep.health;
+    renderPrompts('sage-health', 'health', q.prompts.health);
 
     const at = barColor(a.adoptionPct);
     document.getElementById('slide-adoption-body').innerHTML = `
@@ -449,10 +469,12 @@
       <div class="health-bar-row"><div class="health-bar-label">Platform usage</div><div class="health-bar-wrap" style="height:10px;border-radius:5px;"><div class="health-bar-fill ${at}" style="width:${a.adoptionPct}%;height:100%;border-radius:5px;"></div></div><div class="health-bar-score ${at}">${a.adoptionPct}%</div></div>
       <div style="margin-top:20px;">${(a.riskFlags||[]).filter(f=>f.type!=='ok').length?(a.riskFlags||[]).filter(f=>f.type!=='ok').map(f=>`<div class="risk-item ${f.type}" style="margin-bottom:8px;"><div class="risk-dot"></div>${f.text}</div>`).join(''):`<div class="risk-item ok"><div class="risk-dot"></div>No adoption concerns flagged.</div>`}</div>`;
     document.getElementById('sage-adoption-text').textContent = q.sagePrep.adoption;
+    renderPrompts('sage-adoption', 'adoption', q.prompts.adoption);
 
     document.getElementById('wins-list').innerHTML = q.wins.map(w=>`<li><div class="win-icon">✓</div>${w}</li>`).join('');
     document.getElementById('risks-list').innerHTML = q.risks.map(r=>`<div class="risk-item ${r.type}"><div class="risk-dot"></div>${r.text}</div>`).join('');
     document.getElementById('sage-risks-text').textContent = q.sagePrep.risks;
+    renderPrompts('sage-risks', 'risks', q.prompts.risks);
 
     document.getElementById('slide-renewal-body').innerHTML = `
       <div class="metric-row">
@@ -462,9 +484,11 @@
       </div>
       <div class="renewal-box"><div class="renewal-box-label">Context</div><div class="renewal-box-text">${q.renewalNote}</div></div>`;
     document.getElementById('sage-renewal-text').textContent = q.sagePrep.renewal;
+    renderPrompts('sage-renewal', 'renewal', q.prompts.renewal);
 
     document.getElementById('goals-list').innerHTML = q.goals.map((g,i)=>`<li><div class="goal-num">${i+1}</div>${g}</li>`).join('');
     document.getElementById('sage-next-text').textContent = q.sagePrep.nextSteps;
+    renderPrompts('sage-next', 'nextSteps', q.prompts.nextSteps);
 
     document.getElementById('tldr-grid').innerHTML = `
       <div class="tldr-panel working"><div class="tldr-icon">✓</div><div class="tldr-label">What's working</div><div class="tldr-text">${q.tldr.working}</div></div>
@@ -472,7 +496,59 @@
       <div class="tldr-panel commit"><div class="tldr-icon">→</div><div class="tldr-label">What we're committing to</div><div class="tldr-text">${q.tldr.committing}</div></div>`;
   }
 
-  // ── SAGE ──────────────────────────────────────────────────────────────────
+  // ── PROMPT CHIPS ──────────────────────────────────────────────────────────
+  // selectedPrompts: { sectionKey: [index, index, ...] }
+  const selectedPrompts = {};
+
+  function renderPrompts(panelId, sectionKey, prompts) {
+    if (!prompts || !prompts.length) return;
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    if (!selectedPrompts[sectionKey]) selectedPrompts[sectionKey] = [];
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'sage-prompts';
+    wrapper.innerHTML = `<div class="sage-prompts-label">Discussion Prompts — select the ones that fit</div>`;
+
+    prompts.forEach((text, i) => {
+      const isSelected = selectedPrompts[sectionKey].includes(i);
+      const chip = document.createElement('button');
+      chip.className = `prompt-chip${isSelected ? ' selected' : ''}`;
+      chip.dataset.section = sectionKey;
+      chip.dataset.index   = i;
+      chip.innerHTML = `<span class="prompt-chip-check">${isSelected ? '✓' : ''}</span><span>${text}</span>`;
+      chip.addEventListener('click', () => togglePrompt(sectionKey, i, chip));
+      wrapper.appendChild(chip);
+    });
+
+    panel.appendChild(wrapper);
+  }
+
+  function togglePrompt(sectionKey, index, chip) {
+    if (!selectedPrompts[sectionKey]) selectedPrompts[sectionKey] = [];
+    const arr = selectedPrompts[sectionKey];
+    const pos = arr.indexOf(index);
+    if (pos === -1) {
+      arr.push(index);
+      chip.classList.add('selected');
+      chip.querySelector('.prompt-chip-check').textContent = '✓';
+    } else {
+      arr.splice(pos, 1);
+      chip.classList.remove('selected');
+      chip.querySelector('.prompt-chip-check').textContent = '';
+    }
+  }
+
+  // ── GENERATE NOTES ────────────────────────────────────────────────────────
+  function generateNotes() {
+    if (!account) return;
+    // Save selections and account id to sessionStorage for notes page
+    sessionStorage.setItem('syncdash_qbr_account',   account.id);
+    sessionStorage.setItem('syncdash_qbr_selections', JSON.stringify(selectedPrompts));
+    window.open(`qbr-notes.html?account=${account.id}`, '_blank');
+  }
+
+  // ── SAGE TOGGLE ───────────────────────────────────────────────────────────
   function toggleSage(id) {
     const panel = document.getElementById(id);
     const btn   = panel.previousElementSibling.querySelector('button');

@@ -113,6 +113,33 @@ const SyncDash = (() => {
           renewal:   'Eight months out is the sweet spot — early enough to plan, not so early it feels like a sales call. Float the UK expansion conversation naturally here.',
           nextSteps: 'Keep the ask light. This account doesn\'t need pressure — it needs to feel valued. Confirm the Q2 expansion scoping call and thank them for being a strong partner.',
         },
+        prompts: {
+          health: [
+            'Your health score is sitting at 91 — what does your team feel is driving that?',
+            'We\'re seeing strong numbers across the board. What would a 95+ look like for you internally?',
+            'Is there anything on the health side you\'d want us to be watching more closely?',
+          ],
+          adoption: [
+            'Finance is your highest-adopting team at 94% — what\'s made it work so well there?',
+            'Sales is slightly below the rest at 79%. Is there anything your team needs to get more value from the platform?',
+            'Engineering is trending up — are there any new workflows or integrations your team is exploring?',
+          ],
+          risks: [
+            'No active risks to flag today — what\'s coming up on your end we should be planning around?',
+            'Are there any internal changes — team, process, or org — we should know about heading into Q2?',
+            'Everything looks stable. Is there anything you wish you were getting from us that you\'re not?',
+          ],
+          renewal: [
+            'We\'re 8 months out from renewal — when would you want to start that conversation formally?',
+            'The UK entity expansion is something we\'d love to support. What does the timeline look like on your end?',
+            'Are there other teams or use cases you\'ve been thinking about expanding to?',
+          ],
+          nextSteps: [
+            'Let\'s lock in a Q2 scoping call for the UK expansion — what does your calendar look like in April?',
+            'Is there anything we can do between now and Q3 to make sure adoption stays above 85%?',
+            'Who else on your team should we be looping in as you grow?',
+          ],
+        },
       },
     },
 
@@ -209,6 +236,33 @@ const SyncDash = (() => {
           renewal:   'Three months out with a past cancellation deadline is tight. Don\'t hide that. Be direct: "I want to make sure we earn the renewal — let\'s talk about what that looks like." Then listen.',
           nextSteps: 'You need two firm commitments from them: a follow-up call in two weeks on the ticket resolution, and a renewal conversation before end of April. Get both on the calendar before you leave.',
         },
+        prompts: {
+          health: [
+            'Our health score dropped to 63 this quarter — most of that is tied to the Finance workflow issue. Can we walk through what happened and what we\'re doing about it?',
+            'I want to be upfront about where we are. The score reflects a real blocker we\'re actively resolving. What would it take for you to feel confident heading into renewal?',
+            'The 63 is a reflection of one specific issue, not the overall relationship. HR and Benefits Admin are strong. Where do you feel the platform is working best for your team?',
+          ],
+          adoption: [
+            'HR is at 91% and Benefits Admin at 86% — what\'s made those teams so successful with the platform?',
+            'Finance dropped 14 points this quarter. We believe it\'s tied to the workflow block — but what are you hearing from that team directly?',
+            'Operations is also slipping slightly. Are there any workflow or process changes on your end that might be contributing?',
+          ],
+          risks: [
+            'Ticket #1042 is our top priority right now. Can we align on what resolution looks like and a realistic timeline?',
+            'The Finance adoption drop and the support ticket are connected — once the workflow is fixed, we expect usage to recover. Does that match your team\'s experience?',
+            'Are there any other blockers your team is running into that haven\'t made it into a support ticket yet?',
+          ],
+          renewal: [
+            'We\'re 3 months out and I want to get ahead of this. What would need to be true for renewal to be a straightforward yes?',
+            'I\'d rather have an honest conversation now than wait — are there concerns about continuing that we should address directly?',
+            'Can we schedule a dedicated renewal conversation before end of April, once we have the ticket resolved?',
+          ],
+          nextSteps: [
+            'Can we commit to a follow-up in two weeks to confirm the Finance workflow is resolved and adoption is recovering?',
+            'Who needs to be in the room for the renewal conversation — is that you and Marcus Kim, or are there others?',
+            'What would make this the easiest renewal decision you\'ve made?',
+          ],
+        },
       },
     },
 
@@ -302,6 +356,33 @@ const SyncDash = (() => {
           risks:     'Everything on this slide is critical. Don\'t soften the language. The goal isn\'t to make them feel bad — it\'s to show that you see the situation clearly and aren\'t pretending otherwise.',
           renewal:   'Six weeks out with a past cancellation deadline. This is not a standard renewal conversation — it\'s a decision point. Be direct: "We want to earn the next term, but we need to understand where things stand first."',
           nextSteps: 'The only goal of this meeting is to identify the new decision-maker and schedule a follow-up within one week. Don\'t try to close anything today. Listen more than you talk.',
+        },
+        prompts: {
+          health: [
+            'We\'re seeing a health score of 31 and wanted to come to you directly. Can you help us understand what\'s been happening on your end?',
+            'I\'m not going to sugarcoat what we\'re seeing — usage has dropped significantly. We\'re here because we want to fix it if we can. What changed?',
+            'Before we go through the data, I want to ask — how is the team feeling about the platform right now?',
+          ],
+          adoption: [
+            'Usage has dropped across every department over the past 30 days. Scheduling is at 28% and Operations at 31%. Can you walk us through what\'s been happening internally?',
+            'Legal & Compliance is your only team holding above 30% at 38%. What\'s different about how that team is using the platform?',
+            'Engineering is at 12% — that\'s a significant drop. Is there something specific that\'s blocking that team from logging in?',
+          ],
+          risks: [
+            'Marcus Webb has left the company and we haven\'t been able to connect with anyone new. Who is the right person for us to be working with going forward?',
+            'There\'s been no platform activity in 23 days. We want to understand whether that\'s a temporary gap or something bigger.',
+            'We have an open escalation and a renewal in 6 weeks. What would need to happen for us to get back on track?',
+          ],
+          renewal: [
+            'We\'re 6 weeks out from renewal and I want to be direct — what does the path forward look like from your perspective?',
+            'We\'re not here to pressure a decision. We\'re here to understand if there\'s a way to make this work for your team. What would that look like?',
+            'If you were to not renew, what would be the primary reason? I\'d rather know now so we can address it.',
+          ],
+          nextSteps: [
+            'Can we get 30 minutes on the calendar next week with whoever is now responsible for this platform decision?',
+            'We\'d like to do a re-onboarding session with your Scheduling and Operations teams if you\'re open to it. Would that be valuable?',
+            'What would you need to see from us in the next 4 weeks to feel confident about continuing?',
+          ],
         },
       },
     },

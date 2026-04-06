@@ -248,10 +248,22 @@
 
   const params     = new URLSearchParams(window.location.search);
   const id         = params.get('account');
-  const type       = params.get('type') || sessionStorage.getItem('syncdash_qbr_type') || 'internal';
+  const type       = params.get('type') || 'internal';
   const isClient   = type === 'client';
   const account    = id ? SyncDash.getAccount(id) : null;
-  const selections = JSON.parse(sessionStorage.getItem('syncdash_qbr_selections') || '{}');
+
+  // Read selections from URL param (passed by generateNotes) with sessionStorage fallback
+  let selections = {};
+  try {
+    const selParam = params.get('sel');
+    if (selParam) {
+      selections = JSON.parse(decodeURIComponent(selParam));
+    } else {
+      selections = JSON.parse(sessionStorage.getItem('syncdash_qbr_selections') || '{}');
+    }
+  } catch(e) {
+    selections = {};
+  }
 
   const qbrData = account ? (isClient ? account.qbrClient : account.qbr) : null;
 

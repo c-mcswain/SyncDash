@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Site Analytics — Private</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b24;
+      --surface2:#1c2333;
+      --border:  #242d3d;
+      --border2: #2e3a50;
+      --text:    #e2e8f0;
+      --muted:   #7a8ba3;
+      --faint:   #3d4f68;
+      --teal:    #00c9a7;
+      --teal-bg: rgba(0,201,167,0.08);
+      --green:   #22d98a;
+      --green-bg:rgba(34,217,138,0.10);
+      --amber:   #f5a623;
+      --amber-bg:rgba(245,166,35,0.10);
+      --red:     #ff5c6a;
+      --red-bg:  rgba(255,92,106,0.10);
+      --sage:    #a78bfa;
+      --radius:  10px;
+      --radius-sm:6px;
+    }
+    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; }
+
+    /* ── LOGIN ── */
+    .login-wrap {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; flex-direction: column; gap: 16px;
+    }
+    .login-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 40px; width: 320px;
+    }
+    .login-logo { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text); margin-bottom: 24px; text-align: center; }
+    .login-logo span { color: var(--teal); }
+    .login-label { font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; display: block; }
+    .login-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; }
+    .login-input:focus { border-color: var(--teal); }
+    .login-btn { width: 100%; margin-top: 16px; padding: 10px; background: var(--teal); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .login-btn:hover { background: #00b395; }
+    .login-error { font-size: 12px; color: var(--red); text-align: center; margin-top: 8px; }
+
+    /* ── DASHBOARD ── */
+    .dashboard { display: none; padding: 32px 28px 60px; max-width: 1100px; margin: 0 auto; }
+
+    .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+    .topbar-logo { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; }
+    .topbar-logo span { color: var(--teal); }
+    .topbar-badge { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; background: var(--red-bg); border: 1px solid rgba(255,92,106,0.25); color: var(--red); }
+    .topbar-meta { flex: 1; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .btn:hover { color: var(--text); border-color: var(--border2); }
+    .btn-teal { background: var(--teal-bg); border-color: rgba(0,201,167,0.25); color: var(--teal); }
+    .btn-teal:hover { background: rgba(0,201,167,0.14); border-color: var(--teal); }
+    .btn-active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
+
+    /* ── FILTERS ── */
+    .filters { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+    .filter-group { display: flex; gap: 6px; }
+    .filter-label { font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); align-self: center; margin-right: 4px; }
+    .date-input { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; font-size: 12px; color: var(--text); font-family: 'DM Mono', monospace; outline: none; }
+    .date-input:focus { border-color: var(--teal); }
+
+    /* ── STATS ROW ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+    .stat-label { font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+    .stat-value { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-value.teal  { color: var(--teal); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.amber { color: var(--amber); }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── SECTION ── */
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+    .section-count { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--faint); }
+
+    /* ── TABLE ── */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--surface2); }
+    th { padding: 10px 16px; text-align: left; font-size: 10px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+    td { padding: 10px 16px; font-size: 12.5px; color: var(--text); border-top: 1px solid var(--border); }
+    tr:hover td { background: var(--surface2); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 600; }
+    .badge-syncdash    { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(0,201,167,0.2); }
+    .badge-synctoscale { background: var(--sage-bg, rgba(167,139,250,0.08)); color: var(--sage); border: 1px solid rgba(167,139,250,0.2); }
+    .badge-about { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+    .time-muted { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+
+    /* ── PAGE BREAKDOWN ── */
+    .page-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .page-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+    .page-tile-title { font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 12px; }
+    .page-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .page-row:last-child { margin-bottom: 0; }
+    .page-name { font-size: 12px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'DM Mono', monospace; }
+    .page-bar-wrap { width: 100px; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+    .page-bar-fill { height: 100%; border-radius: 3px; background: var(--teal); }
+    .page-count { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; width: 28px; text-align: right; flex-shrink: 0; }
+
+    .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+    .loading { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; animation: pulse 1.5s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">Sync<span>Dash</span> Analytics</div>
+    <label class="login-label">Password</label>
+    <input class="login-input" type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <button class="login-btn" onclick="checkPw()">View Analytics</button>
+    <div class="login-error" id="pw-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">Sync<span>Dash</span> · Analytics</div>
+    </div>
+    <span class="topbar-badge">Private</span>
+    <div class="topbar-meta"></div>
+    <div class="topbar-actions">
+      <div class="filter-group">
+        <span class="filter-label">Site</span>
+        <button class="btn btn-active" id="filter-all"         onclick="setFilter('all')">All</button>
+        <button class="btn"           id="filter-syncdash"    onclick="setFilter('SyncDash')">SyncDash</button>
+        <button class="btn"           id="filter-synctoscale" onclick="setFilter('SyncToScale')">SyncToScale</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">From</span>
+        <input class="date-input" type="date" id="date-from" onchange="loadData()"/>
+        <span class="filter-label">To</span>
+        <input class="date-input" type="date" id="date-to" onchange="loadData()"/>
+      </div>
+      <button class="btn btn-teal" onclick="loadData()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-tile"><div class="stat-label">Total Visits</div><div class="stat-value teal" id="stat-total">—</div><div class="stat-sub">all pages, all sites</div></div>
+    <div class="stat-tile"><div class="stat-label">Unique Visitors</div><div class="stat-value green" id="stat-unique">—</div><div class="stat-sub">by fingerprint</div></div>
+    <div class="stat-tile"><div class="stat-label">About Page Visits</div><div class="stat-value amber" id="stat-about">—</div><div class="stat-sub">recruiter signal</div></div>
+    <div class="stat-tile"><div class="stat-label">Locations</div><div class="stat-value" id="stat-locations">—</div><div class="stat-sub">unique cities</div></div>
+  </div>
+
+  <!-- PAGE BREAKDOWN -->
+  <div class="page-grid">
+    <div class="page-tile">
+      <div class="page-tile-title">SyncDash — Top Pages</div>
+      <div id="pages-syncdash"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="page-tile">
+      <div class="page-tile-title">SyncToScale — Top Pages</div>
+      <div id="pages-synctoscale"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- VISIT LOG -->
+  <div class="section-header">
+    <div class="section-title">Visit Log</div>
+    <div class="section-line"></div>
+    <div class="section-count" id="log-count"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Site</th>
+          <th>Page</th>
+          <th>City</th>
+          <th>Region</th>
+          <th>Country</th>
+          <th>Visitor ID</th>
+        </tr>
+      </thead>
+      <tbody id="visit-log"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://nrfoukmdpchqcagmvquj.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5yZm91a21kcGNocWNhZ212cXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwODczODksImV4cCI6MjA5MTY2MzM4OX0.dSY2zVFJbR6MzqkuBW6G7yTLPYtlGN1bG_lt3jCAOJM';
+  const PASSWORD   = 'CQ2026';
+
+  let currentFilter = 'all';
+
+  // ── AUTH ──────────────────────────────────────────────────────────────────
+  function checkPw() {
+    const val = document.getElementById('pw-input').value;
+    if (val === PASSWORD) {
+      document.getElementById('login-wrap').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      setDefaultDates();
+      loadData();
+    } else {
+      document.getElementById('pw-error').textContent = 'Incorrect password.';
+    }
+  }
+
+  function setDefaultDates() {
+    const today = new Date();
+    const from  = new Date(today);
+    from.setDate(from.getDate() - 30);
+    document.getElementById('date-to').value   = today.toISOString().slice(0,10);
+    document.getElementById('date-from').value = from.toISOString().slice(0,10);
+  }
+
+  // ── FILTER ────────────────────────────────────────────────────────────────
+  function setFilter(f) {
+    currentFilter = f;
+    ['all','syncdash','synctoscale'].forEach(id => {
+      document.getElementById(`filter-${id}`).className = 'btn' + (
+        (f === 'all' && id === 'all') ||
+        (f === 'SyncDash' && id === 'syncdash') ||
+        (f === 'SyncToScale' && id === 'synctoscale')
+        ? ' btn-active' : ''
+      );
+    });
+    loadData();
+  }
+
+  // ── FETCH ─────────────────────────────────────────────────────────────────
+  async function fetchVisits() {
+    const from = document.getElementById('date-from').value;
+    const to   = document.getElementById('date-to').value;
+
+    let url = `${SUPABASE_URL}/rest/v1/visits?select=*&order=created_at.desc&limit=500`;
+    if (from) url += `&created_at=gte.${from}T00:00:00`;
+    if (to)   url += `&created_at=lte.${to}T23:59:59`;
+    if (currentFilter !== 'all') url += `&site=eq.${currentFilter}`;
+
+    const res = await fetch(url, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    return await res.json();
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const visits = await fetchVisits();
+
+      // Stats
+      const unique    = new Set(visits.map(v => v.fingerprint)).size;
+      const aboutHits = visits.filter(v => v.page && v.page.toLowerCase().includes('about')).length;
+      const cities    = new Set(visits.map(v => v.city).filter(c => c && c !== 'unknown')).size;
+
+      document.getElementById('stat-total').textContent     = visits.length;
+      document.getElementById('stat-unique').textContent    = unique;
+      document.getElementById('stat-about').textContent     = aboutHits;
+      document.getElementById('stat-locations').textContent = cities;
+      document.getElementById('log-count').textContent      = `${visits.length} records`;
+
+      // Page breakdowns
+      renderPageBreakdown(visits.filter(v => v.site === 'SyncDash'),    'pages-syncdash');
+      renderPageBreakdown(visits.filter(v => v.site === 'SyncToScale'), 'pages-synctoscale');
+
+      // Visit log
+      const tbody = document.getElementById('visit-log');
+      if (!visits.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">No visits in this range yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = visits.map(v => {
+        const dt   = new Date(v.created_at);
+        const time = dt.toLocaleDateString('en-US', {month:'short',day:'numeric'}) + ' ' +
+                     dt.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+        const siteBadge = v.site === 'SyncDash'
+          ? `<span class="badge badge-syncdash">SyncDash</span>`
+          : `<span class="badge badge-synctoscale">SyncToScale</span>`;
+        const isAbout = v.page && v.page.toLowerCase().includes('about');
+        const pageDisplay = isAbout
+          ? `<span class="badge badge-about">${v.page}</span>`
+          : `<span class="time-muted">${v.page || '/'}</span>`;
+
+        return `<tr>
+          <td class="time-muted">${time}</td>
+          <td>${siteBadge}</td>
+          <td>${pageDisplay}</td>
+          <td>${v.city    || '—'}</td>
+          <td>${v.region  || '—'}</td>
+          <td>${v.country || '—'}</td>
+          <td class="time-muted">${(v.fingerprint || '').slice(0,8)}...</td>
+        </tr>`;
+      }).join('');
+
+    } catch(e) {
+      document.getElementById('visit-log').innerHTML =
+        `<tr><td colspan="7" class="empty">Error loading data. Check console.</td></tr>`;
+      console.error(e);
+    }
+  }
+
+  function renderPageBreakdown(visits, containerId) {
+    const container = document.getElementById(containerId);
+    if (!visits.length) {
+      container.innerHTML = `<div class="empty">No visits yet.</div>`;
+      return;
+    }
+
+    const counts = {};
+    visits.forEach(v => {
+      const page = (v.page || '/').split('?')[0];
+      counts[page] = (counts[page] || 0) + 1;
+    });
+
+    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+    const max    = sorted[0]?.[1] || 1;
+
+    container.innerHTML = sorted.map(([page, count]) => `
+      <div class="page-row">
+        <div class="page-name">${page}</div>
+        <div class="page-bar-wrap"><div class="page-bar-fill" style="width:${Math.round(count/max*100)}%"></div></div>
+        <div class="page-count">${count}</div>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

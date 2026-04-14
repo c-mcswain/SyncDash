@@ -426,6 +426,809 @@
     <a class="nav-item" id="nav-qbr-builder" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
     <a class="nav-item" href="dashboard.html#integrations"><span class="nav-icon">⊞</span> Integrations</a>
     <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
+    <a class="nav-item" href="about.html"><span class="nav-icon">◎</span> About This Project</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">CM</div>
+      <div>
+        <div class="user-name">Christy M.</div>
+        <div class="user-role">Technical Account Manager</div>
+      </div>
+    </div>
+    <button onclick="handleLogout()" style="margin-top:10px;width:100%;padding:7px 0;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">↩ Log out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="dashboard.html">Accounts</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current" id="breadcrumb-name">—</span>
+    </div>
+    <div class="topbar-actions">
+      <a class="action-btn ghost" href="dashboard.html">← Back</a>
+      <button class="action-btn ghost" id="btn-export-csv">⬇ CSV</button>
+      <button class="action-btn ghost" id="btn-export-json">⬇ JSON</button>
+      <a class="action-btn ghost" id="btn-client-qbr" href="#">◎ Client QBR</a>
+      <a class="action-btn teal" id="btn-build-qbr" href="#">✦ Internal QBR</a>
+    </div>
+  </div>
+
+  <div class="account-header">
+    <div class="account-title-block">
+      <div class="account-name" id="account-name">—</div>
+      <div class="account-meta" id="account-meta"></div>
+    </div>
+    <div class="health-badge" id="health-badge">
+      <span>Health</span>
+      <span class="health-badge-score" id="health-score">—</span>
+      <span style="font-size:11px;opacity:0.6">/100</span>
+      <span style="font-size:11px;margin-left:4px;" id="health-tier-label">—</span>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <div class="tab active" onclick="showTab('overview', this)">Overview</div>
+    <div class="tab"        onclick="showTab('activity', this)">Activity</div>
+    <div class="tab"        onclick="showTab('contract', this)">Contract</div>
+    <div class="tab"        onclick="showTab('signals',  this)">Nova Signals</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="three-col" style="margin-bottom:16px;" id="stat-tiles"></div>
+    <div class="two-col">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Health Score Breakdown</div>
+            <span id="health-panel-score" style="font-size:11px;font-family:'DM Mono',monospace;"></span>
+          </div>
+          <div class="panel-body" id="health-breakdown"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Risk Flags</div></div>
+          <div class="panel-body" id="risk-flags-panel"></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">✦ Nova Signal</div></div>
+          <div class="panel-body" id="nova-signal-panel"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Contract Snapshot</div></div>
+          <div class="panel-body"><div class="contract-grid" id="contract-snapshot"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="tab-content" id="tab-activity">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Activity Feed</div></div>
+      <div class="panel-body" style="padding-top:4px;padding-bottom:4px;" id="activity-feed"></div>
+    </div>
+  </div>
+
+  <!-- CONTRACT -->
+  <div class="tab-content" id="tab-contract">
+    <div id="contract-summary-card" style="margin-bottom:16px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="action-btn ghost" id="btn-contract-download-tab">⬇ Download PDF</button>
+      <button class="action-btn teal" id="btn-contract-reopen">↗ Open Contract</button>
+    </div>
+  </div>
+
+  <!-- NOVA SIGNALS -->
+  <div class="tab-content" id="tab-signals">
+    <div style="max-width:640px;">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">✦ Nova Signals</div>
+          <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);">AI-surfaced insights</span>
+        </div>
+        <div class="panel-body" id="nova-full-panel"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="accounts.js"></script>
+<script src="contract-generator.js"></script>
+<script>
+  // ── SESSION CHECK ─────────────────────────────────────────────────────────
+  if (!localStorage.getItem('syncdash_user')) {
+    window.location.replace('login.html');
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('syncdash_user');
+    localStorage.removeItem('syncdash_accounts');
+    window.location.replace('login.html');
+  }
+
+  // ── LOAD ACCOUNT FROM URL PARAM ───────────────────────────────────────────
+  const params  = new URLSearchParams(window.location.search);
+  const id      = params.get('account');
+  const account = id ? SyncDash.getAccount(id) : null;
+
+  if (!account) {
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:var(--muted);font-family:'DM Sans',sans-serif;background:var(--bg);">
+        <div style="font-size:32px;">◎</div>
+        <div style="font-size:16px;color:var(--text);">Account not found</div>
+        <div style="font-size:13px;">No account matching "${id || 'unknown'}" exists in SyncDash.</div>
+        <a href="dashboard.html" style="margin-top:8px;color:#00c9a7;font-size:13px;text-decoration:none;">← Back to dashboard</a>
+      </div>`;
+  } else {
+    renderAll(account);
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  function renderAll(a) {
+    const tier  = a.healthTier;
+    const color = tier === 'green' ? 'var(--green)' : tier === 'red' ? 'var(--red)' : 'var(--amber)';
+    const bgCol = tier === 'green' ? 'var(--green-bg)' : tier === 'red' ? 'var(--red-bg)' : 'var(--amber-bg)';
+    const bdCol = tier === 'green' ? 'rgba(34,217,138,0.25)' : tier === 'red' ? 'rgba(255,92,106,0.25)' : 'rgba(245,166,35,0.25)';
+    const tierLabel = { green: '✓ Healthy', amber: '⚠ At Risk', red: '✕ Critical' };
+
+    document.title = `SyncDash — ${a.name}`;
+
+    // Wire QBR button and sidebar QBR link dynamically to this account
+    document.getElementById('btn-build-qbr').href = `qbr-preview.html?account=${a.id}`;
+    document.getElementById('btn-client-qbr').href = `qbr-client.html?account=${a.id}`;
+    document.getElementById('nav-qbr-builder').href = `qbr-preview.html?account=${a.id}`;
+
+    // Header
+    document.getElementById('breadcrumb-name').textContent = a.name;
+    document.getElementById('account-name').textContent = a.name;
+    document.getElementById('account-meta').innerHTML = `
+      ${a.industry}
+      <span class="account-meta-dot"></span>
+      ${a.employees.toLocaleString()} employees
+      <span class="account-meta-dot"></span>
+      NPS: ${a.nps}
+      <span class="account-meta-dot"></span>
+      Last touch: ${formatLastTouch(a.lastTouchDays)}
+    `;
+
+    // Health badge
+    const badge = document.getElementById('health-badge');
+    Object.assign(badge.style, { background: bgCol, border: `1px solid ${bdCol}`, color });
+    document.getElementById('health-score').textContent = a.healthScore;
+    document.getElementById('health-tier-label').textContent = tierLabel[tier];
+
+    // Stat tiles
+    document.getElementById('stat-tiles').innerHTML = `
+      <div class="stat-tile">
+        <div class="stat-label">Overall Adoption</div>
+        <div class="stat-value ${tier}">${a.adoptionPct}%</div>
+        <div class="stat-sub">${a.employees.toLocaleString()} licensed users</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Renewal</div>
+        <div class="stat-value ${a.renewalTier}">${formatRenewal(a.renewalMonths)}</div>
+        <div class="stat-sub">$${a.arr.toLocaleString()} ARR</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">NPS Score</div>
+        <div class="stat-value ${npsColor(a.nps)}">${a.nps}</div>
+        <div class="stat-sub">${a.openTickets} open ticket${a.openTickets !== 1 ? 's' : ''}${a.escalationOpen ? ' · Escalation open' : ''}</div>
+      </div>
+    `;
+
+    // Health breakdown
+    const hScore = document.getElementById('health-panel-score');
+    hScore.textContent = `${a.healthScore} / 100`;
+    hScore.style.color = color;
+
+    const supportScore = a.openTickets === 0 ? 90 : a.escalationOpen ? 20 : 50;
+    const touchScore   = Math.max(0, 100 - (a.lastTouchDays * 4));
+
+    document.getElementById('health-breakdown').innerHTML = [
+      { label: 'Adoption rate',   val: a.adoptionPct },
+      { label: 'NPS',             val: a.nps },
+      { label: 'Health score',    val: a.healthScore },
+      { label: 'Last touch',      val: touchScore },
+      { label: 'Support health',  val: supportScore },
+    ].map(row => {
+      const t = row.val >= 70 ? 'green' : row.val >= 40 ? 'amber' : 'red';
+      return `
+        <div class="health-row">
+          <div class="health-label">${row.label}</div>
+          <div class="health-bar-wrap"><div class="health-bar-fill ${t}" style="width:${row.val}%"></div></div>
+          <div class="health-score-sm ${t}">${row.val}</div>
+        </div>`;
+    }).join('');
+
+    // Risk flags
+    const flagMap = { ok: '✓', warn: '⚠', crit: '✕' };
+    document.getElementById('risk-flags-panel').innerHTML = (a.riskFlags || []).length
+      ? (a.riskFlags || []).map(f => `<span class="risk-flag ${f.type}">${flagMap[f.type] || '·'} ${f.text}</span>`).join('')
+      : `<span style="font-size:13px;color:var(--muted);">No active risk flags.</span>`;
+
+    // Nova signal
+    const signalIcons = { crit: '⚡', warn: '◎', info: '↑', ok: '✓' };
+    const s = a.novaSignal;
+    const novaHTML = s
+      ? `<div class="signal-item ${s.type}">
+           <div class="signal-icon">${signalIcons[s.type] || '◎'}</div>
+           <div><div class="signal-title">${s.title}</div><div class="signal-text">${s.text}</div></div>
+         </div>`
+      : `<span style="font-size:13px;color:var(--muted);">No active Nova signals.</span>`;
+
+    document.getElementById('nova-signal-panel').innerHTML = novaHTML;
+    document.getElementById('nova-full-panel').innerHTML = novaHTML;
+
+    // Contract snapshot (overview tab)
+    const renewalVal = formatRenewal(a.renewalMonths);
+    document.getElementById('contract-snapshot').innerHTML = `
+      <div><div class="contract-label">ARR</div><div class="contract-value">$${a.arr.toLocaleString()}</div></div>
+      <div><div class="contract-label">Renewal</div><div class="contract-value ${a.renewalTier}">${renewalVal}</div></div>
+      <div><div class="contract-label">Employees</div><div class="contract-value">${a.employees.toLocaleString()}</div></div>
+      <div><div class="contract-label">NPS</div><div class="contract-value">${a.nps}</div></div>
+    `;
+
+    // Contract tab — summary card
+    renderContractSummary(a);
+
+    // Activity feed
+    const feed = a.activityFeed || [];
+    document.getElementById('activity-feed').innerHTML = feed.length
+      ? feed.map(item => `
+          <div class="feed-item">
+            <div class="feed-icon ${item.type}">${item.icon}</div>
+            <div>
+              <div class="feed-text">${item.text}</div>
+              <div class="feed-time">${relativeDate(item.date)}</div>
+            </div>
+          </div>`).join('')
+      : `<div style="padding:8px 0;font-size:13px;color:var(--muted);">No recent activity.</div>`;
+
+    // Export buttons
+    document.getElementById('btn-export-csv').addEventListener('click',  () => SyncDash.exportAccount(a.id, 'csv'));
+    document.getElementById('btn-export-json').addEventListener('click', () => SyncDash.exportAccount(a.id, 'json'));
+
+    // In-tab contract buttons
+    const dlBtn = document.getElementById('btn-contract-download-tab');
+    if (dlBtn) dlBtn.addEventListener('click', () => SyncDash.generateContract(a.id));
+
+    const reopenBtn = document.getElementById('btn-contract-reopen');
+    if (reopenBtn) reopenBtn.addEventListener('click', () => openContractNewTab(a.id));
+  }
+
+  // ── CONTRACT SUMMARY CARD ────────────────────────────────────────────────
+  function renderContractSummary(a) {
+    const c = a.contract;
+    const el = document.getElementById('contract-summary-card');
+    if (!el || !c) return;
+
+    const deadlineDate = new Date(c.cancelDeadline);
+    const daysToDeadline = Math.round((deadlineDate - Date.now()) / 86400000);
+    const showWarning = daysToDeadline <= 90;
+    const warningHTML = showWarning ? `
+      <div style="background:var(--amber-bg);border:1px solid rgba(245,166,35,0.3);border-radius:8px;padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">
+        <span style="font-size:16px;flex-shrink:0;">⚠</span>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:2px;">Cancellation Deadline Approaching</div>
+          <div style="font-size:11.5px;color:var(--muted);">
+            Non-renewal notice must be sent by <strong style="color:var(--amber)">${c.cancelDeadline}</strong>
+            — ${daysToDeadline > 0 ? `${daysToDeadline} days away` : '<span style="color:var(--red)">PAST DEADLINE</span>'}.
+            Written notice required per Section 8.2.
+          </div>
+        </div>
+      </div>` : '';
+
+    el.innerHTML = `
+      ${warningHTML}
+      <div class="panel">
+        <div class="panel-header" style="justify-content:space-between;">
+          <div class="panel-title">Contract Summary</div>
+          <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);">${c.orderRef}</span>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;">
+            ${summaryTile('Plan', `${c.plan}`, c.plan === 'Starter' ? 'var(--blue)' : 'var(--teal)')}
+            ${summaryTile('Licensed Seats', `${a.licensedSeats} seats`, 'var(--text)')}
+            ${summaryTile('ARR', `$${a.arr.toLocaleString()}`, 'var(--text)')}
+            ${summaryTile('Price / Seat', `$${c.pricePerSeat}/mo`, 'var(--text)')}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">TERM & DATES</div>
+              ${contractRow('Start Date', c.startDate)}
+              ${contractRow('End Date', c.endDate, daysToDeadline <= 90 ? 'var(--amber)' : 'var(--text)')}
+              ${contractRow('Term Length', `${c.termYears} year${c.termYears !== 1 ? 's' : ''}`)}
+              ${contractRow('Auto-Renewal', c.autoRenew ? 'Yes — 12-month terms' : 'No')}
+              ${contractRow('Cancel Deadline', c.cancelDeadline, showWarning ? 'var(--amber)' : 'var(--text)')}
+              ${contractRow('Billing', c.billingCycle)}
+            </div>
+            <div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">SIGNATORIES</div>
+              ${contractRow('Customer Signer', `${c.signerCustomer.name} — ${c.signerCustomer.title}`)}
+              ${contractRow('Vendor Signer', `${c.signerVendor.name} — ${c.signerVendor.title}`)}
+              ${contractRow('Signed', c.signedDate)}
+              ${contractRow('Customer Sig ID', c.sigIdCustomer, 'var(--muted)', true)}
+              ${contractRow('Vendor Sig ID', c.sigIdVendor, 'var(--muted)', true)}
+              ${contractRow('MSA Reference', c.msaRef, 'var(--muted)', true)}
+            </div>
+          </div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+            <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;">MODULES INCLUDED</div>
+            <div style="font-size:12.5px;color:var(--text);">
+              ${c.modules.split(', ').map(m => `<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;margin:2px;font-size:11.5px;">${m}</span>`).join('')}
+            </div>
+            ${c.novaAddon
+              ? `<div style="margin-top:8px;"><span style="display:inline-block;background:var(--teal-bg);border:1px solid rgba(0,201,167,0.25);border-radius:4px;padding:2px 8px;font-size:11.5px;color:var(--teal);">✦ Nova AI Add-On (+$15/seat/mo)</span></div>`
+              : `<div style="margin-top:6px;font-size:11px;color:var(--faint);">Nova AI Add-On not included — available at +$15/user/month</div>`}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function summaryTile(label, value, color) {
+    return `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;">${label}</div>
+        <div style="font-size:15px;font-family:'Outfit',sans-serif;font-weight:700;color:${color};">${value}</div>
+      </div>`;
+  }
+
+  function contractRow(label, value, color = 'var(--text)', mono = false) {
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:11.5px;color:var(--muted);flex-shrink:0;margin-right:8px;">${label}</span>
+        <span style="font-size:11.5px;color:${color};text-align:right;${mono ? "font-family:'DM Mono',monospace;font-size:10px;" : ''}">${value}</span>
+      </div>`;
+  }
+
+  function openContractNewTab(accountId) {
+    window.open('contract-view.html?account=' + accountId, '_blank');
+  }
+
+  function formatRenewal(months) {
+    if (months < 2)  return `${Math.round(months * 4)} weeks`;
+    if (months < 12) return `${Math.round(months)} months`;
+    return `${(months / 12).toFixed(1)} years`;
+  }
+
+  function formatLastTouch(days) {
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days} days ago`;
+  }
+
+  function relativeDate(isoDate) {
+    const diff = Math.round((Date.now() - new Date(isoDate)) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    return `${diff} days ago`;
+  }
+
+  function npsColor(nps) {
+    if (nps >= 50) return 'green';
+    if (nps >= 30) return 'amber';
+    return 'red';
+  }
+
+  // ── TABS ──────────────────────────────────────────────────────────────────
+  function showTab(name, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    el.classList.add('active');
+
+    if (name === 'contract' && !showTab._contractOpened) {
+      showTab._contractOpened = true;
+      openContractNewTab(account.id);
+    }
+  }
+</script>
+
+</body>
+</html>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .logo-wordmark {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1;
+      padding-left: 4px;
+    }
+
+    .logo-wordmark span { color: var(--teal); }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-left: 4px;
+    }
+
+    .powered-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--teal-bg);
+      border: 1px solid rgba(0,201,167,0.2);
+      border-radius: 20px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      font-size: 9.5px;
+      color: var(--teal);
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      align-self: flex-start;
+    }
+
+    .powered-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .sidebar-nav { padding: 16px 12px; flex: 1; min-height: 0; overflow-y: auto; }
+
+    .nav-label {
+      font-size: 9.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13.5px;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--teal-bg); color: var(--teal); font-weight: 500; }
+    .nav-icon { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red-bg);
+      color: var(--red);
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .user-row { display: flex; align-items: center; gap: 10px; }
+
+    .user-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #005f8a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .user-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    /* ── MAIN ────────────────────────────────── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── TOPBAR ──────────────────────────────── */
+    .topbar {
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); flex: 1; }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .breadcrumb a:hover { color: var(--text); }
+    .breadcrumb-sep { color: var(--faint); }
+    .breadcrumb-current { color: var(--text); font-weight: 500; }
+
+    .topbar-actions { display: flex; gap: 8px; }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      background: none;
+    }
+
+    .action-btn.teal { background: var(--teal-bg); border-color: rgba(0,201,167,0.25); color: var(--teal); }
+    .action-btn.teal:hover { background: rgba(0,201,167,0.15); border-color: var(--teal); }
+    .action-btn.ghost { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+    .action-btn.ghost:hover { color: var(--text); border-color: var(--border2); }
+
+    /* ── ACCOUNT HEADER ──────────────────────── */
+    .account-header {
+      padding: 24px 28px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .account-title-block { flex: 1; }
+
+    .account-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .account-meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+    .account-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--faint); }
+
+    .health-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .health-badge-score { font-size: 18px; font-weight: 700; font-family: 'Outfit', sans-serif; }
+
+    /* ── TABS ────────────────────────────────── */
+    .tabs-bar {
+      padding: 0 28px;
+      margin-top: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+    }
+
+    .tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+    .tab-content { display: none; padding: 24px 28px; }
+    .tab-content.active { display: block; animation: fadeUp 0.3s ease both; }
+
+    /* ── LAYOUTS ─────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+    .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    /* ── PANELS ──────────────────────────────── */
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+    .panel-body { padding: 16px 18px; }
+
+    /* ── STAT TILES ──────────────────────────── */
+    .stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+
+    .stat-label {
+      font-size: 10.5px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-value.green { color: var(--green); }
+    .stat-value.amber { color: var(--amber); }
+    .stat-value.red   { color: var(--red); }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── HEALTH BARS ─────────────────────────── */
+    .health-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .health-row:last-child { margin-bottom: 0; }
+    .health-label { font-size: 12.5px; color: var(--muted); width: 120px; flex-shrink: 0; }
+    .health-bar-wrap { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+    .health-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+    .health-bar-fill.green { background: var(--green); }
+    .health-bar-fill.amber { background: var(--amber); }
+    .health-bar-fill.red   { background: var(--red); }
+    .health-score-sm { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; width: 36px; text-align: right; }
+    .health-score-sm.green { color: var(--green); }
+    .health-score-sm.amber { color: var(--amber); }
+    .health-score-sm.red   { color: var(--red); }
+
+    /* ── SIGNAL ITEMS ────────────────────────── */
+    .signal-item { display: flex; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid transparent; }
+    .signal-item:last-child { margin-bottom: 0; }
+    .signal-item.crit { background: var(--red-bg);   border-color: rgba(255,92,106,0.2); }
+    .signal-item.warn { background: var(--amber-bg); border-color: rgba(245,166,35,0.2); }
+    .signal-item.info { background: var(--blue-bg);  border-color: rgba(77,166,255,0.15); }
+    .signal-item.ok   { background: var(--green-bg); border-color: rgba(34,217,138,0.2); }
+    .signal-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .signal-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+    .signal-item.crit .signal-title { color: var(--red); }
+    .signal-item.warn .signal-title { color: var(--amber); }
+    .signal-item.info .signal-title { color: var(--blue); }
+    .signal-item.ok   .signal-title { color: var(--green); }
+    .signal-text { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+    /* ── ACTIVITY FEED ───────────────────────── */
+    .feed-item { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+    .feed-icon.blue  { background: var(--blue-bg);  color: var(--blue); }
+    .feed-icon.amber { background: var(--amber-bg); color: var(--amber); }
+    .feed-icon.green { background: var(--green-bg); color: var(--green); }
+    .feed-icon.red   { background: var(--red-bg);   color: var(--red); }
+    .feed-icon.teal  { background: var(--teal-bg);  color: var(--teal); }
+    .feed-text { font-size: 12.5px; color: var(--text); line-height: 1.4; }
+    .feed-time { font-size: 11px; color: var(--faint); font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+    /* ── RISK FLAGS ──────────────────────────── */
+    .risk-flag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-family: 'DM Mono', monospace; padding: 2px 8px; border-radius: 10px; border: 1px solid transparent; margin-right: 4px; margin-bottom: 4px; }
+    .risk-flag.ok   { background: var(--green-bg); color: var(--green); border-color: rgba(34,217,138,0.2); }
+    .risk-flag.warn { background: var(--amber-bg); color: var(--amber); border-color: rgba(245,166,35,0.2); }
+    .risk-flag.crit { background: var(--red-bg);   color: var(--red);   border-color: rgba(255,92,106,0.2); }
+
+    /* ── CONTRACT GRID ───────────────────────── */
+    .contract-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .contract-label { font-size: 10.5px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .contract-value { font-size: 14px; font-weight: 500; color: var(--text); }
+    .contract-value.amber { color: var(--amber); }
+    .contract-value.green { color: var(--green); }
+    .contract-value.red   { color: var(--red); }
+
+    /* ── ANIMATIONS ──────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .topbar { padding: 0 16px; }
+      .account-header { padding: 16px; flex-direction: column; }
+      .tabs-bar { padding: 0 16px; overflow-x: auto; }
+      .tab-content { padding: 16px; }
+      .two-col { grid-template-columns: 1fr; }
+      .three-col { grid-template-columns: repeat(2, 1fr); }
+      .contract-grid { grid-template-columns: 1fr; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wordmark">Sync<span>Dash</span></div>
+    <div class="logo-sub">Account Intelligence</div>
+    <div class="powered-badge">Powered by SyncToScale</div>
+    <div style="font-size:8.5px;color:var(--faint);margin-top:8px;font-family:'DM Mono',monospace;letter-spacing:0.02em;padding-bottom:8px;">Portfolio project · fictional data</div>
+  </div>
+  <style>.sidebar-logo { padding-bottom: 0; }</style>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon">◎</span> Accounts</a>
+    <a class="nav-item" href="dashboard.html#activity"><span class="nav-icon">◷</span> Activity</a>
+    <a class="nav-item" href="dashboard.html#tasks"><span class="nav-icon">◫</span> Tasks</a>
+    <div class="nav-label">Insights</div>
+    <a class="nav-item" href="dashboard.html#health"><span class="nav-icon">◉</span> Health Reports</a>
+    <a class="nav-item" href="dashboard.html#renewals"><span class="nav-icon">◑</span> Renewals</a>
+    <a class="nav-item" href="dashboard.html#signals"><span class="nav-icon">✦</span> Nova Signals</a>
+    <div class="nav-label">Tools</div>
+    <a class="nav-item" id="nav-qbr-builder" href="#"><span class="nav-icon">◰</span> QBR Builder</a>
+    <a class="nav-item" href="dashboard.html#integrations"><span class="nav-icon">⊞</span> Integrations</a>
+    <a class="nav-item" href="https://www.synctoscale.me" target="_blank"><span class="nav-icon">↗</span> SyncToScale</a>
   </nav>
 
   <div class="sidebar-footer">

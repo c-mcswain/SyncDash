@@ -19,9 +19,9 @@
   --sage-glow2: rgba(126,184,154,0.18);
   --accent: #e8c97a;
   --accent-dim: rgba(232,201,122,0.12);
-  --text: #e8eaf0;
-  --text-muted: #6b7280;
-  --text-dim: #9ca3af;
+  --text: #ffffff;
+  --text-muted: #8b95a3;
+  --text-dim: #c4c9d4;
   --danger: #e07070;
   --danger-dim: rgba(224,112,112,0.12);
   --info: #7ab0e8;
@@ -47,7 +47,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .page { display: none; }
 .page.active { display: block; }
 
-/* FORM */
 .form-wrap { max-width: 760px; margin: 0 auto; padding: 44px 24px 80px; }
 .page-intro { margin-bottom: 40px; }
 .page-intro h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
@@ -60,19 +59,41 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .form-grid.full { grid-template-columns: 1fr; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 12px; color: var(--text-dim); font-weight: 500; }
-.field input, .field select, .field textarea { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; transition: border-color 0.2s; width: 100%; }
+.field input, .field select, .field textarea {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; padding: 10px 14px; outline: none; transition: border-color 0.2s; width: 100%;
+}
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
 .field select { appearance: none; cursor: pointer; }
-.field select option { background: var(--surface2); }
+.field select option { background: var(--surface2); color: var(--text); }
 .field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-.field input::placeholder, .field textarea::placeholder { color: #8b95a3; }
+.field input::placeholder, .field textarea::placeholder { color: var(--text-muted); }
 #kickoff-fields { display: none; }
 #kickoff-fields.visible { display: block; }
 
 .data-items { display: flex; flex-direction: column; gap: 10px; }
-.data-item { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px; display: grid; grid-template-columns: 190px 1fr auto; gap: 10px; align-items: start; }
-.data-item select { background: var(--surface3); border: 1px solid var(--border); }
-.data-item textarea { background: var(--surface3); border: 1px solid var(--border); min-height: 60px; font-size: 12px; color: var(--text); }
+.data-item {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 14px;
+  display: grid; grid-template-columns: 190px 1fr auto; gap: 10px; align-items: start;
+}
+.data-item select {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; padding: 10px 14px; outline: none; width: 100%;
+  appearance: none; cursor: pointer;
+}
+.data-item select option { background: var(--surface3); color: var(--text); }
+.data-item textarea {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; padding: 10px 14px; outline: none; width: 100%;
+  min-height: 70px; resize: vertical; line-height: 1.6;
+}
+.data-item textarea::placeholder { color: var(--text-muted); }
+.data-item select:focus, .data-item textarea:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+
 .remove-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; transition: color 0.2s; line-height: 1; margin-top: 2px; }
 .remove-btn:hover { color: var(--danger); }
 .add-item-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: none; border: 1px dashed var(--border2); border-radius: var(--radius); color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 8px; }
@@ -87,7 +108,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .spinner.green { border-color: rgba(126,184,154,0.3); border-top-color: var(--sage); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* DECK PAGE */
 #deck-page.active { display: flex; flex-direction: column; min-height: calc(100vh - 57px); }
 .deck-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .deck-meta { font-size: 13px; color: var(--text-dim); }
@@ -101,7 +121,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .deck-layout { display: flex; flex: 1; overflow: hidden; }
 .deck-slides { flex: 1; overflow-y: auto; padding: 32px 24px; scroll-behavior: smooth; }
 
-/* SLIDES */
 .slide { max-width: 860px; margin: 0 auto 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 .slide:last-child { margin-bottom: 0; }
 .slide-cover { background: linear-gradient(135deg, #0f1a14 0%, #13261d 50%, #0d1a13 100%); padding: 64px 56px; border: 1px solid var(--sage-dim); position: relative; overflow: hidden; }
@@ -137,7 +156,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .sage-content strong { color: var(--text); font-weight: 500; }
 .sage-loading { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--sage); font-style: italic; }
 
-/* TLDR */
 .slide-tldr { background: linear-gradient(135deg, #0f1a14, #0d1a1a); border: 1px solid var(--sage-dim); }
 .tldr-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 24px 28px 28px; }
 .tldr-card { background: rgba(13,26,19,0.6); border: 1px solid var(--border2); border-radius: 10px; padding: 18px; }
@@ -146,7 +164,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .tldr-card-content ul { padding-left: 14px; }
 .tldr-card-content li { margin-bottom: 4px; }
 
-/* CSM PANEL */
 .csm-panel { width: 360px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; }
 .csm-panel.collapsed { width: 0; border-left: none; }
 .csm-panel-inner { padding: 20px; overflow-y: auto; flex: 1; min-width: 360px; }
@@ -160,7 +177,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .tp-item-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: 12px; }
 .notes-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
 .notes-label span { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0; color: var(--sage); text-transform: none; cursor: pointer; }
-#live-notes { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 12px 14px; resize: none; outline: none; transition: border-color 0.2s; min-height: 160px; line-height: 1.7; }
+#live-notes { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 14px; resize: none; outline: none; transition: border-color 0.2s; min-height: 160px; line-height: 1.7; }
 #live-notes:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
 #live-notes::placeholder { color: var(--text-muted); }
 .panel-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
@@ -171,7 +188,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .panel-action-btn.accent:hover { background: rgba(232,201,122,0.2); }
 .panel-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* MODALS */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; width: 100%; max-width: 640px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
@@ -207,7 +223,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </nav>
 </header>
 
-<!-- FORM PAGE -->
 <div id="form-page" class="page active">
 <div class="form-wrap">
   <div class="page-intro">
@@ -253,13 +268,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="field"><label>Success Criteria</label><input type="text" id="success-criteria" placeholder="80% adoption in 60 days"></div>
     </div>
     <div class="form-grid full">
-      <div class="field"><label>Known Concerns or Questions</label><textarea id="kickoff-concerns" placeholder="Any concerns raised during sales, timeline risks, IT dependencies, change management challenges..."></textarea></div>
+      <div class="field"><label>Known Concerns or Questions</label><textarea id="kickoff-concerns" placeholder="Any concerns raised during sales, timeline risks, IT dependencies..."></textarea></div>
     </div>
   </div>
 
   <div class="form-section">
     <div class="section-label">Agenda Items / Data Points</div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Add each item to address. Sage will generate tailored prep notes and talking points for each one.</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Add each item to address. Sage will generate tailored prep notes and talking points for each one.</p>
     <div class="data-items" id="data-items-list"></div>
     <button class="add-item-btn" onclick="addDataItem()"><span style="font-size:16px;line-height:1">+</span> Add Item</button>
   </div>
@@ -281,7 +296,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 </div>
 
-<!-- DECK PAGE -->
 <div id="deck-page" class="page">
   <div class="deck-toolbar">
     <div class="deck-meta">
@@ -321,7 +335,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- SUMMARY MODAL -->
 <div class="modal-overlay" id="summary-modal">
   <div class="modal">
     <div class="modal-header">
@@ -329,7 +342,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <button class="modal-close" onclick="closeModal('summary-modal')">✕</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Sage uses your deck context and live notes to generate a polished follow-up email ready to send.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Sage uses your deck context and live notes to generate a polished follow-up email ready to send.</p>
       <div class="email-loading" id="summary-loading" style="display:none"><div class="spinner green"></div> Sage is writing your summary...</div>
       <div class="email-output" id="summary-text" style="display:none"></div>
       <div id="summary-placeholder" style="font-size:13px;color:var(--text-muted);padding:8px 0;">Click "Generate" to create your follow-up email.</div>
@@ -337,12 +350,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="modal-footer">
       <button class="cancel-btn" onclick="closeModal('summary-modal')">Close</button>
       <button class="copy-btn" id="summary-generate-btn" onclick="generateSummary()">Generate Summary</button>
-      <button class="copy-btn" id="summary-copy-btn" onclick="copyText('summary-text', 'summary-copy-btn')" style="display:none">Copy Email</button>
+      <button class="copy-btn" id="summary-copy-btn" onclick="copyText('summary-text','summary-copy-btn')" style="display:none">Copy Email</button>
     </div>
   </div>
 </div>
 
-<!-- ANNOUNCEMENT MODAL -->
 <div class="modal-overlay" id="announcement-modal">
   <div class="modal">
     <div class="modal-header">
@@ -350,7 +362,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <button class="modal-close" onclick="closeModal('announcement-modal')">✕</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">A ready-to-send internal email the customer can share with their employees about the upcoming rollout.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">A ready-to-send internal email the customer can share with their employees about the upcoming rollout.</p>
       <div class="email-loading" id="announcement-loading" style="display:none"><div class="spinner green"></div> Sage is writing the announcement...</div>
       <div class="email-output" id="announcement-text" style="display:none"></div>
       <div id="announcement-placeholder" style="font-size:13px;color:var(--text-muted);padding:8px 0;">Click "Generate" to create the announcement email.</div>
@@ -358,33 +370,30 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="modal-footer">
       <button class="cancel-btn" onclick="closeModal('announcement-modal')">Close</button>
       <button class="copy-btn" id="announcement-generate-btn" onclick="generateAnnouncement()">Generate Email</button>
-      <button class="copy-btn" id="announcement-copy-btn" onclick="copyText('announcement-text', 'announcement-copy-btn')" style="display:none">Copy Email</button>
+      <button class="copy-btn" id="announcement-copy-btn" onclick="copyText('announcement-text','announcement-copy-btn')" style="display:none">Copy Email</button>
     </div>
   </div>
 </div>
 
 <script>
 let meetingData = null;
-
 const DATA_TYPES = {
-  adoption:    { label: 'Adoption Metric',       placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
-  positive:    { label: 'Positive Win',           placeholder: 'e.g. Finance team hit 100% adoption, cut reporting time by 6 hrs/week' },
-  risk:        { label: 'Risk / Concern',         placeholder: 'e.g. Low engagement from IT, possible champion departure' },
-  ticket:      { label: 'Open Ticket / Eng Issue',placeholder: 'e.g. JIRA-1042 — SSO integration intermittent failures since v2.4' },
-  escalation:  { label: 'Escalation',             placeholder: 'e.g. VP reached out re: data export delays, frustrated with timeline' },
-  renewal:     { label: 'Renewal Info',           placeholder: 'e.g. Renewal April 30, $120K ARR, expansion opportunity open' },
-  expansion:   { label: 'Expansion Opportunity',  placeholder: 'e.g. HR team interested in Recruiting module, budget opens Q1' },
-  usage:       { label: 'Usage Data',             placeholder: 'e.g. 1,240 logins/30 days, top feature: dashboards, least used: API' },
-  stakeholder: { label: 'Stakeholder Change',     placeholder: 'e.g. Champion Lisa Park departed, new POC is Marcus Webb (IT Director)' },
-  kickoff:     { label: 'Kickoff Item',           placeholder: 'e.g. IT confirmed SSO setup complete, pending UAT from compliance' },
+  adoption:    { label: 'Adoption Metric',        placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
+  positive:    { label: 'Positive Win',            placeholder: 'e.g. Finance team hit 100% adoption, cut reporting time by 6 hrs/week' },
+  risk:        { label: 'Risk / Concern',          placeholder: 'e.g. Low engagement from IT, possible champion departure' },
+  ticket:      { label: 'Open Ticket / Eng Issue', placeholder: 'e.g. JIRA-1042 — SSO integration intermittent failures since v2.4' },
+  escalation:  { label: 'Escalation',              placeholder: 'e.g. VP reached out re: data export delays, frustrated with timeline' },
+  renewal:     { label: 'Renewal Info',            placeholder: 'e.g. Renewal April 30, $120K ARR, expansion opportunity open' },
+  expansion:   { label: 'Expansion Opportunity',   placeholder: 'e.g. HR team interested in Recruiting module, budget opens Q1' },
+  usage:       { label: 'Usage Data',              placeholder: 'e.g. 1,240 logins/30 days, top feature: dashboards, least used: API' },
+  stakeholder: { label: 'Stakeholder Change',      placeholder: 'e.g. Champion Lisa Park departed, new POC is Marcus Webb (IT Director)' },
+  kickoff:     { label: 'Kickoff Item',            placeholder: 'e.g. IT confirmed SSO setup complete, pending UAT from compliance' },
 };
-
 const MEETING_LABELS = {
-  qbr: 'Quarterly Business Review', ebr: 'Executive Business Review',
-  kickoff: 'Kickoff / Launch Call', renewal: 'Renewal Review',
-  health: 'Health Check', escalation: 'Escalation Call',
+  qbr:'Quarterly Business Review', ebr:'Executive Business Review',
+  kickoff:'Kickoff / Launch Call', renewal:'Renewal Review',
+  health:'Health Check', escalation:'Escalation Call',
 };
-
 let itemCounter = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -394,23 +403,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('form-nav-btn').classList.toggle('active', page === 'form');
-  document.getElementById('deck-nav-btn').classList.toggle('active', page === 'deck');
-  document.getElementById(page + '-page').classList.add('active');
+  document.getElementById('form-nav-btn').classList.toggle('active', page==='form');
+  document.getElementById('deck-nav-btn').classList.toggle('active', page==='deck');
+  document.getElementById(page+'-page').classList.add('active');
 }
 
 function handleMeetingTypeChange() {
   const type = document.getElementById('meeting-type').value;
-  document.getElementById('kickoff-fields').classList.toggle('visible', type === 'kickoff');
+  document.getElementById('kickoff-fields').classList.toggle('visible', type==='kickoff');
 }
 
 function addDataItem() {
   itemCounter++;
-  const id = 'item-' + itemCounter;
-  const opts = Object.entries(DATA_TYPES).map(([v,d]) => `<option value="${v}">${d.label}</option>`).join('');
+  const id = 'item-'+itemCounter;
+  const opts = Object.entries(DATA_TYPES).map(([v,d])=>`<option value="${v}">${d.label}</option>`).join('');
   const div = document.createElement('div');
-  div.className = 'data-item'; div.id = id;
-  div.innerHTML = `
+  div.className='data-item'; div.id=id;
+  div.innerHTML=`
     <select class="item-type" onchange="updatePlaceholder('${id}')"><option value="">Select type...</option>${opts}</select>
     <textarea class="item-detail" placeholder="Describe this item..."></textarea>
     <button class="remove-btn" onclick="document.getElementById('${id}').remove()" title="Remove">✕</button>`;
@@ -418,101 +427,94 @@ function addDataItem() {
 }
 
 function updatePlaceholder(id) {
-  const div = document.getElementById(id);
-  const type = div.querySelector('.item-type').value;
-  if (type && DATA_TYPES[type]) div.querySelector('.item-detail').placeholder = DATA_TYPES[type].placeholder;
+  const div=document.getElementById(id);
+  const type=div.querySelector('.item-type').value;
+  if(type&&DATA_TYPES[type]) div.querySelector('.item-detail').placeholder=DATA_TYPES[type].placeholder;
 }
 
 function getItems() {
-  return [...document.querySelectorAll('.data-item')].reduce((acc, div) => {
-    const type = div.querySelector('.item-type').value;
-    const detail = div.querySelector('.item-detail').value.trim();
-    if (type && detail) acc.push({ type, detail, label: DATA_TYPES[type]?.label || type });
+  return [...document.querySelectorAll('.data-item')].reduce((acc,div)=>{
+    const type=div.querySelector('.item-type').value;
+    const detail=div.querySelector('.item-detail').value.trim();
+    if(type&&detail) acc.push({type,detail,label:DATA_TYPES[type]?.label||type});
     return acc;
-  }, []);
+  },[]);
 }
 
 async function generateDeck() {
-  const company = document.getElementById('company-name').value.trim();
-  const type = document.getElementById('meeting-type').value;
-  if (!company || !type) { alert('Please fill in Company Name and Meeting Type.'); return; }
-  const items = getItems();
-  if (!items.length) { alert('Please add at least one agenda item.'); return; }
-
-  meetingData = {
-    companyName: company, meetingType: type,
-    meetingDate: document.getElementById('meeting-date').value,
-    csmName: document.getElementById('csm-name').value.trim(),
-    aeName: document.getElementById('ae-name').value.trim(),
-    contactName: document.getElementById('contact-name').value.trim(),
-    attendees: document.getElementById('attendees').value.trim(),
-    background: document.getElementById('background').value.trim(),
-    seats: document.getElementById('seats').value.trim(),
-    launchDate: document.getElementById('launch-date').value,
-    modules: document.getElementById('modules').value.trim(),
-    successCriteria: document.getElementById('success-criteria').value.trim(),
-    kickoffConcerns: document.getElementById('kickoff-concerns').value.trim(),
+  const company=document.getElementById('company-name').value.trim();
+  const type=document.getElementById('meeting-type').value;
+  if(!company||!type){alert('Please fill in Company Name and Meeting Type.');return;}
+  const items=getItems();
+  if(!items.length){alert('Please add at least one agenda item.');return;}
+  meetingData={
+    companyName:company,meetingType:type,
+    meetingDate:document.getElementById('meeting-date').value,
+    csmName:document.getElementById('csm-name').value.trim(),
+    aeName:document.getElementById('ae-name').value.trim(),
+    contactName:document.getElementById('contact-name').value.trim(),
+    attendees:document.getElementById('attendees').value.trim(),
+    background:document.getElementById('background').value.trim(),
+    seats:document.getElementById('seats').value.trim(),
+    launchDate:document.getElementById('launch-date').value,
+    modules:document.getElementById('modules').value.trim(),
+    successCriteria:document.getElementById('success-criteria').value.trim(),
+    kickoffConcerns:document.getElementById('kickoff-concerns').value.trim(),
     items,
   };
-
-  const btn = document.getElementById('generate-btn');
-  const txt = document.getElementById('generate-btn-text');
-  const spin = document.getElementById('generate-spinner');
-  btn.disabled = true; txt.textContent = 'Generating...'; spin.style.display = 'block';
-
+  const btn=document.getElementById('generate-btn');
+  const txt=document.getElementById('generate-btn-text');
+  const spin=document.getElementById('generate-spinner');
+  btn.disabled=true; txt.textContent='Generating...'; spin.style.display='block';
   buildDeckShell();
-  document.getElementById('deck-nav-btn').style.display = 'block';
+  document.getElementById('deck-nav-btn').style.display='block';
   showPage('deck');
-
   await runSageGeneration();
-  btn.disabled = false; txt.textContent = 'Regenerate Deck'; spin.style.display = 'none';
+  btn.disabled=false; txt.textContent='Regenerate Deck'; spin.style.display='none';
 }
 
 function buildDeckShell() {
-  const d = meetingData;
-  const c = document.getElementById('deck-slides-container');
-  c.innerHTML = '';
-  document.getElementById('deck-company-label').textContent = d.companyName;
-  document.getElementById('deck-type-label').textContent = MEETING_LABELS[d.meetingType] || d.meetingType;
-  document.getElementById('deck-date-label').textContent = d.meetingDate ? fmtDate(d.meetingDate) : '—';
-  document.getElementById('announcement-btn').style.display = d.meetingType === 'kickoff' ? 'flex' : 'none';
+  const d=meetingData;
+  const c=document.getElementById('deck-slides-container');
+  c.innerHTML='';
+  document.getElementById('deck-company-label').textContent=d.companyName;
+  document.getElementById('deck-type-label').textContent=MEETING_LABELS[d.meetingType]||d.meetingType;
+  document.getElementById('deck-date-label').textContent=d.meetingDate?fmtDate(d.meetingDate):'—';
+  document.getElementById('announcement-btn').style.display=d.meetingType==='kickoff'?'flex':'none';
 
-  // Cover
-  const cover = el('div', 'slide slide-cover');
-  cover.innerHTML = `
+  const cover=el('div','slide slide-cover');
+  cover.innerHTML=`
     <div class="cover-meeting-type">${MEETING_LABELS[d.meetingType]}</div>
     <div class="cover-company">${d.companyName}</div>
-    <div class="cover-sub">${d.meetingDate ? fmtDate(d.meetingDate) : ''}</div>
+    <div class="cover-sub">${d.meetingDate?fmtDate(d.meetingDate):''}</div>
     <div class="cover-meta">
-      ${d.csmName ? `<div class="cover-meta-item"><strong>CSM / TAM</strong>${d.csmName}</div>` : ''}
-      ${d.contactName ? `<div class="cover-meta-item"><strong>Primary Contact</strong>${d.contactName}</div>` : ''}
-      ${d.attendees ? `<div class="cover-meta-item"><strong>Attendees</strong>${d.attendees}</div>` : ''}
-      ${d.aeName ? `<div class="cover-meta-item"><strong>AE</strong>${d.aeName}</div>` : ''}
+      ${d.csmName?`<div class="cover-meta-item"><strong>CSM / TAM</strong>${d.csmName}</div>`:''}
+      ${d.contactName?`<div class="cover-meta-item"><strong>Primary Contact</strong>${d.contactName}</div>`:''}
+      ${d.attendees?`<div class="cover-meta-item"><strong>Attendees</strong>${d.attendees}</div>`:''}
+      ${d.aeName?`<div class="cover-meta-item"><strong>AE</strong>${d.aeName}</div>`:''}
     </div>`;
   c.appendChild(cover);
 
-  // Kickoff snapshot
-  if (d.meetingType === 'kickoff' && (d.seats || d.modules || d.launchDate || d.successCriteria)) {
-    const ks = el('div', 'slide');
-    ks.innerHTML = `
+  if(d.meetingType==='kickoff'&&(d.seats||d.modules||d.launchDate||d.successCriteria)){
+    const ks=el('div','slide');
+    ks.innerHTML=`
       <div class="slide-header"><span class="slide-number">01</span><span class="slide-title">Account Snapshot</span><span class="slide-type-badge badge-kickoff">KICKOFF</span></div>
       <div class="slide-body">
         <div class="slide-detail">
-          ${d.seats ? `<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Seats / Licenses:</strong> ${d.seats}</div>` : ''}
-          ${d.modules ? `<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Contracted Modules:</strong> ${d.modules}</div>` : ''}
-          ${d.launchDate ? `<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Target Launch Date:</strong> ${fmtDate(d.launchDate)}</div>` : ''}
-          ${d.successCriteria ? `<div><strong style="color:var(--text-dim)">Success Criteria:</strong> ${d.successCriteria}</div>` : ''}
+          ${d.seats?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Seats / Licenses:</strong> ${d.seats}</div>`:''}
+          ${d.modules?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Contracted Modules:</strong> ${d.modules}</div>`:''}
+          ${d.launchDate?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Target Launch Date:</strong> ${fmtDate(d.launchDate)}</div>`:''}
+          ${d.successCriteria?`<div><strong style="color:var(--text-dim)">Success Criteria:</strong> ${d.successCriteria}</div>`:''}
         </div>
         <div class="sage-section"><div class="sage-section-label">✦ Sage · Prep Notes</div><div class="sage-content sage-loading" id="sage-snapshot"><div class="spinner green" style="width:14px;height:14px"></div> Sage is preparing notes...</div></div>
       </div>`;
     c.appendChild(ks);
   }
 
-  // Item slides
-  d.items.forEach((item, i) => {
-    const num = String(i + (d.meetingType === 'kickoff' ? 2 : 1)).padStart(2, '0');
-    const s = el('div', 'slide');
-    s.innerHTML = `
+  d.items.forEach((item,i)=>{
+    const num=String(i+(d.meetingType==='kickoff'?2:1)).padStart(2,'0');
+    const s=el('div','slide');
+    s.innerHTML=`
       <div class="slide-header"><span class="slide-number">${num}</span><span class="slide-title">${item.label}</span><span class="slide-type-badge badge-${item.type}">${item.type.toUpperCase()}</span></div>
       <div class="slide-body">
         <div class="slide-detail">${item.detail}</div>
@@ -521,9 +523,8 @@ function buildDeckShell() {
     c.appendChild(s);
   });
 
-  // TL;DR
-  const tldr = el('div', 'slide slide-tldr');
-  tldr.innerHTML = `
+  const tldr=el('div','slide slide-tldr');
+  tldr.innerHTML=`
     <div class="slide-header" style="padding:22px 28px 16px"><span class="slide-number">TL;DR</span><span class="slide-title">Summary & Next Steps</span></div>
     <div class="tldr-grid">
       <div class="tldr-card"><div class="tldr-card-label">Key Wins</div><div class="tldr-card-content" id="tldr-wins" style="color:var(--text-muted);font-style:italic">Generating...</div></div>
@@ -532,171 +533,154 @@ function buildDeckShell() {
     </div>`;
   c.appendChild(tldr);
 
-  // Talking points panel
-  const tp = document.getElementById('talking-points-list');
-  tp.innerHTML = '';
-  d.items.forEach((item, i) => {
-    const div = el('div', 'tp-item');
-    div.innerHTML = `<div class="tp-item-title">${item.label}</div><div id="tp-${i}" style="color:var(--text-muted);font-style:italic;font-size:11px">Loading...</div>`;
+  const tp=document.getElementById('talking-points-list');
+  tp.innerHTML='';
+  d.items.forEach((item,i)=>{
+    const div=el('div','tp-item');
+    div.innerHTML=`<div class="tp-item-title">${item.label}</div><div id="tp-${i}" style="color:var(--text-muted);font-style:italic;font-size:11px">Loading...</div>`;
     tp.appendChild(div);
   });
 }
 
 async function runSageGeneration() {
-  const d = meetingData;
-  const calls = [];
-
-  if (d.meetingType === 'kickoff' && document.getElementById('sage-snapshot')) {
+  const d=meetingData;
+  const calls=[];
+  if(d.meetingType==='kickoff'&&document.getElementById('sage-snapshot')){
     calls.push(callSage(
-      `You are Sage, a CSM prep assistant. This is a Kickoff/Launch Call for ${d.companyName}. Seats: ${d.seats||'N/A'}. Modules: ${d.modules||'N/A'}. Launch date: ${d.launchDate||'TBD'}. Success criteria: ${d.successCriteria||'N/A'}. Known concerns: ${d.kickoffConcerns||'none'}.
-Generate concise CSM prep notes for opening this kickoff call — how to frame the partnership, what to confirm about readiness, and how to set a confident collaborative tone. Be practical and direct.`,
-      'sage-snapshot', null
+      `You are Sage, a CSM prep assistant. Kickoff/Launch Call for ${d.companyName}. Seats: ${d.seats||'N/A'}. Modules: ${d.modules||'N/A'}. Launch date: ${d.launchDate||'TBD'}. Success criteria: ${d.successCriteria||'N/A'}. Known concerns: ${d.kickoffConcerns||'none'}.
+Generate concise CSM prep notes for opening this kickoff call — how to frame the partnership, what to confirm about readiness, and how to set a confident collaborative tone.`,
+      'sage-snapshot',null
     ));
   }
-
-  d.items.forEach((item, i) => {
+  d.items.forEach((item,i)=>{
     calls.push(callSage(
       `You are Sage, a senior CSM advisor. Meeting: ${MEETING_LABELS[d.meetingType]} with ${d.companyName}.
 Item type: ${item.label}
 Detail: ${item.detail}
-${d.background ? `Account context: ${d.background}` : ''}
-
-Write prep notes for this CSM going into the meeting. Let the complexity and urgency of the item guide how much detail you provide — don't force a rigid structure. Cover: how to introduce or frame this topic, what to listen for from the client, suggested talking points or questions, and how to move toward a positive outcome. Sound like a senior colleague giving real advice, not a template.`,
-      `sage-item-${i}`, i
+${d.background?`Account context: ${d.background}`:''}
+Write prep notes for this CSM. Let the complexity and urgency guide depth. Cover: how to frame this topic, what to listen for, suggested talking points or questions, and how to move toward a positive outcome. Sound like a senior colleague giving real advice.`,
+      `sage-item-${i}`,i
     ));
   });
-
   calls.push(callTLDR());
   await Promise.allSettled(calls);
 }
 
-async function callSage(prompt, elId, tpIdx) {
+async function callSage(prompt,elId,tpIdx) {
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
-    const data = await res.json();
-    const text = data.content?.[0]?.text || 'Unable to generate notes.';
-    const target = document.getElementById(elId);
-    if (target) { target.classList.remove('sage-loading'); target.innerHTML = fmtSage(text); }
-    if (tpIdx !== null) {
-      const tp = document.getElementById('tp-' + tpIdx);
-      if (tp) { tp.style.cssText = 'font-style:normal;color:var(--text-dim)'; tp.innerHTML = fmtSageShort(text); }
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'Unable to generate notes.';
+    const target=document.getElementById(elId);
+    if(target){target.classList.remove('sage-loading');target.innerHTML=fmtSage(text);}
+    if(tpIdx!==null){
+      const tp=document.getElementById('tp-'+tpIdx);
+      if(tp){tp.style.cssText='font-style:normal;color:var(--text-dim)';tp.innerHTML=fmtSageShort(text);}
     }
   } catch {
-    const target = document.getElementById(elId);
-    if (target) { target.classList.remove('sage-loading'); target.textContent = 'Could not load Sage notes.'; }
+    const target=document.getElementById(elId);
+    if(target){target.classList.remove('sage-loading');target.textContent='Could not load Sage notes.';}
   }
 }
 
 async function callTLDR() {
-  const d = meetingData;
-  const summary = d.items.map(it => `- ${it.label}: ${it.detail}`).join('\n');
+  const d=meetingData;
+  const summary=d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 500,
-        messages: [{ role: 'user', content: `Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR with three lists. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words. wins=positives, address=items needing action, next=concrete next steps.` }]
-      })
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
+        messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words.`}]})
     });
-    const data = await res.json();
-    const parsed = JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim() || '{}');
-    const mkList = arr => arr?.length ? `<ul>${arr.map(b=>`<li>${b}</li>`).join('')}</ul>` : '—';
-    document.getElementById('tldr-wins').innerHTML = mkList(parsed.wins);
-    document.getElementById('tldr-address').innerHTML = mkList(parsed.address);
-    document.getElementById('tldr-next').innerHTML = mkList(parsed.next);
-  } catch { ['tldr-wins','tldr-address','tldr-next'].forEach(id => { const e = document.getElementById(id); if(e){e.style.fontStyle='normal';e.textContent='—';} }); }
+    const data=await res.json();
+    const parsed=JSON.parse(data.content?.[0]?.text?.replace(/\`\`\`json|\`\`\`/g,'').trim()||'{}');
+    const mkList=arr=>arr?.length?`<ul>${arr.map(b=>`<li>${b}</li>`).join('')}</ul>`:'—';
+    document.getElementById('tldr-wins').innerHTML=mkList(parsed.wins);
+    document.getElementById('tldr-address').innerHTML=mkList(parsed.address);
+    document.getElementById('tldr-next').innerHTML=mkList(parsed.next);
+  } catch {['tldr-wins','tldr-address','tldr-next'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.fontStyle='normal';e.textContent='—';}});}
 }
 
 async function generateSummary() {
-  const d = meetingData;
-  const notes = document.getElementById('live-notes').value.trim();
-  const genBtn = document.getElementById('summary-generate-btn');
-  setModalState('summary', 'loading');
-  genBtn.disabled = true;
+  const d=meetingData;
+  const notes=document.getElementById('live-notes').value.trim();
+  const genBtn=document.getElementById('summary-generate-btn');
+  setModalState('summary','loading');
+  genBtn.disabled=true;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-        messages: [{ role: 'user', content: `You are Sage. Write a professional, warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
-Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate ? fmtDate(d.meetingDate) : 'today'}.
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`You are Sage. Write a professional warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
+Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate?fmtDate(d.meetingDate):'today'}.
 Items covered:\n${d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n')}
-${notes ? `\nLive notes from the call:\n${notes}` : ''}
-Write a complete ready-to-send email. Include: a warm opening referencing the meeting, a concise recap, any action items with owners, and a friendly close with next steps. Professional but human — not stiff. Include a subject line. Flowing prose with light structure, not heavy bullets.` }]
-      })
+${notes?`\nLive notes from the call:\n${notes}`:''}
+Write a complete ready-to-send email. Warm opening, concise recap, action items with owners, friendly close with next steps. Professional but human. Include a subject line.`}]})
     });
-    const data = await res.json();
-    setModalState('summary', 'done', data.content?.[0]?.text || 'Unable to generate summary.');
-  } catch { setModalState('summary', 'error'); }
-  finally { genBtn.disabled = false; }
+    const data=await res.json();
+    setModalState('summary','done',data.content?.[0]?.text||'Unable to generate summary.');
+  } catch {setModalState('summary','error');}
+  finally{genBtn.disabled=false;}
 }
 
 async function generateAnnouncement() {
-  const d = meetingData;
-  const genBtn = document.getElementById('announcement-generate-btn');
-  setModalState('announcement', 'loading');
-  genBtn.disabled = true;
+  const d=meetingData;
+  const genBtn=document.getElementById('announcement-generate-btn');
+  setModalState('announcement','loading');
+  genBtn.disabled=true;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 800,
-        messages: [{ role: 'user', content: `You are Sage. Write an internal employee announcement email that ${d.companyName} can send to their team about an upcoming software rollout.
-Product: ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch date: ${d.launchDate ? fmtDate(d.launchDate) : 'coming soon'}. Goal: ${d.successCriteria||'successful adoption across the team'}.
-Write as if FROM the customer's internal comms team TO their employees. Explain what's changing and why, set timeline expectations, tell employees what to do (if anything), and close with a change-management-friendly encouraging tone. Concise — employees will skim it. Include a subject line. Sound like a real internal company email.` }]
-      })
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        messages:[{role:'user',content:`You are Sage. Write an internal employee announcement email that ${d.companyName} can send to their team about an upcoming software rollout.
+Product: ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch date: ${d.launchDate?fmtDate(d.launchDate):'coming soon'}. Goal: ${d.successCriteria||'successful adoption'}.
+Write as FROM the customer's internal comms team TO their employees. Explain what's changing and why, set timeline expectations, tell employees what to do, close with encouraging tone. Concise. Include a subject line. Sound like a real internal company email.`}]})
     });
-    const data = await res.json();
-    setModalState('announcement', 'done', data.content?.[0]?.text || 'Unable to generate email.');
-  } catch { setModalState('announcement', 'error'); }
-  finally { genBtn.disabled = false; }
+    const data=await res.json();
+    setModalState('announcement','done',data.content?.[0]?.text||'Unable to generate email.');
+  } catch {setModalState('announcement','error');}
+  finally{genBtn.disabled=false;}
 }
 
-function setModalState(modal, state, text) {
-  document.getElementById(modal+'-loading').style.display = state === 'loading' ? 'flex' : 'none';
-  document.getElementById(modal+'-text').style.display = state === 'done' ? 'block' : 'none';
-  document.getElementById(modal+'-placeholder').style.display = state === 'error' ? 'block' : (state === 'done' ? 'none' : (state === 'loading' ? 'none' : 'block'));
-  if (state === 'done') {
-    document.getElementById(modal+'-text').textContent = text;
-    document.getElementById(modal+'-copy-btn').style.display = 'inline-block';
+function setModalState(modal,state,text) {
+  document.getElementById(modal+'-loading').style.display=state==='loading'?'flex':'none';
+  document.getElementById(modal+'-text').style.display=state==='done'?'block':'none';
+  document.getElementById(modal+'-placeholder').style.display=(state==='done'||state==='loading')?'none':'block';
+  if(state==='done'){
+    document.getElementById(modal+'-text').textContent=text;
+    document.getElementById(modal+'-copy-btn').style.display='inline-block';
   }
-  if (state === 'error') document.getElementById(modal+'-placeholder').textContent = 'Error generating. Please try again.';
+  if(state==='error') document.getElementById(modal+'-placeholder').textContent='Error generating. Please try again.';
 }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
-
-function toggleCSMPanel() { document.getElementById('csm-panel').classList.toggle('collapsed'); }
-function clearNotes() { if(confirm('Clear all live notes?')) document.getElementById('live-notes').value=''; }
-
-function el(tag, cls) { const e = document.createElement(tag); e.className = cls; return e; }
-function fmtDate(s) { if(!s) return ''; return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }
-function fmtSage(text) {
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function toggleCSMPanel(){document.getElementById('csm-panel').classList.toggle('collapsed');}
+function clearNotes(){if(confirm('Clear all live notes?'))document.getElementById('live-notes').value='';}
+function el(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
+function fmtDate(s){if(!s)return'';return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
+function fmtSage(text){
   return text
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`)
+    .replace(/(<li>.*?<\/li>\n?)+/gs,m=>`<ul>${m}</ul>`)
     .replace(/\n\n/g,'<br><br>');
 }
-function fmtSageShort(text) {
+function fmtSageShort(text){
   return text.split('\n').filter(l=>l.trim()).slice(0,3)
     .map(l=>l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^[-•]\s+/,'')).join('<br>');
 }
-function copyText(elId, btnId) {
-  const text = document.getElementById(elId).textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById(btnId);
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(()=>btn.textContent=orig, 2000);
+function copyText(elId,btnId){
+  const text=document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById(btnId);
+    const orig=btn.textContent;
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent=orig,2000);
   });
 }
 </script>

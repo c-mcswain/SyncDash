@@ -376,6 +376,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <script>
+const API_KEY = 'YOUR_API_KEY_HERE'; // 🔑 Replace with your Anthropic API key
 let meetingData = null;
 const DATA_TYPES = {
   adoption:    { label: 'Adoption Metric',        placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
@@ -569,7 +570,7 @@ Write prep notes for this CSM. Let the complexity and urgency guide depth. Cover
 async function callSage(prompt,elId,tpIdx) {
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`,'anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
@@ -591,7 +592,7 @@ async function callTLDR() {
   const summary=d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`,'anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
         messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words.`}]})
     });
@@ -612,7 +613,7 @@ async function generateSummary() {
   genBtn.disabled=true;
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`,'anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         messages:[{role:'user',content:`You are Sage. Write a professional warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
 Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate?fmtDate(d.meetingDate):'today'}.
@@ -633,7 +634,7 @@ async function generateAnnouncement() {
   genBtn.disabled=true;
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`,'anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
         messages:[{role:'user',content:`You are Sage. Write an internal employee announcement email that ${d.companyName} can send to their team about an upcoming software rollout.
 Product: ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch date: ${d.launchDate?fmtDate(d.launchDate):'coming soon'}. Goal: ${d.successCriteria||'successful adoption'}.

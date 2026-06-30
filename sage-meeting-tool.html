@@ -376,7 +376,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <script>
-const API_KEY = 'YOUR_API_KEY_HERE'; // 🔑 Replace with your Anthropic API key
+const API_KEY = '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'; // 🔑 Replace with your Anthropic API key
 let meetingData = null;
 const DATA_TYPES = {
   adoption:    { label: 'Adoption Metric',        placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
@@ -571,7 +571,7 @@ async function callSage(prompt,elId,tpIdx) {
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const text=data.content?.[0]?.text||'Unable to generate notes.';
@@ -593,7 +593,7 @@ async function callTLDR() {
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,
         messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words.`}]})
     });
     const data=await res.json();
@@ -614,7 +614,7 @@ async function generateSummary() {
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
         messages:[{role:'user',content:`You are Sage. Write a professional warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
 Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate?fmtDate(d.meetingDate):'today'}.
 Items covered:\n${d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n')}
@@ -635,7 +635,7 @@ async function generateAnnouncement() {
   try {
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,
         messages:[{role:'user',content:`You are Sage. Write an internal employee announcement email that ${d.companyName} can send to their team about an upcoming software rollout.
 Product: ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch date: ${d.launchDate?fmtDate(d.launchDate):'coming soon'}. Goal: ${d.successCriteria||'successful adoption'}.
 Write as FROM the customer's internal comms team TO their employees. Explain what's changing and why, set timeline expectations, tell employees what to do, close with encouraging tone. Concise. Include a subject line. Sound like a real internal company email.`}]})

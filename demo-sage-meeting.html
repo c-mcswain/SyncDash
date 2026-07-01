@@ -580,21 +580,43 @@ async function parseContent() {
 async function demoParse(content) {
   await new Promise(r => setTimeout(r, 1100)); // simulate thinking
   const fields = {};
-  const grab = (re) => { const m = content.match(re); return m ? m[1].trim() : ''; };
 
-  fields.companyName = grab(/(?:company|client|account|customer)\s*(?:name)?[:\-]\s*([A-Z][A-Za-z0-9 &.,'-]{2,40})/i);
-  fields.seats = grab(/(\d[\d,]*)\s*(?:seats|licenses|users)/i);
-  fields.contactName = grab(/(?:primary contact|contact|poc|point of contact)[:\-]\s*([A-Za-z ,.'-]{3,50})/i);
-  fields.csmName = grab(/(?:csm|tam|success manager|account manager)[:\-]\s*([A-Za-z ,.'-]{3,40})/i);
-  fields.modules = grab(/(?:modules|products|package|plan)[:\-]\s*([A-Za-z0-9 ,&+-]{3,60})/i);
-  fields.launchDate = grab(/(?:launch|go[- ]?live|start)\s*date[:\-]\s*([A-Za-z0-9 ,\/-]{4,20})/i);
-  fields.successCriteria = grab(/(?:success criteria|goal|target)[:\-]\s*([A-Za-z0-9 ,%.-]{3,60})/i);
+  // Strict line-based parsing: only read clean "Label: value" lines.
+  // This ignores paragraphs, agenda items, and any stray text so a
+  // sloppy paste can never produce a garbage field.
+  const LABELS = {
+    companyName:     /^(?:company|client|account|customer)(?:\s*name)?$/i,
+    contactName:     /^(?:primary\s*contact|contact|poc|point\s*of\s*contact)$/i,
+    csmName:         /^(?:csm|tam|success\s*manager|account\s*manager|csm\s*\/\s*tam)$/i,
+    aeName:          /^(?:ae|account\s*executive)$/i,
+    attendees:       /^(?:attendees|additional\s*attendees|participants)$/i,
+    seats:           /^(?:seats|licenses|number\s*of\s*seats|seats\s*\/\s*licenses)$/i,
+    modules:         /^(?:modules|products|package|plan|contracted\s*modules)$/i,
+    launchDate:      /^(?:launch\s*date|go[- ]?live\s*date|target\s*launch\s*date|start\s*date)$/i,
+    successCriteria: /^(?:success\s*criteria|goal|target|objective)$/i,
+    background:      /^(?:background|notes|account\s*notes|context)$/i,
+  };
 
-  if (!fields.companyName) {
-    // fallback: first capitalized multiword phrase near the top
-    const firstLine = content.split('\n').find(l => /[A-Z][a-z]+ [A-Z]/.test(l));
-    if (firstLine) fields.companyName = firstLine.trim().slice(0, 40);
+  content.split(/\r?\n/).forEach(line => {
+    const idx = line.indexOf(':');
+    if (idx === -1) return;
+    const rawLabel = line.slice(0, idx).trim();
+    const value = line.slice(idx + 1).trim();
+    if (!value) return;
+    for (const [field, re] of Object.entries(LABELS)) {
+      if (re.test(rawLabel) && !fields[field]) {
+        fields[field] = value;
+        break;
+      }
+    }
+  });
+
+  // Seats: keep just the number if it's phrased like "250 seats"
+  if (fields.seats) {
+    const num = fields.seats.match(/\d[\d,]*/);
+    if (num) fields.seats = num[0];
   }
+
   return fields;
 }
 
@@ -617,6 +639,8 @@ function applyParsedFields(f) {
   setIf('company-name', f.companyName);
   setIf('contact-name', f.contactName);
   setIf('csm-name', f.csmName);
+  setIf('ae-name', f.aeName);
+  setIf('attendees', f.attendees);
   setIf('seats', f.seats);
   setIf('modules', f.modules);
   setIf('success-criteria', f.successCriteria);

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sage · Meeting Tool (Demo)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root {
+  --bg: #0d0f12; --surface: #13161b; --surface2: #1a1e25; --surface3: #1f242d;
+  --border: #252932; --border2: #2f3540;
+  --sage: #7eb89a; --sage-dim: #4a7a62; --sage-glow: rgba(126,184,154,0.1); --sage-glow2: rgba(126,184,154,0.18);
+  --accent: #e8c97a; --accent-dim: rgba(232,201,122,0.12);
+  --text: #ffffff; --text-muted: #8b95a3; --text-dim: #c4c9d4;
+  --danger: #e07070; --danger-dim: rgba(224,112,112,0.12);
+  --info: #7ab0e8; --info-dim: rgba(122,176,232,0.12);
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 200; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+.logo-dot { width: 7px; height: 7px; background: var(--sage); border-radius: 50%; box-shadow: 0 0 8px var(--sage); }
+.sage-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--sage); background: var(--sage-glow); border: 1px solid var(--sage-dim); padding: 3px 9px; border-radius: 20px; letter-spacing: 0.06em; }
+.demo-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(232,201,122,0.3); padding: 3px 9px; border-radius: 20px; letter-spacing: 0.06em; }
+.header-nav { display: flex; gap: 6px; }
+.nav-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border2); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+.nav-btn:hover { border-color: var(--sage-dim); color: var(--sage); }
+.nav-btn.active { background: var(--sage-glow2); border-color: var(--sage); color: var(--sage); }
+
+.page { display: none; } .page.active { display: block; }
+.form-wrap { max-width: 760px; margin: 0 auto; padding: 44px 24px 80px; }
+.page-intro { margin-bottom: 32px; }
+.page-intro h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+.page-intro p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.form-section { margin-bottom: 36px; }
+.section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--sage); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-grid.thirds { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid.full { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+.field input, .field select, .field textarea { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; transition: border-color 0.2s; width: 100%; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+.field select { appearance: none; cursor: pointer; }
+.field select option { background: var(--surface2); color: var(--text); }
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.field input::placeholder, .field textarea::placeholder { color: var(--text-muted); }
+#kickoff-fields { display: none; } #kickoff-fields.visible { display: block; }
+
+/* UPLOAD PARSER */
+.upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 28px 24px; text-align: center; transition: all 0.2s; cursor: pointer; background: var(--surface2); }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--sage-dim); background: var(--sage-glow); }
+.upload-icon { font-size: 26px; margin-bottom: 10px; }
+.upload-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.upload-sub { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.upload-formats { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 10px; letter-spacing: 0.04em; }
+.upload-or { text-align: center; font-size: 11px; color: var(--text-muted); margin: 14px 0; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+.paste-area { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 14px; outline: none; width: 100%; min-height: 90px; resize: vertical; line-height: 1.6; }
+.paste-area:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+.paste-area::placeholder { color: var(--text-muted); }
+.parse-btn { margin-top: 12px; background: var(--sage-glow2); border: 1px solid var(--sage-dim); color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.parse-btn:hover { background: rgba(126,184,154,0.24); }
+.parse-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.parse-status { margin-top: 12px; font-size: 12px; color: var(--sage); display: none; align-items: center; gap: 8px; }
+.parse-status.show { display: flex; }
+.parse-status.error { color: var(--danger); }
+.parsed-file { margin-top: 10px; font-size: 12px; color: var(--text-dim); font-family: 'DM Mono', monospace; display: none; align-items: center; gap: 8px; }
+.parsed-file.show { display: flex; }
+
+.data-items { display: flex; flex-direction: column; gap: 10px; }
+.data-item { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px; display: grid; grid-template-columns: 200px 1fr auto; gap: 10px; align-items: start; }
+.data-item select { background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; width: 100%; appearance: none; cursor: pointer; }
+.data-item select option { background: var(--surface3); color: var(--text); }
+.data-item select optgroup { background: var(--surface3); color: var(--text-muted); font-style: normal; }
+.item-custom-label { background: var(--surface3); border: 1px solid var(--sage-dim); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 12px; outline: none; width: 100%; margin-top: 8px; display: none; }
+.item-custom-label.show { display: block; }
+.item-custom-label::placeholder { color: var(--text-muted); }
+.data-item textarea { background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; width: 100%; min-height: 70px; resize: vertical; line-height: 1.6; }
+.data-item textarea::placeholder { color: var(--text-muted); }
+.data-item select:focus, .data-item textarea:focus, .item-custom-label:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+.item-left { display: flex; flex-direction: column; }
+.remove-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px; transition: color 0.2s; line-height: 1; margin-top: 2px; }
+.remove-btn:hover { color: var(--danger); }
+.add-item-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: none; border: 1px dashed var(--border2); border-radius: var(--radius); color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 8px; }
+.add-item-btn:hover { border-color: var(--sage-dim); color: var(--sage); }
+
+.submit-area { margin-top: 40px; display: flex; align-items: center; gap: 16px; }
+.submit-btn { background: var(--sage); color: #0d1a13; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; padding: 13px 32px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+.submit-btn:hover { background: #92caa8; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(126,184,154,0.3); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.submit-note { font-size: 12px; color: var(--text-muted); }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(13,26,19,0.3); border-top-color: #0d1a13; border-radius: 50%; animation: spin 0.7s linear infinite; }
+.spinner.green { border-color: rgba(126,184,154,0.3); border-top-color: var(--sage); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#deck-page.active { display: flex; flex-direction: column; min-height: calc(100vh - 57px); }
+.deck-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.deck-meta { font-size: 13px; color: var(--text-dim); }
+.deck-meta strong { color: var(--text); font-weight: 500; }
+.toolbar-actions { display: flex; gap: 8px; }
+.tool-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-dim); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.tool-btn:hover { color: var(--text); }
+.tool-btn.sage-btn { border-color: var(--sage-dim); color: var(--sage); background: var(--sage-glow); }
+.tool-btn.sage-btn:hover { background: var(--sage-glow2); }
+
+.deck-layout { display: flex; flex: 1; overflow: hidden; }
+.deck-slides { flex: 1; overflow-y: auto; padding: 32px 24px; scroll-behavior: smooth; }
+.slide { max-width: 860px; margin: 0 auto 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.slide:last-child { margin-bottom: 0; }
+.slide-cover { background: linear-gradient(135deg, #0f1a14 0%, #13261d 50%, #0d1a13 100%); padding: 64px 56px; border: 1px solid var(--sage-dim); position: relative; overflow: hidden; }
+.slide-cover::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(126,184,154,0.12) 0%, transparent 70%); }
+.cover-meeting-type { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--sage); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.cover-meeting-type::before { content: ''; width: 20px; height: 1px; background: var(--sage); }
+.cover-company { font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+.cover-sub { font-size: 15px; color: var(--text-dim); margin-bottom: 32px; }
+.cover-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+.cover-meta-item { font-size: 12px; color: var(--text-muted); }
+.cover-meta-item strong { color: var(--text-dim); display: block; font-size: 10px; margin-bottom: 2px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.slide-header { padding: 22px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.slide-number { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+.slide-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; flex: 1; }
+.slide-type-badge { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; letter-spacing: 0.04em; color: var(--sage); background: var(--sage-glow); border: 1px solid var(--sage-dim); text-transform: uppercase; }
+.slide-body { padding: 16px 28px 28px; }
+.slide-detail { font-size: 13px; color: var(--text-dim); line-height: 1.7; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+.sage-section { background: var(--sage-glow); border: 1px solid var(--sage-dim); border-radius: 8px; padding: 16px 18px; }
+.sage-section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--sage); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.sage-content { font-size: 13px; line-height: 1.75; color: var(--text-dim); }
+.sage-content ul { padding-left: 18px; } .sage-content li { margin-bottom: 6px; } .sage-content strong { color: var(--text); font-weight: 500; }
+.sage-loading { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--sage); font-style: italic; }
+.slide-tldr { background: linear-gradient(135deg, #0f1a14, #0d1a1a); border: 1px solid var(--sage-dim); }
+.tldr-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 24px 28px 28px; }
+.tldr-card { background: rgba(13,26,19,0.6); border: 1px solid var(--border2); border-radius: 10px; padding: 18px; }
+.tldr-card-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
+.tldr-card-content { font-size: 12px; color: var(--text-dim); line-height: 1.7; }
+.tldr-card-content ul { padding-left: 14px; } .tldr-card-content li { margin-bottom: 4px; }
+
+.csm-panel { width: 360px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; }
+.csm-panel.collapsed { width: 0; border-left: none; }
+.csm-panel-inner { padding: 20px; overflow-y: auto; flex: 1; min-width: 360px; }
+.csm-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.csm-panel-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.csm-private-badge { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--danger); background: var(--danger-dim); border: 1px solid rgba(224,112,112,0.2); padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; }
+.collapse-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 4px; transition: color 0.2s; }
+.collapse-btn:hover { color: var(--text); }
+.tp-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
+.tp-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+.tp-item-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: 12px; }
+.notes-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.notes-label span { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0; color: var(--sage); text-transform: none; cursor: pointer; }
+#live-notes { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 14px; resize: none; outline: none; transition: border-color 0.2s; min-height: 160px; line-height: 1.7; }
+#live-notes:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+#live-notes::placeholder { color: var(--text-muted); }
+.panel-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.panel-action-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 10px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; width: 100%; border: 1px solid; }
+.panel-action-btn.sage { background: var(--sage-glow2); border-color: var(--sage-dim); color: var(--sage); }
+.panel-action-btn.sage:hover { background: rgba(126,184,154,0.22); }
+.panel-action-btn.accent { background: var(--accent-dim); border-color: rgba(232,201,122,0.3); color: var(--accent); }
+.panel-action-btn.accent:hover { background: rgba(232,201,122,0.2); }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; width: 100%; max-width: 640px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 15px; font-weight: 600; }
+.modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 4px; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.email-output { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; font-size: 13px; line-height: 1.8; color: var(--text-dim); white-space: pre-wrap; min-height: 200px; }
+.email-loading { display: flex; align-items: center; gap: 12px; color: var(--sage); font-size: 13px; font-style: italic; padding: 20px 0; }
+.copy-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: 8px; cursor: pointer; background: var(--sage); color: #0d1a13; border: none; }
+.copy-btn:hover { background: #92caa8; }
+.cancel-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 20px; border-radius: 8px; cursor: pointer; background: none; border: 1px solid var(--border2); color: var(--text-dim); }
+.cancel-btn:hover { color: var(--text); }
+
+.demo-banner { max-width: 760px; margin: 0 auto 24px; background: var(--accent-dim); border: 1px solid rgba(232,201,122,0.3); border-radius: var(--radius); padding: 12px 16px; font-size: 12px; color: var(--accent); line-height: 1.6; }
+
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+@media (max-width: 700px) { .form-grid, .form-grid.thirds { grid-template-columns: 1fr; } .data-item { grid-template-columns: 1fr; } .tldr-grid { grid-template-columns: 1fr; } .csm-panel { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    SyncDash <span style="color:var(--text-muted);font-weight:300;margin:0 4px">/</span> Sage
+    <span class="sage-tag">MEETING TOOL</span>
+    <span class="demo-tag">DEMO</span>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-btn active" id="form-nav-btn" onclick="showPage('form')">New Meeting</button>
+    <button class="nav-btn" id="deck-nav-btn" onclick="showPage('deck')" style="display:none">View Deck</button>
+  </nav>
+</header>
+
+<div id="form-page" class="page active">
+<div class="form-wrap">
+  <div class="page-intro">
+    <h1>Build Your Meeting Deck</h1>
+    <p>Upload an account doc to auto-fill the form, or fill it in manually. Sage generates a client-facing deck with prep notes for each item, plus a private CSM panel for the call.</p>
+  </div>
+
+  <div class="demo-banner">Demo mode — Sage responses use sample content so the full flow works without a live API key. The production version generates these live.</div>
+
+  <!-- UPLOAD PARSER -->
+  <div class="form-section">
+    <div class="section-label">Auto-Fill From Document <span style="font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:11px;margin-left:4px;">(optional)</span></div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Drop a file or click to upload</div>
+      <div class="upload-sub">Contract, SOW, account brief, onboarding doc — Sage reads it and fills the form.</div>
+      <div class="upload-formats">PDF · DOCX · TXT · CSV · MD</div>
+    </div>
+    <input type="file" id="file-input" accept=".pdf,.docx,.txt,.csv,.md" style="display:none" onchange="handleFileSelect(event)">
+    <div class="upload-or">— or paste text —</div>
+    <textarea class="paste-area" id="paste-area" placeholder="Paste contract text, an email thread, account notes, anything with the details..."></textarea>
+    <button class="parse-btn" id="parse-btn" onclick="parseContent()">✦ Parse with Sage</button>
+    <div class="parsed-file" id="parsed-file"></div>
+    <div class="parse-status" id="parse-status"></div>
+  </div>
+
+  <div class="form-section">
+    <div class="section-label">Meeting Info</div>
+    <div class="form-grid">
+      <div class="field"><label>Company Name *</label><input type="text" id="company-name" placeholder="Acme Corp"></div>
+      <div class="field"><label>Meeting Type *</label>
+        <select id="meeting-type" onchange="handleMeetingTypeChange()">
+          <option value="">Select type...</option>
+          <option value="general">General Meeting</option>
+          <option value="qbr">Quarterly Business Review (QBR)</option>
+          <option value="ebr">Executive Business Review (EBR)</option>
+          <option value="kickoff">Kickoff / Launch Call</option>
+          <option value="renewal">Renewal Review</option>
+          <option value="health">Health Check</option>
+          <option value="escalation">Escalation Call</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid thirds">
+      <div class="field"><label>Meeting Date *</label><input type="date" id="meeting-date"></div>
+      <div class="field"><label>CSM / TAM Name</label><input type="text" id="csm-name" placeholder="Your name"></div>
+      <div class="field"><label>Account Executive</label><input type="text" id="ae-name" placeholder="Optional"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Primary Contact</label><input type="text" id="contact-name" placeholder="Jane Smith, VP of Operations"></div>
+      <div class="field"><label>Additional Attendees</label><input type="text" id="attendees" placeholder="John Doe (IT), Sarah Lee (Finance)"></div>
+    </div>
+  </div>
+
+  <div id="kickoff-fields" class="form-section">
+    <div class="section-label">Kickoff Details</div>
+    <div class="form-grid">
+      <div class="field"><label>Number of Seats / Licenses</label><input type="text" id="seats" placeholder="250 seats"></div>
+      <div class="field"><label>Target Launch Date</label><input type="date" id="launch-date"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Contracted Modules / Products</label><input type="text" id="modules" placeholder="Core Platform, Analytics Add-on"></div>
+      <div class="field"><label>Success Criteria</label><input type="text" id="success-criteria" placeholder="80% adoption in 60 days"></div>
+    </div>
+    <div class="form-grid full">
+      <div class="field"><label>Known Concerns or Questions</label><textarea id="kickoff-concerns" placeholder="Concerns raised during sales, timeline risks, IT dependencies..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="section-label">Agenda Items / Data Points</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Item types adapt to your meeting type. Sage generates tailored prep notes for each.</p>
+    <div class="data-items" id="data-items-list"></div>
+    <button class="add-item-btn" onclick="addDataItem()"><span style="font-size:16px;line-height:1">+</span> Add Item</button>
+  </div>
+
+  <div class="form-section">
+    <div class="section-label">Additional Context <span style="font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:11px;margin-left:4px;">(optional)</span></div>
+    <div class="form-grid full">
+      <div class="field"><label>Background / Account Notes</label><textarea id="background" placeholder="Relevant history, past issues, relationship context, recent wins..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <button class="submit-btn" id="generate-btn" onclick="generateDeck()">
+      <span id="generate-btn-text">Generate Deck with Sage</span>
+      <div class="spinner" id="generate-spinner" style="display:none"></div>
+    </button>
+    <span class="submit-note">Sage will prep notes for each agenda item</span>
+  </div>
+</div>
+</div>
+
+<div id="deck-page" class="page">
+  <div class="deck-toolbar">
+    <div class="deck-meta">
+      <strong id="deck-company-label">—</strong>
+      <span style="margin:0 10px;color:var(--border2)">·</span><span id="deck-type-label">—</span>
+      <span style="margin:0 10px;color:var(--border2)">·</span><span id="deck-date-label">—</span>
+    </div>
+    <div class="toolbar-actions">
+      <button class="tool-btn" onclick="showPage('form')">← Edit</button>
+      <button class="tool-btn sage-btn" onclick="toggleCSMPanel()">📋 CSM View</button>
+    </div>
+  </div>
+  <div class="deck-layout">
+    <div class="deck-slides" id="deck-slides-container"></div>
+    <div class="csm-panel collapsed" id="csm-panel">
+      <div class="csm-panel-inner">
+        <div class="csm-panel-header">
+          <div class="csm-panel-title">CSM Private View <span class="csm-private-badge">PRIVATE</span></div>
+          <button class="collapse-btn" onclick="toggleCSMPanel()">✕</button>
+        </div>
+        <div style="margin-bottom:24px;">
+          <div class="tp-label">Talking Points</div>
+          <div id="talking-points-list"></div>
+        </div>
+        <div style="margin-bottom:4px;">
+          <div class="notes-label">Live Notes <span onclick="clearNotes()">Clear</span></div>
+          <textarea id="live-notes" placeholder="Type notes during the call... these stay private."></textarea>
+        </div>
+        <div class="panel-actions">
+          <button class="panel-action-btn sage" onclick="openModal('summary-modal')">✉️ Generate Follow-Up Summary</button>
+          <button class="panel-action-btn accent" id="announcement-btn" onclick="openModal('announcement-modal')" style="display:none">📢 Generate Announcement Email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="summary-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">✉️ Post-Call Follow-Up Email</div><button class="modal-close" onclick="closeModal('summary-modal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Sage uses your deck context and live notes to generate a polished follow-up email.</p>
+      <div class="email-loading" id="summary-loading" style="display:none"><div class="spinner green"></div> Sage is writing your summary...</div>
+      <div class="email-output" id="summary-text" style="display:none"></div>
+      <div id="summary-placeholder" style="font-size:13px;color:var(--text-muted);padding:8px 0;">Click "Generate" to create your follow-up email.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal('summary-modal')">Close</button>
+      <button class="copy-btn" id="summary-generate-btn" onclick="generateSummary()">Generate Summary</button>
+      <button class="copy-btn" id="summary-copy-btn" onclick="copyText('summary-text','summary-copy-btn')" style="display:none">Copy Email</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="announcement-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📢 Employee Announcement Email</div><button class="modal-close" onclick="closeModal('announcement-modal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">A ready-to-send internal email the customer can share with their employees about the rollout.</p>
+      <div class="email-loading" id="announcement-loading" style="display:none"><div class="spinner green"></div> Sage is writing the announcement...</div>
+      <div class="email-output" id="announcement-text" style="display:none"></div>
+      <div id="announcement-placeholder" style="font-size:13px;color:var(--text-muted);padding:8px 0;">Click "Generate" to create the announcement email.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal('announcement-modal')">Close</button>
+      <button class="copy-btn" id="announcement-generate-btn" onclick="generateAnnouncement()">Generate Email</button>
+      <button class="copy-btn" id="announcement-copy-btn" onclick="copyText('announcement-text','announcement-copy-btn')" style="display:none">Copy Email</button>
+    </div>
+  </div>
+</div>
+
+<script>
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── DEMO MODE ──
+const DEMO_MODE = true;
+const API_KEY = 'YOUR_API_KEY_HERE'; // Used only when DEMO_MODE = false
+
+let meetingData = null;
+let itemCounter = 0;
+
+// Agenda item type definitions
+const ALL_TYPES = {
+  general:     { label: 'General / Discussion',    placeholder: 'e.g. Walk through Q3 roadmap priorities and gather feedback' },
+  action:      { label: 'Action Needed',           placeholder: 'e.g. Client needs to assign an internal admin before go-live' },
+  decision:    { label: 'Decision Required',       placeholder: 'e.g. Choose between phased or full rollout approach' },
+  followup:    { label: 'Follow-Up',               placeholder: 'e.g. Circle back on the SSO config question from last call' },
+  adoption:    { label: 'Adoption Metric',         placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
+  positive:    { label: 'Positive Win',            placeholder: 'e.g. Finance team hit 100% adoption, cut reporting time 6 hrs/week' },
+  risk:        { label: 'Risk / Concern',          placeholder: 'e.g. Low engagement from IT, possible champion departure' },
+  ticket:      { label: 'Open Ticket / Eng Issue', placeholder: 'e.g. JIRA-1042 — SSO integration failures since v2.4' },
+  escalation:  { label: 'Escalation',              placeholder: 'e.g. VP reached out re: data export delays, frustrated' },
+  renewal:     { label: 'Renewal Info',            placeholder: 'e.g. Renewal April 30, $120K ARR, expansion open' },
+  expansion:   { label: 'Expansion Opportunity',   placeholder: 'e.g. HR team interested in Recruiting module, budget opens Q1' },
+  usage:       { label: 'Usage Data',              placeholder: 'e.g. 1,240 logins/30 days, top feature: dashboards' },
+  stakeholder: { label: 'Stakeholder Change',      placeholder: 'e.g. Champion Lisa Park departed, new POC Marcus Webb' },
+  kickoff:     { label: 'Kickoff Item',            placeholder: 'e.g. IT confirmed SSO setup, pending UAT from compliance' },
+  other:       { label: 'Other (custom)',          placeholder: 'Describe this item...' },
+};
+
+// Universal types shown for every meeting
+const UNIVERSAL = ['general','action','decision','followup'];
+
+// Type-specific items per meeting type
+const TYPE_MAP = {
+  general:    [],
+  qbr:        ['adoption','positive','risk','renewal','expansion','usage','stakeholder','ticket'],
+  ebr:        ['adoption','positive','risk','renewal','expansion','usage','stakeholder'],
+  kickoff:    ['kickoff','ticket','risk','stakeholder'],
+  renewal:    ['renewal','risk','expansion','usage','adoption'],
+  health:     ['adoption','risk','usage','ticket','stakeholder'],
+  escalation: ['escalation','ticket','risk'],
+};
+
+const MEETING_LABELS = {
+  general:'General Meeting', qbr:'Quarterly Business Review', ebr:'Executive Business Review',
+  kickoff:'Kickoff / Launch Call', renewal:'Renewal Review', health:'Health Check', escalation:'Escalation Call',
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  addDataItem();
+  document.getElementById('meeting-date').value = new Date().toISOString().split('T')[0];
+  setupDragDrop();
+});
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('form-nav-btn').classList.toggle('active', page==='form');
+  document.getElementById('deck-nav-btn').classList.toggle('active', page==='deck');
+  document.getElementById(page+'-page').classList.add('active');
+}
+
+function handleMeetingTypeChange() {
+  const type = document.getElementById('meeting-type').value;
+  document.getElementById('kickoff-fields').classList.toggle('visible', type==='kickoff');
+  // Rebuild all existing item dropdowns to match the new meeting type
+  document.querySelectorAll('.data-item').forEach(div => {
+    const sel = div.querySelector('.item-type');
+    const current = sel.value;
+    sel.innerHTML = buildTypeOptions();
+    if ([...sel.options].some(o => o.value === current)) sel.value = current;
+    else { sel.value = ''; toggleCustomLabel(div); }
+  });
+}
+
+function buildTypeOptions() {
+  const meetingType = document.getElementById('meeting-type').value;
+  const specific = TYPE_MAP[meetingType] || [];
+  let html = '<option value="">Select type...</option>';
+  // Universal group
+  html += '<optgroup label="General">';
+  UNIVERSAL.forEach(k => html += `<option value="${k}">${ALL_TYPES[k].label}</option>`);
+  html += '</optgroup>';
+  // Type-specific group
+  if (specific.length) {
+    const groupName = meetingType ? (MEETING_LABELS[meetingType] || 'Relevant') : 'Relevant';
+    html += `<optgroup label="${groupName}">`;
+    specific.forEach(k => html += `<option value="${k}">${ALL_TYPES[k].label}</option>`);
+    html += '</optgroup>';
+  }
+  // Other always last
+  html += `<option value="other">${ALL_TYPES.other.label}</option>`;
+  return html;
+}
+
+function addDataItem() {
+  itemCounter++;
+  const id = 'item-'+itemCounter;
+  const div = document.createElement('div');
+  div.className='data-item'; div.id=id;
+  div.innerHTML = `
+    <div class="item-left">
+      <select class="item-type" onchange="onItemTypeChange('${id}')">${buildTypeOptions()}</select>
+      <input class="item-custom-label" placeholder="Name this item type (e.g. Budget Discussion)">
+    </div>
+    <textarea class="item-detail" placeholder="Describe this item..."></textarea>
+    <button class="remove-btn" onclick="document.getElementById('${id}').remove()" title="Remove">✕</button>`;
+  document.getElementById('data-items-list').appendChild(div);
+}
+
+function onItemTypeChange(id) {
+  const div = document.getElementById(id);
+  const type = div.querySelector('.item-type').value;
+  if (type && ALL_TYPES[type]) div.querySelector('.item-detail').placeholder = ALL_TYPES[type].placeholder;
+  toggleCustomLabel(div);
+}
+
+function toggleCustomLabel(div) {
+  const type = div.querySelector('.item-type').value;
+  const customInput = div.querySelector('.item-custom-label');
+  customInput.classList.toggle('show', type === 'other');
+}
+
+function getItems() {
+  return [...document.querySelectorAll('.data-item')].reduce((acc,div)=>{
+    const type = div.querySelector('.item-type').value;
+    const detail = div.querySelector('.item-detail').value.trim();
+    const customLabel = div.querySelector('.item-custom-label').value.trim();
+    if (type && detail) {
+      const label = type === 'other' ? (customLabel || 'Other') : ALL_TYPES[type].label;
+      acc.push({ type, detail, label });
+    }
+    return acc;
+  }, []);
+}
+
+// ── DOCUMENT PARSER ──
+function setupDragDrop() {
+  const zone = document.getElementById('upload-zone');
+  ['dragenter','dragover'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('dragover'); }));
+  zone.addEventListener('drop', ev => { const f = ev.dataTransfer.files[0]; if (f) processFile(f); });
+}
+
+function handleFileSelect(ev) { const f = ev.target.files[0]; if (f) processFile(f); }
+
+let extractedText = '';
+
+async function processFile(file) {
+  const status = document.getElementById('parse-status');
+  const parsedFile = document.getElementById('parsed-file');
+  status.className = 'parse-status show';
+  status.innerHTML = `<div class="spinner green" style="width:13px;height:13px"></div> Reading ${file.name}...`;
+  try {
+    extractedText = await extractText(file);
+    parsedFile.className = 'parsed-file show';
+    parsedFile.innerHTML = `📎 ${file.name} — ${extractedText.length.toLocaleString()} chars extracted`;
+    status.className = 'parse-status show';
+    status.innerHTML = `✓ Text extracted. Click "Parse with Sage" to auto-fill.`;
+  } catch (err) {
+    status.className = 'parse-status show error';
+    status.textContent = `Could not read that file: ${err.message}`;
+  }
+}
+
+async function extractText(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.pdf')) {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(it => it.str).join(' ') + '\n';
+    }
+    return text;
+  } else if (name.endsWith('.docx')) {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    return result.value;
+  } else {
+    return await file.text(); // txt, csv, md
+  }
+}
+
+async function parseContent() {
+  const pasted = document.getElementById('paste-area').value.trim();
+  const content = pasted || extractedText;
+  if (!content) {
+    const status = document.getElementById('parse-status');
+    status.className = 'parse-status show error';
+    status.textContent = 'Upload a file or paste some text first.';
+    return;
+  }
+  const btn = document.getElementById('parse-btn');
+  const status = document.getElementById('parse-status');
+  btn.disabled = true;
+  status.className = 'parse-status show';
+  status.innerHTML = `<div class="spinner green" style="width:13px;height:13px"></div> Sage is reading the document...`;
+
+  try {
+    const fields = DEMO_MODE ? await demoParse(content) : await liveParse(content);
+    applyParsedFields(fields);
+    status.className = 'parse-status show';
+    status.innerHTML = `✓ Form auto-filled. Review and edit anything below.`;
+  } catch (err) {
+    status.className = 'parse-status show error';
+    status.textContent = `Parse failed: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Demo parser — extracts what it reasonably can with simple heuristics so the demo feels real
+async function demoParse(content) {
+  await new Promise(r => setTimeout(r, 1100)); // simulate thinking
+  const fields = {};
+  const grab = (re) => { const m = content.match(re); return m ? m[1].trim() : ''; };
+
+  fields.companyName = grab(/(?:company|client|account|customer)\s*(?:name)?[:\-]\s*([A-Z][A-Za-z0-9 &.,'-]{2,40})/i);
+  fields.seats = grab(/(\d[\d,]*)\s*(?:seats|licenses|users)/i);
+  fields.contactName = grab(/(?:primary contact|contact|poc|point of contact)[:\-]\s*([A-Za-z ,.'-]{3,50})/i);
+  fields.csmName = grab(/(?:csm|tam|success manager|account manager)[:\-]\s*([A-Za-z ,.'-]{3,40})/i);
+  fields.modules = grab(/(?:modules|products|package|plan)[:\-]\s*([A-Za-z0-9 ,&+-]{3,60})/i);
+  fields.launchDate = grab(/(?:launch|go[- ]?live|start)\s*date[:\-]\s*([A-Za-z0-9 ,\/-]{4,20})/i);
+  fields.successCriteria = grab(/(?:success criteria|goal|target)[:\-]\s*([A-Za-z0-9 ,%.-]{3,60})/i);
+
+  if (!fields.companyName) {
+    // fallback: first capitalized multiword phrase near the top
+    const firstLine = content.split('\n').find(l => /[A-Z][a-z]+ [A-Z]/.test(l));
+    if (firstLine) fields.companyName = firstLine.trim().slice(0, 40);
+  }
+  return fields;
+}
+
+// Live parser — uses the API to extract structured JSON (for production)
+async function liveParse(content) {
+  const prompt = `Extract meeting/account details from this document. Respond ONLY with JSON, no markdown:
+{"companyName":"","contactName":"","csmName":"","seats":"","modules":"","launchDate":"","successCriteria":"","background":""}
+Leave any field empty if not found. Document:\n\n${content.slice(0, 6000)}`;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:600, messages:[{role:'user',content:prompt}] })
+  });
+  const data = await res.json();
+  return JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim() || '{}');
+}
+
+function applyParsedFields(f) {
+  const setIf = (id, val) => { if (val) document.getElementById(id).value = val; };
+  setIf('company-name', f.companyName);
+  setIf('contact-name', f.contactName);
+  setIf('csm-name', f.csmName);
+  setIf('seats', f.seats);
+  setIf('modules', f.modules);
+  setIf('success-criteria', f.successCriteria);
+  setIf('background', f.background);
+  if (f.launchDate) {
+    const parsed = new Date(f.launchDate);
+    if (!isNaN(parsed)) document.getElementById('launch-date').value = parsed.toISOString().split('T')[0];
+  }
+}
+
+// ── DECK GENERATION ──
+async function generateDeck() {
+  const company = document.getElementById('company-name').value.trim();
+  const type = document.getElementById('meeting-type').value;
+  if (!company || !type) { alert('Please fill in Company Name and Meeting Type.'); return; }
+  const items = getItems();
+  if (!items.length) { alert('Please add at least one agenda item.'); return; }
+
+  meetingData = {
+    companyName: company, meetingType: type,
+    meetingDate: document.getElementById('meeting-date').value,
+    csmName: document.getElementById('csm-name').value.trim(),
+    aeName: document.getElementById('ae-name').value.trim(),
+    contactName: document.getElementById('contact-name').value.trim(),
+    attendees: document.getElementById('attendees').value.trim(),
+    background: document.getElementById('background').value.trim(),
+    seats: document.getElementById('seats').value.trim(),
+    launchDate: document.getElementById('launch-date').value,
+    modules: document.getElementById('modules').value.trim(),
+    successCriteria: document.getElementById('success-criteria').value.trim(),
+    kickoffConcerns: document.getElementById('kickoff-concerns').value.trim(),
+    items,
+  };
+
+  const btn=document.getElementById('generate-btn'), txt=document.getElementById('generate-btn-text'), spin=document.getElementById('generate-spinner');
+  btn.disabled=true; txt.textContent='Generating...'; spin.style.display='block';
+  buildDeckShell();
+  document.getElementById('deck-nav-btn').style.display='block';
+  showPage('deck');
+  await runSageGeneration();
+  btn.disabled=false; txt.textContent='Regenerate Deck'; spin.style.display='none';
+}
+
+function buildDeckShell() {
+  const d=meetingData, c=document.getElementById('deck-slides-container');
+  c.innerHTML='';
+  document.getElementById('deck-company-label').textContent=d.companyName;
+  document.getElementById('deck-type-label').textContent=MEETING_LABELS[d.meetingType]||d.meetingType;
+  document.getElementById('deck-date-label').textContent=d.meetingDate?fmtDate(d.meetingDate):'—';
+  document.getElementById('announcement-btn').style.display=d.meetingType==='kickoff'?'flex':'none';
+
+  const cover=el('div','slide slide-cover');
+  cover.innerHTML=`
+    <div class="cover-meeting-type">${MEETING_LABELS[d.meetingType]}</div>
+    <div class="cover-company">${d.companyName}</div>
+    <div class="cover-sub">${d.meetingDate?fmtDate(d.meetingDate):''}</div>
+    <div class="cover-meta">
+      ${d.csmName?`<div class="cover-meta-item"><strong>CSM / TAM</strong>${d.csmName}</div>`:''}
+      ${d.contactName?`<div class="cover-meta-item"><strong>Primary Contact</strong>${d.contactName}</div>`:''}
+      ${d.attendees?`<div class="cover-meta-item"><strong>Attendees</strong>${d.attendees}</div>`:''}
+      ${d.aeName?`<div class="cover-meta-item"><strong>AE</strong>${d.aeName}</div>`:''}
+    </div>`;
+  c.appendChild(cover);
+
+  if(d.meetingType==='kickoff'&&(d.seats||d.modules||d.launchDate||d.successCriteria)){
+    const ks=el('div','slide');
+    ks.innerHTML=`
+      <div class="slide-header"><span class="slide-number">01</span><span class="slide-title">Account Snapshot</span><span class="slide-type-badge">KICKOFF</span></div>
+      <div class="slide-body">
+        <div class="slide-detail">
+          ${d.seats?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Seats / Licenses:</strong> ${d.seats}</div>`:''}
+          ${d.modules?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Contracted Modules:</strong> ${d.modules}</div>`:''}
+          ${d.launchDate?`<div style="margin-bottom:8px"><strong style="color:var(--text-dim)">Target Launch Date:</strong> ${fmtDate(d.launchDate)}</div>`:''}
+          ${d.successCriteria?`<div><strong style="color:var(--text-dim)">Success Criteria:</strong> ${d.successCriteria}</div>`:''}
+        </div>
+        <div class="sage-section"><div class="sage-section-label">✦ Sage · Prep Notes</div><div class="sage-content sage-loading" id="sage-snapshot"><div class="spinner green" style="width:14px;height:14px"></div> Sage is preparing notes...</div></div>
+      </div>`;
+    c.appendChild(ks);
+  }
+
+  d.items.forEach((item,i)=>{
+    const num=String(i+(d.meetingType==='kickoff'?2:1)).padStart(2,'0');
+    const s=el('div','slide');
+    s.innerHTML=`
+      <div class="slide-header"><span class="slide-number">${num}</span><span class="slide-title">${item.label}</span><span class="slide-type-badge">${(item.type==='other'?item.label:item.label).toUpperCase()}</span></div>
+      <div class="slide-body">
+        <div class="slide-detail">${item.detail}</div>
+        <div class="sage-section"><div class="sage-section-label">✦ Sage · Prep Notes</div><div class="sage-content sage-loading" id="sage-item-${i}"><div class="spinner green" style="width:14px;height:14px"></div> Sage is preparing notes...</div></div>
+      </div>`;
+    c.appendChild(s);
+  });
+
+  const tldr=el('div','slide slide-tldr');
+  tldr.innerHTML=`
+    <div class="slide-header" style="padding:22px 28px 16px"><span class="slide-number">TL;DR</span><span class="slide-title">Summary & Next Steps</span></div>
+    <div class="tldr-grid">
+      <div class="tldr-card"><div class="tldr-card-label">Key Wins</div><div class="tldr-card-content" id="tldr-wins" style="color:var(--text-muted);font-style:italic">Generating...</div></div>
+      <div class="tldr-card"><div class="tldr-card-label">Items to Address</div><div class="tldr-card-content" id="tldr-address" style="color:var(--text-muted);font-style:italic">Generating...</div></div>
+      <div class="tldr-card"><div class="tldr-card-label">Suggested Next Steps</div><div class="tldr-card-content" id="tldr-next" style="color:var(--text-muted);font-style:italic">Generating...</div></div>
+    </div>`;
+  c.appendChild(tldr);
+
+  const tp=document.getElementById('talking-points-list');
+  tp.innerHTML='';
+  d.items.forEach((item,i)=>{
+    const div=el('div','tp-item');
+    div.innerHTML=`<div class="tp-item-title">${item.label}</div><div id="tp-${i}" style="color:var(--text-muted);font-style:italic;font-size:11px">Loading...</div>`;
+    tp.appendChild(div);
+  });
+}
+
+async function runSageGeneration() {
+  const d=meetingData, calls=[];
+  if(d.meetingType==='kickoff'&&document.getElementById('sage-snapshot')){
+    calls.push(sageNote('snapshot', 'sage-snapshot', null));
+  }
+  d.items.forEach((item,i)=> calls.push(sageNote('item', `sage-item-${i}`, i, item)));
+  calls.push(sageTLDR());
+  await Promise.allSettled(calls);
+}
+
+async function sageNote(kind, elId, tpIdx, item) {
+  try {
+    const text = DEMO_MODE ? await demoSageNote(kind, item) : await liveSageNote(kind, item);
+    const target = document.getElementById(elId);
+    if (target) { target.classList.remove('sage-loading'); target.innerHTML = fmtSage(text); }
+    if (tpIdx !== null) {
+      const tp = document.getElementById('tp-'+tpIdx);
+      if (tp) { tp.style.cssText='font-style:normal;color:var(--text-dim)'; tp.innerHTML = fmtSageShort(text); }
+    }
+  } catch {
+    const target = document.getElementById(elId);
+    if (target) { target.classList.remove('sage-loading'); target.textContent='Could not load Sage notes.'; }
+  }
+}
+
+// Demo Sage notes — realistic sample prep content per item type
+async function demoSageNote(kind, item) {
+  await new Promise(r => setTimeout(r, 700 + Math.random()*800));
+  if (kind === 'snapshot') {
+    return `**Open with partnership framing.** Reaffirm why they chose the platform and connect it to their stated goal. Confirm the launch date is still realistic on their side and surface any internal blockers early.\n\n**Confirm readiness:** admin assigned, data ready, key stakeholders looped in. **Set the tone:** collaborative, not vendor-to-client — you're their guide through rollout.`;
+  }
+  const byType = {
+    adoption: `**Frame the number honestly** but lead with trajectory, not just the dip. Ask what changed in the teams that dropped off. **Listen for** process changes, turnover, or competing priorities. Position a targeted re-engagement plan rather than a broad push.`,
+    positive: `**Celebrate specifically** — name the team and the exact outcome. This is your credibility anchor for the harder parts of the call. **Ask** what made it work so you can replicate it elsewhere in the account.`,
+    risk: `**Name it directly** — don't soften a real risk. Show you already have a plan and a point of contact. **Listen for** whether they share your urgency. Confirm ownership on both sides before moving on.`,
+    ticket: `**Give a status, a cause, and a timeline** — that's what technical stakeholders want. Avoid over-promising on the fix date. **Confirm** who on their side is the technical POC and how they want updates.`,
+    escalation: `**Acknowledge the frustration first**, before any explanation. Take clear ownership. **Do not** get defensive or assign blame. Offer a concrete next step with a name and a date attached.`,
+    renewal: `**Anchor on value delivered** before the number. Frame renewal as continuation of momentum, not a transaction. **Listen for** budget signals and any competitive noise. Don't rush to discount.`,
+    expansion: `**Let their need lead** — connect the module to a problem they've already named. This is a conversation, not a pitch. **Ask** about timing and budget cycle so you know when to formalize.`,
+    usage: `**Turn data into a story** — what are the numbers telling you about how they work? Highlight the gap between what they bought and what they use. **Position** underused features as untapped ROI.`,
+    stakeholder: `**Prioritize the relationship reset.** Learn the new stakeholder's goals and how they measure success — they may differ from the old champion's. **Offer** a tailored onboarding so they get value fast and become an advocate.`,
+    kickoff: `**Confirm the specifics** and flag anything incomplete before it becomes a launch blocker. **Set clear next steps** with owners and dates. Keep momentum — early wins build trust.`,
+    general: `**Keep it open and structured.** State the purpose, invite their input early, and steer toward a clear outcome or decision. **Listen for** unspoken concerns and capture anything that needs follow-up.`,
+    action: `**Be explicit about the ask** — what, who, and by when. Don't leave the room without confirmed ownership. **Check** whether they have any blockers to committing.`,
+    decision: `**Lay out the options cleanly** with a recommendation. Make the trade-offs clear. **Drive to a decision** or a firm date for one — avoid letting it drift.`,
+    followup: `**Close the loop** on the open item. Give a clear answer or a timeline for one. **Confirm** it resolves what they raised so nothing lingers.`,
+    other: `**Frame this clearly for the client** and connect it to their priorities. Introduce the topic, invite their perspective, and steer toward a concrete outcome or next step.`,
+  };
+  return byType[item?.type] || byType.general;
+}
+
+async function liveSageNote(kind, item) {
+  const d = meetingData;
+  const prompt = kind === 'snapshot'
+    ? `You are Sage, a CSM prep assistant. Kickoff/Launch for ${d.companyName}. Seats: ${d.seats||'N/A'}. Modules: ${d.modules||'N/A'}. Launch: ${d.launchDate||'TBD'}. Success: ${d.successCriteria||'N/A'}. Concerns: ${d.kickoffConcerns||'none'}. Write concise prep notes for opening this kickoff.`
+    : `You are Sage, a senior CSM advisor. Meeting: ${MEETING_LABELS[d.meetingType]} with ${d.companyName}. Item: ${item.label}. Detail: ${item.detail}. ${d.background?'Context: '+d.background:''} Write practical prep notes — how to frame it, what to listen for, how to move toward a positive outcome.`;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || 'Unable to generate notes.';
+}
+
+async function sageTLDR() {
+  const d = meetingData;
+  try {
+    let parsed;
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 900));
+      const wins = d.items.filter(it=>['positive','adoption','usage'].includes(it.type)).map(it=>it.label);
+      const address = d.items.filter(it=>['risk','ticket','escalation','action','decision'].includes(it.type)).map(it=>it.label);
+      parsed = {
+        wins: wins.length ? wins.slice(0,3) : ['Strong engagement to build on'],
+        address: address.length ? address.slice(0,3) : ['Items flagged for follow-up'],
+        next: ['Confirm owners on action items', 'Schedule follow-up check-in', 'Share recap with stakeholders']
+      };
+    } else {
+      const summary = d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:500, messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName}. Items:\n${summary}\n\nJSON only:\n{"wins":["..."],"address":["..."],"next":["..."]}\nEach bullet under 12 words.`}]})
+      });
+      const data = await res.json();
+      parsed = JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim() || '{}');
+    }
+    const mk = arr => arr?.length ? `<ul>${arr.map(b=>`<li>${b}</li>`).join('')}</ul>` : '—';
+    document.getElementById('tldr-wins').innerHTML = mk(parsed.wins);
+    document.getElementById('tldr-address').innerHTML = mk(parsed.address);
+    document.getElementById('tldr-next').innerHTML = mk(parsed.next);
+  } catch {
+    ['tldr-wins','tldr-address','tldr-next'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.fontStyle='normal';e.textContent='—';}});
+  }
+}
+
+async function generateSummary() {
+  const d = meetingData, notes = document.getElementById('live-notes').value.trim();
+  const genBtn = document.getElementById('summary-generate-btn');
+  setModalState('summary','loading'); genBtn.disabled=true;
+  try {
+    let text;
+    if (DEMO_MODE) {
+      await new Promise(r=>setTimeout(r,1200));
+      text = demoEmail('summary', d, notes);
+    } else {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, messages:[{role:'user',content:`You are Sage. Write a warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}. Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate?fmtDate(d.meetingDate):'today'}. Items:\n${d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n')}${notes?'\nNotes:\n'+notes:''}\nWarm opening, recap, action items with owners, friendly close. Include subject line.`}]})
+      });
+      const data = await res.json();
+      text = data.content?.[0]?.text || 'Unable to generate.';
+    }
+    setModalState('summary','done',text);
+  } catch { setModalState('summary','error'); }
+  finally { genBtn.disabled=false; }
+}
+
+async function generateAnnouncement() {
+  const d = meetingData;
+  const genBtn = document.getElementById('announcement-generate-btn');
+  setModalState('announcement','loading'); genBtn.disabled=true;
+  try {
+    let text;
+    if (DEMO_MODE) {
+      await new Promise(r=>setTimeout(r,1200));
+      text = demoEmail('announcement', d);
+    } else {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:800, messages:[{role:'user',content:`You are Sage. Write an internal employee announcement email ${d.companyName} sends to their team about rolling out ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch: ${d.launchDate?fmtDate(d.launchDate):'soon'}. Goal: ${d.successCriteria||'adoption'}. From their comms team to employees. Include subject line.`}]})
+      });
+      const data = await res.json();
+      text = data.content?.[0]?.text || 'Unable to generate.';
+    }
+    setModalState('announcement','done',text);
+  } catch { setModalState('announcement','error'); }
+  finally { genBtn.disabled=false; }
+}
+
+function demoEmail(kind, d, notes) {
+  const contact = (d.contactName||'there').split(',')[0].split(' ')[0];
+  const csm = d.csmName || 'Your CSM';
+  if (kind === 'announcement') {
+    const product = d.modules || 'our new platform';
+    const launch = d.launchDate ? fmtDate(d.launchDate) : 'in the coming weeks';
+    return `Subject: Coming Soon — We're Rolling Out ${product}\n\nHi team,\n\nExciting news: we're rolling out ${product} to help streamline how we work together day to day. This is going live ${launch}, and we wanted to give everyone a heads-up on what to expect.\n\nWhat this means for you:\n• A single place to handle the tasks you juggle across tools today\n• Less manual work and fewer handoffs\n• Training and support available before and after launch\n\nWhat we need from you right now: nothing yet — just keep an eye out for a calendar invite to a short intro session. Our goal is ${d.successCriteria || 'a smooth rollout with strong adoption across the team'}, and that starts with everyone feeling comfortable using it.\n\nQuestions in the meantime? Reply here and we'll get you answers.\n\nThanks,\nThe Rollout Team`;
+  }
+  const itemLines = d.items.map(it => `• ${it.label}: we discussed ${it.detail.slice(0,70)}${it.detail.length>70?'...':''}`).join('\n');
+  return `Subject: Recap & Next Steps — ${MEETING_LABELS[d.meetingType]}\n\nHi ${contact},\n\nThank you for the time today — it was great to connect and walk through where things stand. Here's a quick recap of what we covered and where we're headed.\n\nWhat we discussed:\n${itemLines}\n${notes ? '\nA few notes from our conversation:\n'+notes+'\n' : ''}\nNext steps: I'll follow up on the open items above and confirm owners on our side. If anything above doesn't match your notes, just let me know and I'll adjust.\n\nAppreciate the partnership — looking forward to continuing the momentum.\n\nBest,\n${csm}`;
+}
+
+function setModalState(modal,state,text) {
+  document.getElementById(modal+'-loading').style.display=state==='loading'?'flex':'none';
+  document.getElementById(modal+'-text').style.display=state==='done'?'block':'none';
+  document.getElementById(modal+'-placeholder').style.display=(state==='done'||state==='loading')?'none':'block';
+  if(state==='done'){ document.getElementById(modal+'-text').textContent=text; document.getElementById(modal+'-copy-btn').style.display='inline-block'; }
+  if(state==='error') document.getElementById(modal+'-placeholder').textContent='Error generating. Please try again.';
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function toggleCSMPanel(){document.getElementById('csm-panel').classList.toggle('collapsed');}
+function clearNotes(){if(confirm('Clear all live notes?'))document.getElementById('live-notes').value='';}
+function el(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
+function fmtDate(s){if(!s)return'';return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
+function fmtSage(text){return text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>').replace(/(<li>.*?<\/li>\n?)+/gs,m=>`<ul>${m}</ul>`).replace(/\n\n/g,'<br><br>');}
+function fmtSageShort(text){return text.split('\n').filter(l=>l.trim()).slice(0,2).map(l=>l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^[-•]\s+/,'')).join('<br>');}
+function copyText(elId,btnId){const text=document.getElementById(elId).textContent;navigator.clipboard.writeText(text).then(()=>{const btn=document.getElementById(btnId);const o=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=o,2000);});}
+</script>
+</body>
+</html>

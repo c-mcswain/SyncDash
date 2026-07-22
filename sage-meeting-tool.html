@@ -262,6 +262,30 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .refine-use:hover { background: #92caa8; }
 .refine-keep { background: none; color: var(--text-dim); border-color: var(--border2); }
 .refine-keep:hover { color: var(--text); }
+/* Comm modal */
+.comm-field { margin-bottom: 18px; }
+.comm-field-label { font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px; display: block; }
+.comm-field-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-top: 2px; }
+.comm-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; }
+.comm-input:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+.comm-input::placeholder { color: var(--text-muted); }
+textarea.comm-input { min-height: 70px; resize: vertical; line-height: 1.6; }
+.audience-opts { display: flex; flex-direction: column; gap: 8px; }
+.audience-opt { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.audience-opt:hover { border-color: var(--sage-dim); }
+.audience-opt input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--sage); cursor: pointer; flex-shrink: 0; }
+.audience-opt-text { font-size: 13px; }
+.audience-opt-label { font-weight: 600; color: var(--text); }
+.audience-opt-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+.comm-result { margin-top: 18px; }
+.comm-draft { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+.comm-draft-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface3); border-bottom: 1px solid var(--border); }
+.comm-draft-audience { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; }
+.comm-draft-audience.exec { color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(232,201,122,0.3); }
+.comm-draft-audience.employee { color: var(--sage); background: var(--sage-glow); border: 1px solid var(--sage-dim); }
+.comm-draft-copy { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 6px; cursor: pointer; background: var(--sage); color: #0d1a13; border: none; }
+.comm-draft-copy:hover { background: #92caa8; }
+.comm-draft-body { padding: 14px 16px; font-size: 13px; line-height: 1.7; color: var(--text-dim); white-space: pre-wrap; }
 /* Export modal */
 .export-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 4px; }
 .export-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
@@ -406,8 +430,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <textarea id="live-notes" placeholder="Type notes during the call... these stay private."></textarea>
         </div>
         <div class="panel-actions">
-          <button class="panel-action-btn sage" onclick="openModal('summary-modal')">✉️ Generate Follow-Up Summary</button>
-          <button class="panel-action-btn accent" id="announcement-btn" onclick="openModal('announcement-modal')" style="display:none">📢 Generate Announcement Email</button>
+          <button class="panel-action-btn sage" onclick="openModal('summary-modal')">✉️ Follow-Up Summary (for you → admin)</button>
+          <button class="panel-action-btn accent" onclick="openCommModal()">📢 Draft a Communication (template for admin)</button>
           <button class="panel-action-btn sage" onclick="openPrepExport()">📝 Export Prep Notes (private)</button>
           <button class="panel-action-btn sage" onclick="exportClientDeck()">📊 Export Client Deck (PPTX)</button>
         </div>
@@ -426,6 +450,46 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="modal-footer">
       <button class="cancel-btn" onclick="closeModal('prep-export-modal')">Cancel</button>
       <button class="copy-btn" onclick="generatePrepDoc()">Open Printable Doc</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="comm-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📢 Draft a Communication</div><button class="modal-close" onclick="closeModal('comm-modal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">These are <strong>templates for the client's admin to send</strong>, written in their internal voice. You provide them; they send them.</p>
+
+      <div class="comm-field">
+        <label class="comm-field-label">What is this communication about?<span class="comm-field-sub">Steers the draft — e.g. "new reporting dashboard launching in Q3" or "sunsetting the legacy portal"</span></label>
+        <textarea class="comm-input" id="comm-topic" placeholder="Describe the update, change, or strategy to communicate..."></textarea>
+      </div>
+
+      <div class="comm-field">
+        <label class="comm-field-label">Who will the admin send this to?<span class="comm-field-sub">Check one or both — a separate labeled draft is generated for each</span></label>
+        <div class="audience-opts">
+          <label class="audience-opt">
+            <input type="checkbox" id="aud-exec">
+            <div class="audience-opt-text"><div class="audience-opt-label">For Leadership / Exec</div><div class="audience-opt-desc">Strategic framing, the "why," metrics and context OK. For the admin to share up the chain.</div></div>
+          </label>
+          <label class="audience-opt">
+            <input type="checkbox" id="aud-employee">
+            <div class="audience-opt-text"><div class="audience-opt-label">For Employees / End-Users</div><div class="audience-opt-desc">Simple, action-focused — what's changing and what to do. No sensitive metrics, ARR, or internal strategy.</div></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="comm-field">
+        <label class="comm-field-label">Internal note <span style="font-weight:400;color:var(--text-muted)">(optional, private)</span><span class="comm-field-sub">For your records / CRM — never appears in the email. e.g. "gave to Jane 7/22, she'll forward to leadership"</span></label>
+        <input class="comm-input" id="comm-note" placeholder="Documentation note for the account file...">
+      </div>
+
+      <div class="comm-result" id="comm-result"></div>
+      <div class="parse-status" id="comm-status" style="margin-top:4px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal('comm-modal')">Close</button>
+      <button class="copy-btn" id="comm-generate-btn" onclick="generateComms()">Generate Template(s)</button>
     </div>
   </div>
 </div>
@@ -736,7 +800,6 @@ function buildDeckShell() {
   document.getElementById('deck-company-label').textContent=d.companyName;
   document.getElementById('deck-type-label').textContent=MEETING_LABELS[d.meetingType]||d.meetingType;
   document.getElementById('deck-date-label').textContent=d.meetingDate?fmtDate(d.meetingDate):'—';
-  document.getElementById('announcement-btn').style.display=d.meetingType==='kickoff'?'flex':'none';
 
   const cover=el('div','slide slide-cover');
   cover.innerHTML=`
@@ -1009,30 +1072,58 @@ function generatePrepDoc() {
   const checks=d.items.map((it,i)=>document.getElementById('exp-'+i)?.checked);
   let html=`<html><head><meta charset="utf-8"><title>${d.companyName} — CSM Prep Notes</title>
     <style>
-      body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a2e;line-height:1.6;}
-      h1{font-size:24px;margin-bottom:4px;} .sub{color:#666;font-size:13px;margin-bottom:8px;}
-      .conf{display:inline-block;background:#fee;color:#c00;font-size:11px;font-weight:600;padding:3px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:24px;}
-      .item{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #e2e8f0;}
-      .item-label{font-size:16px;font-weight:700;color:#0d9488;margin-bottom:4px;}
-      .item-detail{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px;}
-      .gist{font-size:14px;margin-bottom:12px;}
-      .full{font-size:13px;color:#333;}
-      .full h1,.full h2,.full h3{font-size:14px;margin:12px 0 6px;}
-      @media print{.noprint{display:none;}}
+      * { box-sizing: border-box; }
+      body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;max-width:720px;margin:0 auto;padding:56px 40px 80px;color:#1e293b;line-height:1.65;font-size:14px;}
+      .doc-head{margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid #0d9488;}
+      h1{font-size:26px;margin:0 0 8px;letter-spacing:-0.02em;color:#0f172a;}
+      .sub{color:#64748b;font-size:13px;margin-bottom:14px;}
+      .conf{display:inline-block;background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:4px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:0.08em;}
+      .item{margin-bottom:44px;}
+      .item-label{font-size:18px;font-weight:700;color:#0d9488;margin-bottom:12px;letter-spacing:-0.01em;}
+      .item-detail{background:#f8fafc;border-left:3px solid #cbd5e1;border-radius:0 6px 6px 0;padding:12px 16px;font-size:13px;color:#475569;margin-bottom:18px;}
+      .gist{font-size:14px;margin-bottom:20px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:14px 16px;}
+      .gist .gist-tag{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#0d9488;margin-bottom:6px;}
+      .full{font-size:13.5px;color:#334155;padding-top:4px;}
+      .full h2,.full h3{font-size:14px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:-0.01em;}
+      .full ul{margin:8px 0 8px 0;padding-left:22px;}
+      .full li{margin-bottom:7px;}
+      .full blockquote{border-left:3px solid #99f6e4;padding:2px 0 2px 14px;margin:12px 0;font-style:italic;color:#475569;}
+      .full strong{color:#0f172a;}
+      .item-divider{border:none;border-top:1px solid #e2e8f0;margin:0 0 44px;}
+      .foot{color:#94a3b8;font-size:12px;margin-top:32px;padding-top:16px;border-top:1px solid #e2e8f0;}
+      @media print{.noprint{display:none;} body{padding:24px 0;}}
     </style></head><body>
-    <h1>${d.companyName} — CSM Prep Notes</h1>
-    <div class="sub">${MEETING_LABELS[d.meetingType]} · ${d.meetingDate?fmtDate(d.meetingDate):''} · Prepared by ${d.csmName||'—'}</div>
-    <div class="conf">Internal Only — Not for Distribution</div>`;
+    <div class="doc-head">
+      <h1>${d.companyName} — CSM Prep Notes</h1>
+      <div class="sub">${MEETING_LABELS[d.meetingType]}  ·  ${d.meetingDate?fmtDate(d.meetingDate):''}  ·  Prepared by ${d.csmName||'—'}</div>
+      <span class="conf">Internal Only — Not for Distribution</span>
+    </div>`;
 
   d.items.forEach((it,i)=>{
     const notes=sageNotesStore['sage-item-'+i]||{gist:'',full:''};
-    html+=`<div class="item"><div class="item-label">${it.label}</div>
+    const last = i === d.items.length-1;
+    html+=`<div class="item">
+      <div class="item-label">${it.label}</div>
       <div class="item-detail">${it.detail}</div>
-      <div class="gist"><strong>Quick read:</strong> ${mdToHtml(notes.gist)}</div>`;
+      <div class="gist"><span class="gist-tag">Quick Read</span>${mdToHtml(notes.gist)}</div>`;
     if(checks[i] && notes.full){ html+=`<div class="full">${mdToHtml(notes.full)}</div>`; }
     html+=`</div>`;
+    if(!last) html+=`<hr class="item-divider">`;
   });
-  html+=`<p class="noprint" style="color:#999;font-size:12px;margin-top:20px">Tip: use your browser's Print dialog to save this as a PDF.</p></body></html>`;
+  // Communications & Documentation section
+  if(generatedComms.length){
+    html+=`<hr class="item-divider"><div class="comm-section"><h2 style="font-size:18px;color:#0d9488;margin:0 0 6px;">Communications & Documentation</h2>
+      <p style="font-size:12px;color:#64748b;margin-bottom:20px;">Templates generated for the client's admin to send. Captured for the account record.</p>`;
+    generatedComms.forEach(c=>{
+      html+=`<div style="margin-bottom:26px;">
+        <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:2px;">${c.audience}</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:8px;">Topic: ${c.topic}${c.note?`  ·  Note: ${c.note}`:''}</div>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px 16px;font-size:12.5px;color:#334155;white-space:pre-wrap;line-height:1.6;">${c.text.replace(/</g,'&lt;')}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`<div class="foot noprint">Tip: use your browser's Print dialog (Cmd/Ctrl + P) to save this as a PDF.</div></body></html>`;
 
   const w=window.open('','_blank');
   w.document.write(html); w.document.close();
@@ -1096,6 +1187,98 @@ function mdToHtml(md) {
     .replace(/^[-•*]\s+(.*)$/gm,'<li>$1</li>')
     .replace(/(<li>.*?<\/li>\n?)+/gs,m=>`<ul>${m}</ul>`)
     .replace(/\n\n/g,'<br><br>');
+}
+
+// ── DRAFT A COMMUNICATION (templates for the admin to send) ──
+const generatedComms = []; // {audience, topic, note, text}
+
+function openCommModal() {
+  // reset
+  document.getElementById('comm-topic').value='';
+  document.getElementById('comm-note').value='';
+  document.getElementById('aud-exec').checked=false;
+  document.getElementById('aud-employee').checked=false;
+  document.getElementById('comm-result').innerHTML='';
+  document.getElementById('comm-status').className='parse-status';
+  openModal('comm-modal');
+}
+
+async function generateComms() {
+  const d=meetingData;
+  const topic=document.getElementById('comm-topic').value.trim();
+  const note=document.getElementById('comm-note').value.trim();
+  const wantExec=document.getElementById('aud-exec').checked;
+  const wantEmp=document.getElementById('aud-employee').checked;
+  const status=document.getElementById('comm-status');
+
+  if(!topic){ status.className='parse-status show error'; status.textContent='Tell Sage what the communication is about first.'; return; }
+  if(!wantExec&&!wantEmp){ status.className='parse-status show error'; status.textContent='Pick at least one audience.'; return; }
+
+  const btn=document.getElementById('comm-generate-btn');
+  btn.disabled=true;
+  status.className='parse-status show';
+  status.innerHTML='<div class="spinner green" style="width:13px;height:13px"></div> Sage is drafting...';
+  document.getElementById('comm-result').innerHTML='';
+
+  const jobs=[];
+  if(wantExec) jobs.push(draftComm('exec', topic, note, d));
+  if(wantEmp) jobs.push(draftComm('employee', topic, note, d));
+  await Promise.allSettled(jobs);
+
+  btn.disabled=false;
+  status.className='parse-status';
+  status.textContent='';
+}
+
+async function draftComm(audience, topic, note, d) {
+  const isExec = audience==='exec';
+  const audienceLabel = isExec ? 'the company\'s leadership / executives' : 'the company\'s employees / end-users';
+  const guard = isExec
+    ? 'This is for leadership, so strategic framing, the reasoning, and relevant metrics are appropriate.'
+    : 'CRITICAL: This is for all employees. Do NOT include any sensitive or internal-only information — no ARR or dollar figures, no adoption percentages or internal metrics, no renewal/contract details, no risk or churn language, no internal strategy. Keep it simple: what is changing, why it helps them, what (if anything) they need to do, and when.';
+
+  const prompt = `You are Sage. Write an internal communication TEMPLATE that an admin/decision-maker at ${d.companyName} can send to ${audienceLabel}. It is written in THEIR internal voice (from their team, to their people) — not from a vendor.
+
+Topic of the communication: ${topic}
+
+Context from the account: ${MEETING_LABELS[d.meetingType]} with ${d.companyName}.${d.modules?' Product: '+d.modules+'.':''}${d.launchDate?' Relevant date: '+fmtDate(d.launchDate)+'.':''}
+
+${guard}
+
+FORMAT: Clean and professional. NO emojis, no markdown tables, no decorative headers. Include a subject line, a brief opening, the core message in short prose, a simple list only if there are clear action items, and a short close. Sound like a real internal company email. Keep it tight and skimmable.`;
+
+  const resultEl=document.getElementById('comm-result');
+  const placeholder=document.createElement('div');
+  placeholder.className='comm-draft';
+  placeholder.innerHTML=`<div class="comm-draft-head"><span class="comm-draft-audience ${audience}">${isExec?'For Leadership / Exec':'For Employees'}</span></div><div class="comm-draft-body"><span style="color:var(--sage);font-style:italic">Drafting...</span></div>`;
+  resultEl.appendChild(placeholder);
+
+  try {
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=(data.content?.[0]?.text||'Unable to generate.').trim();
+    const cid='comm-'+audience+'-'+Date.now();
+    placeholder.innerHTML=`
+      <div class="comm-draft-head">
+        <span class="comm-draft-audience ${audience}">${isExec?'For Leadership / Exec':'For Employees'}</span>
+        <button class="comm-draft-copy" onclick="copyCommDraft('${cid}',this)">Copy</button>
+      </div>
+      <div class="comm-draft-body" id="${cid}">${text.replace(/</g,'&lt;')}</div>`;
+    // store for export (replace any prior draft of same audience+topic)
+    const existing=generatedComms.findIndex(c=>c.audience===audience&&c.topic===topic);
+    const record={audience:isExec?'For Leadership / Exec':'For Employees', topic, note, text};
+    if(existing>=0) generatedComms[existing]=record; else generatedComms.push(record);
+  } catch {
+    placeholder.querySelector('.comm-draft-body').innerHTML='<span style="color:var(--danger)">Could not generate. Try again.</span>';
+  }
+}
+
+function copyCommDraft(id, btn) {
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{ const o=btn.textContent; btn.textContent='Copied!'; setTimeout(()=>btn.textContent=o,2000); });
 }
 
 function toggleCSMPanel(){document.getElementById('csm-panel').classList.toggle('collapsed');}

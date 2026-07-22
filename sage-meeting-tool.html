@@ -85,6 +85,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   appearance: none; cursor: pointer;
 }
 .data-item select option { background: var(--surface3); color: var(--text); }
+.data-item select optgroup { background: var(--surface3); color: var(--text-muted); }
+.item-left { display: flex; flex-direction: column; }
+.item-custom-label { background: var(--surface3); border: 1px solid var(--sage-dim); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 12px; outline: none; width: 100%; margin-top: 8px; display: none; }
+.item-custom-label.show { display: block; }
+.item-custom-label::placeholder { color: var(--text-muted); }
+.item-custom-label:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
 .data-item textarea {
   background: var(--surface3); border: 1px solid var(--border);
   border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
@@ -146,6 +152,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .badge-usage { color: var(--info); background: var(--info-dim); border: 1px solid rgba(122,176,232,0.2); }
 .badge-stakeholder { color: #f0a070; background: rgba(240,160,112,0.1); border: 1px solid rgba(240,160,112,0.2); }
 .badge-kickoff { color: var(--sage); background: var(--sage-glow); border: 1px solid var(--sage-dim); }
+.badge-general, .badge-action, .badge-decision, .badge-followup, .badge-other { color: var(--text-dim); background: var(--surface3); border: 1px solid var(--border2); }
 .slide-body { padding: 16px 28px 28px; }
 .slide-detail { font-size: 13px; color: var(--text-dim); line-height: 1.7; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
 .sage-section { background: var(--sage-glow); border: 1px solid var(--sage-dim); border-radius: 8px; padding: 16px 18px; }
@@ -208,6 +215,61 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 @media (max-width: 700px) { .form-grid, .form-grid.thirds { grid-template-columns: 1fr; } .data-item { grid-template-columns: 1fr; } .tldr-grid { grid-template-columns: 1fr; } .csm-panel { display: none; } }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+.upload-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 28px 24px; text-align: center; transition: all 0.2s; cursor: pointer; background: var(--surface2); }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--sage-dim); background: var(--sage-glow); }
+.upload-icon { font-size: 26px; margin-bottom: 10px; }
+.upload-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.upload-sub { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.upload-formats { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 10px; letter-spacing: 0.04em; }
+.upload-or { text-align: center; font-size: 11px; color: var(--text-muted); margin: 14px 0; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+.paste-area { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 14px; outline: none; width: 100%; min-height: 90px; resize: vertical; line-height: 1.6; }
+.paste-area:focus { border-color: var(--sage-dim); box-shadow: 0 0 0 3px var(--sage-glow); }
+.paste-area::placeholder { color: var(--text-muted); }
+.parse-btn { margin-top: 12px; background: var(--sage-glow2); border: 1px solid var(--sage-dim); color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 10px 20px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.parse-btn:hover { background: rgba(126,184,154,0.24); }
+.parse-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.parse-status { margin-top: 12px; font-size: 12px; color: var(--sage); display: none; align-items: center; gap: 8px; }
+.parse-status.show { display: flex; }
+.parse-status.error { color: var(--danger); }
+.parsed-file { margin-top: 10px; font-size: 12px; color: var(--text-dim); font-family: 'DM Mono', monospace; display: none; align-items: center; gap: 8px; }
+.parsed-file.show { display: flex; }
+/* Gist + expand */
+.sage-h { font-size: 13px; font-weight: 600; color: var(--text); margin: 14px 0 6px; letter-spacing: -0.01em; }
+.sage-h:first-child { margin-top: 0; }
+.sage-quote { border-left: 2px solid var(--sage-dim); padding: 4px 0 4px 12px; margin: 8px 0; color: var(--text); font-style: italic; }
+.sage-gist { font-size: 13px; line-height: 1.75; color: var(--text-dim); }
+.sage-gist strong { color: var(--text); font-weight: 500; }
+.sage-full { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--sage-dim); font-size: 13px; line-height: 1.75; color: var(--text-dim); }
+.sage-full.show { display: block; }
+.sage-full ul { padding-left: 18px; } .sage-full li { margin-bottom: 6px; } .sage-full strong { color: var(--text); font-weight: 500; }
+.sage-full h1, .sage-full h2, .sage-full h3 { font-size: 13px; font-weight: 600; color: var(--text); margin: 12px 0 6px; }
+.expand-btn { margin-top: 12px; background: none; border: none; color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 5px; }
+.expand-btn:hover { text-decoration: underline; }
+/* Refine wording */
+.refine-btn { margin-top: 10px; background: var(--sage-glow); border: 1px solid var(--sage-dim); color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.refine-btn:hover { background: var(--sage-glow2); }
+.refine-box { margin-top: 12px; background: var(--surface3); border: 1px solid var(--sage-dim); border-radius: 8px; padding: 14px; display: none; }
+.refine-box.show { display: block; }
+.refine-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--sage); text-transform: uppercase; margin-bottom: 8px; }
+.refine-suggestion { font-size: 13px; line-height: 1.7; color: var(--text); margin-bottom: 12px; }
+.refine-actions { display: flex; gap: 8px; }
+.refine-use, .refine-keep { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 6px; cursor: pointer; border: 1px solid; }
+.refine-use { background: var(--sage); color: #0d1a13; border-color: var(--sage); }
+.refine-use:hover { background: #92caa8; }
+.refine-keep { background: none; color: var(--text-dim); border-color: var(--border2); }
+.refine-keep:hover { color: var(--text); }
+/* Export modal */
+.export-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 4px; }
+.export-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+.export-row input[type=checkbox] { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--sage); cursor: pointer; flex-shrink: 0; }
+.export-row-label { font-size: 13px; color: var(--text); font-weight: 500; }
+.export-row-detail { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+.export-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+</style>
 </head>
 <body>
 
@@ -231,12 +293,29 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 
   <div class="form-section">
+    <div class="section-label">Auto-Fill From Document <span style="font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:11px;margin-left:4px;">(optional)</span></div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Drop a file or click to upload</div>
+      <div class="upload-sub">Contract, SOW, account brief, onboarding doc — Sage reads it and fills the form.</div>
+      <div class="upload-formats">PDF · DOCX · TXT · CSV · MD</div>
+    </div>
+    <input type="file" id="file-input" accept=".pdf,.docx,.txt,.csv,.md" style="display:none" onchange="handleFileSelect(event)">
+    <div class="upload-or">— or paste text —</div>
+    <textarea class="paste-area" id="paste-area" placeholder="Paste contract text, an email thread, account notes, anything with the details..."></textarea>
+    <button class="parse-btn" id="parse-btn" onclick="parseContent()">✦ Parse with Sage</button>
+    <div class="parsed-file" id="parsed-file"></div>
+    <div class="parse-status" id="parse-status"></div>
+  </div>
+
+  <div class="form-section">
     <div class="section-label">Meeting Info</div>
     <div class="form-grid">
       <div class="field"><label>Company Name *</label><input type="text" id="company-name" placeholder="Acme Corp"></div>
       <div class="field"><label>Meeting Type *</label>
         <select id="meeting-type" onchange="handleMeetingTypeChange()">
           <option value="">Select type...</option>
+          <option value="general">General Meeting</option>
           <option value="qbr">Quarterly Business Review (QBR)</option>
           <option value="ebr">Executive Business Review (EBR)</option>
           <option value="kickoff">Kickoff / Launch Call</option>
@@ -329,8 +408,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
         <div class="panel-actions">
           <button class="panel-action-btn sage" onclick="openModal('summary-modal')">✉️ Generate Follow-Up Summary</button>
           <button class="panel-action-btn accent" id="announcement-btn" onclick="openModal('announcement-modal')" style="display:none">📢 Generate Announcement Email</button>
+          <button class="panel-action-btn sage" onclick="openPrepExport()">📝 Export Prep Notes (private)</button>
+          <button class="panel-action-btn sage" onclick="exportClientDeck()">📊 Export Client Deck (PPTX)</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="prep-export-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📝 Export Prep Notes</div><button class="modal-close" onclick="closeModal('prep-export-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="export-hint">Private CSM doc — not for the client. Every item includes its quick read. Check which items should also include the <strong>full</strong> prep notes.</div>
+      <div class="export-list" id="prep-export-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal('prep-export-modal')">Cancel</button>
+      <button class="copy-btn" onclick="generatePrepDoc()">Open Printable Doc</button>
     </div>
   </div>
 </div>
@@ -376,22 +471,145 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <script>
-const API_KEY = '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'; // 🔑 Replace with your Anthropic API key
+// API key is stored securely in the Cloudflare Worker (sage-proxy) — not in this file
 let meetingData = null;
-const DATA_TYPES = {
-  adoption:    { label: 'Adoption Metric',        placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
-  positive:    { label: 'Positive Win',            placeholder: 'e.g. Finance team hit 100% adoption, cut reporting time by 6 hrs/week' },
+
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let extractedText = '';
+
+function setupDragDrop() {
+  const zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  ['dragenter','dragover'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('dragover'); }));
+  zone.addEventListener('drop', ev => { const f = ev.dataTransfer.files[0]; if (f) processFile(f); });
+}
+
+function handleFileSelect(ev) { const f = ev.target.files[0]; if (f) processFile(f); }
+
+async function processFile(file) {
+  const status = document.getElementById('parse-status');
+  const parsedFile = document.getElementById('parsed-file');
+  status.className = 'parse-status show';
+  status.innerHTML = `<div class="spinner green" style="width:13px;height:13px"></div> Reading ${file.name}...`;
+  try {
+    extractedText = await extractText(file);
+    parsedFile.className = 'parsed-file show';
+    parsedFile.innerHTML = `📎 ${file.name} — ${extractedText.length.toLocaleString()} chars extracted`;
+    status.className = 'parse-status show';
+    status.innerHTML = `✓ Text extracted. Click "Parse with Sage" to auto-fill.`;
+  } catch (err) {
+    status.className = 'parse-status show error';
+    status.textContent = `Could not read that file: ${err.message}`;
+  }
+}
+
+async function extractText(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.pdf')) {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(it => it.str).join(' ') + '\n';
+    }
+    return text;
+  } else if (name.endsWith('.docx')) {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    return result.value;
+  } else {
+    return await file.text();
+  }
+}
+
+async function parseContent() {
+  const pasted = document.getElementById('paste-area').value.trim();
+  const content = pasted || extractedText;
+  const status = document.getElementById('parse-status');
+  if (!content) {
+    status.className = 'parse-status show error';
+    status.textContent = 'Upload a file or paste some text first.';
+    return;
+  }
+  const btn = document.getElementById('parse-btn');
+  btn.disabled = true;
+  status.className = 'parse-status show';
+  status.innerHTML = `<div class="spinner green" style="width:13px;height:13px"></div> Sage is reading the document...`;
+  try {
+    const fields = await liveParse(content);
+    applyParsedFields(fields);
+    status.className = 'parse-status show';
+    status.innerHTML = `✓ Form auto-filled. Review and edit anything below.`;
+  } catch (err) {
+    status.className = 'parse-status show error';
+    status.textContent = `Parse failed: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function liveParse(content) {
+  const prompt = `Extract meeting/account details from this document. Respond ONLY with JSON, no markdown:
+{"companyName":"","contactName":"","csmName":"","aeName":"","attendees":"","seats":"","modules":"","launchDate":"","successCriteria":"","background":""}
+Leave any field empty if not found. Document:\n\n${content.slice(0, 6000)}`;
+  const res = await fetch('https://sage-proxy.christy-m-mcswain.workers.dev', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:600, messages:[{role:'user',content:prompt}] })
+  });
+  const data = await res.json();
+  return JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim() || '{}');
+}
+
+function applyParsedFields(f) {
+  const setIf = (id, val) => { if (val && document.getElementById(id)) document.getElementById(id).value = val; };
+  setIf('company-name', f.companyName);
+  setIf('contact-name', f.contactName);
+  setIf('csm-name', f.csmName);
+  setIf('ae-name', f.aeName);
+  setIf('attendees', f.attendees);
+  setIf('seats', f.seats);
+  setIf('modules', f.modules);
+  setIf('success-criteria', f.successCriteria);
+  setIf('background', f.background);
+  if (f.launchDate) {
+    const parsed = new Date(f.launchDate);
+    if (!isNaN(parsed)) document.getElementById('launch-date').value = parsed.toISOString().split('T')[0];
+  }
+}
+
+const ALL_TYPES = {
+  general:     { label: 'General / Discussion',    placeholder: 'e.g. Walk through Q3 roadmap priorities and gather feedback' },
+  action:      { label: 'Action Needed',           placeholder: 'e.g. Client needs to assign an internal admin before go-live' },
+  decision:    { label: 'Decision Required',       placeholder: 'e.g. Choose between phased or full rollout approach' },
+  followup:    { label: 'Follow-Up',               placeholder: 'e.g. Circle back on the SSO config question from last call' },
+  adoption:    { label: 'Adoption Metric',         placeholder: 'e.g. 42% of licensed seats active, down from 58% last quarter' },
+  positive:    { label: 'Positive Win',            placeholder: 'e.g. Finance team hit 100% adoption, cut reporting time 6 hrs/week' },
   risk:        { label: 'Risk / Concern',          placeholder: 'e.g. Low engagement from IT, possible champion departure' },
-  ticket:      { label: 'Open Ticket / Eng Issue', placeholder: 'e.g. JIRA-1042 — SSO integration intermittent failures since v2.4' },
-  escalation:  { label: 'Escalation',              placeholder: 'e.g. VP reached out re: data export delays, frustrated with timeline' },
-  renewal:     { label: 'Renewal Info',            placeholder: 'e.g. Renewal April 30, $120K ARR, expansion opportunity open' },
+  ticket:      { label: 'Open Ticket / Eng Issue', placeholder: 'e.g. JIRA-1042 — SSO integration failures since v2.4' },
+  escalation:  { label: 'Escalation',              placeholder: 'e.g. VP reached out re: data export delays, frustrated' },
+  renewal:     { label: 'Renewal Info',            placeholder: 'e.g. Renewal April 30, $120K ARR, expansion open' },
   expansion:   { label: 'Expansion Opportunity',   placeholder: 'e.g. HR team interested in Recruiting module, budget opens Q1' },
-  usage:       { label: 'Usage Data',              placeholder: 'e.g. 1,240 logins/30 days, top feature: dashboards, least used: API' },
-  stakeholder: { label: 'Stakeholder Change',      placeholder: 'e.g. Champion Lisa Park departed, new POC is Marcus Webb (IT Director)' },
-  kickoff:     { label: 'Kickoff Item',            placeholder: 'e.g. IT confirmed SSO setup complete, pending UAT from compliance' },
+  usage:       { label: 'Usage Data',              placeholder: 'e.g. 1,240 logins/30 days, top feature: dashboards' },
+  stakeholder: { label: 'Stakeholder Change',      placeholder: 'e.g. Champion Lisa Park departed, new POC Marcus Webb' },
+  kickoff:     { label: 'Kickoff Item',            placeholder: 'e.g. IT confirmed SSO setup, pending UAT from compliance' },
+  other:       { label: 'Other (custom)',          placeholder: 'Describe this item...' },
+};
+const UNIVERSAL = ['general','action','decision','followup'];
+const TYPE_MAP = {
+  general:    [],
+  qbr:        ['adoption','positive','risk','renewal','expansion','usage','stakeholder','ticket'],
+  ebr:        ['adoption','positive','risk','renewal','expansion','usage','stakeholder'],
+  kickoff:    ['kickoff','ticket','risk','stakeholder'],
+  renewal:    ['renewal','risk','expansion','usage','adoption'],
+  health:     ['adoption','risk','usage','ticket','stakeholder'],
+  escalation: ['escalation','ticket','risk'],
 };
 const MEETING_LABELS = {
-  qbr:'Quarterly Business Review', ebr:'Executive Business Review',
+  general:'General Meeting', qbr:'Quarterly Business Review', ebr:'Executive Business Review',
   kickoff:'Kickoff / Launch Call', renewal:'Renewal Review',
   health:'Health Check', escalation:'Escalation Call',
 };
@@ -400,6 +618,7 @@ let itemCounter = 0;
 document.addEventListener('DOMContentLoaded', () => {
   addDataItem();
   document.getElementById('meeting-date').value = new Date().toISOString().split('T')[0];
+  setupDragDrop();
 });
 
 function showPage(page) {
@@ -412,34 +631,70 @@ function showPage(page) {
 function handleMeetingTypeChange() {
   const type = document.getElementById('meeting-type').value;
   document.getElementById('kickoff-fields').classList.toggle('visible', type==='kickoff');
+  document.querySelectorAll('.data-item').forEach(div => {
+    const sel = div.querySelector('.item-type');
+    const current = sel.value;
+    sel.innerHTML = buildTypeOptions();
+    if ([...sel.options].some(o => o.value === current)) sel.value = current;
+    else { sel.value = ''; toggleCustomLabel(div); }
+  });
+}
+
+function buildTypeOptions() {
+  const meetingType = document.getElementById('meeting-type').value;
+  const specific = TYPE_MAP[meetingType] || [];
+  let html = '<option value="">Select type...</option>';
+  html += '<optgroup label="General">';
+  UNIVERSAL.forEach(k => html += `<option value="${k}">${ALL_TYPES[k].label}</option>`);
+  html += '</optgroup>';
+  if (specific.length) {
+    const groupName = meetingType ? (MEETING_LABELS[meetingType] || 'Relevant') : 'Relevant';
+    html += `<optgroup label="${groupName}">`;
+    specific.forEach(k => html += `<option value="${k}">${ALL_TYPES[k].label}</option>`);
+    html += '</optgroup>';
+  }
+  html += `<option value="other">${ALL_TYPES.other.label}</option>`;
+  return html;
 }
 
 function addDataItem() {
   itemCounter++;
   const id = 'item-'+itemCounter;
-  const opts = Object.entries(DATA_TYPES).map(([v,d])=>`<option value="${v}">${d.label}</option>`).join('');
   const div = document.createElement('div');
   div.className='data-item'; div.id=id;
   div.innerHTML=`
-    <select class="item-type" onchange="updatePlaceholder('${id}')"><option value="">Select type...</option>${opts}</select>
+    <div class="item-left">
+      <select class="item-type" onchange="onItemTypeChange('${id}')">${buildTypeOptions()}</select>
+      <input class="item-custom-label" placeholder="Name this item type (e.g. Budget Discussion)">
+    </div>
     <textarea class="item-detail" placeholder="Describe this item..."></textarea>
     <button class="remove-btn" onclick="document.getElementById('${id}').remove()" title="Remove">✕</button>`;
   document.getElementById('data-items-list').appendChild(div);
 }
 
-function updatePlaceholder(id) {
-  const div=document.getElementById(id);
-  const type=div.querySelector('.item-type').value;
-  if(type&&DATA_TYPES[type]) div.querySelector('.item-detail').placeholder=DATA_TYPES[type].placeholder;
+function onItemTypeChange(id) {
+  const div = document.getElementById(id);
+  const type = div.querySelector('.item-type').value;
+  if (type && ALL_TYPES[type]) div.querySelector('.item-detail').placeholder = ALL_TYPES[type].placeholder;
+  toggleCustomLabel(div);
+}
+
+function toggleCustomLabel(div) {
+  const type = div.querySelector('.item-type').value;
+  div.querySelector('.item-custom-label').classList.toggle('show', type === 'other');
 }
 
 function getItems() {
   return [...document.querySelectorAll('.data-item')].reduce((acc,div)=>{
-    const type=div.querySelector('.item-type').value;
-    const detail=div.querySelector('.item-detail').value.trim();
-    if(type&&detail) acc.push({type,detail,label:DATA_TYPES[type]?.label||type});
+    const type = div.querySelector('.item-type').value;
+    const detail = div.querySelector('.item-detail').value.trim();
+    const customLabel = div.querySelector('.item-custom-label').value.trim();
+    if (type && detail) {
+      const label = type === 'other' ? (customLabel || 'Other') : ALL_TYPES[type].label;
+      acc.push({ type, detail, label });
+    }
     return acc;
-  },[]);
+  }, []);
 }
 
 async function generateDeck() {
@@ -516,10 +771,19 @@ function buildDeckShell() {
     const num=String(i+(d.meetingType==='kickoff'?2:1)).padStart(2,'0');
     const s=el('div','slide');
     s.innerHTML=`
-      <div class="slide-header"><span class="slide-number">${num}</span><span class="slide-title">${item.label}</span><span class="slide-type-badge badge-${item.type}">${item.type.toUpperCase()}</span></div>
+      <div class="slide-header"><span class="slide-number">${num}</span><span class="slide-title">${item.label}</span><span class="slide-type-badge badge-${item.type}">${(item.type==='other'?item.label:item.label).toUpperCase()}</span></div>
       <div class="slide-body">
-        <div class="slide-detail">${item.detail}</div>
-        <div class="sage-section"><div class="sage-section-label">✦ Sage · Prep Notes</div><div class="sage-content sage-loading" id="sage-item-${i}"><div class="spinner green" style="width:14px;height:14px"></div> Sage is preparing notes...</div></div>
+        <div class="slide-detail" id="detail-${i}">${item.detail}</div>
+        <button class="refine-btn" onclick="refineWording(${i})">✦ Refine wording for client</button>
+        <div class="refine-box" id="refine-${i}">
+          <div class="refine-label">Sage suggests</div>
+          <div class="refine-suggestion" id="refine-text-${i}"></div>
+          <div class="refine-actions">
+            <button class="refine-use" onclick="useRefined(${i})">Use this</button>
+            <button class="refine-keep" onclick="keepOriginal(${i})">Keep mine</button>
+          </div>
+        </div>
+        <div class="sage-section" style="margin-top:16px"><div class="sage-section-label">✦ Sage · Prep Notes</div><div class="sage-content sage-loading" id="sage-item-${i}"><div class="spinner green" style="width:14px;height:14px"></div> Sage is preparing notes...</div></div>
       </div>`;
     c.appendChild(s);
   });
@@ -549,7 +813,7 @@ async function runSageGeneration() {
   if(d.meetingType==='kickoff'&&document.getElementById('sage-snapshot')){
     calls.push(callSage(
       `You are Sage, a CSM prep assistant. Kickoff/Launch Call for ${d.companyName}. Seats: ${d.seats||'N/A'}. Modules: ${d.modules||'N/A'}. Launch date: ${d.launchDate||'TBD'}. Success criteria: ${d.successCriteria||'N/A'}. Known concerns: ${d.kickoffConcerns||'none'}.
-Generate concise CSM prep notes for opening this kickoff call — how to frame the partnership, what to confirm about readiness, and how to set a confident collaborative tone.`,
+Write prep notes in TWO parts separated by a line containing only "===SPLIT===". Part 1: a 2-3 sentence gist of the single most important thing for opening this kickoff. Part 2: the full prep — how to frame the partnership, what to confirm about readiness, how to set a confident collaborative tone. Use short markdown sections.`,
       'sage-snapshot',null
     ));
   }
@@ -559,7 +823,13 @@ Generate concise CSM prep notes for opening this kickoff call — how to frame t
 Item type: ${item.label}
 Detail: ${item.detail}
 ${d.background?`Account context: ${d.background}`:''}
-Write prep notes for this CSM. Let the complexity and urgency guide depth. Cover: how to frame this topic, what to listen for, suggested talking points or questions, and how to move toward a positive outcome. Sound like a senior colleague giving real advice.`,
+Write prep notes in TWO parts, separated by a line containing only "===SPLIT===".
+
+Part 1 (before ===SPLIT===): A tight gist — 2 to 3 sentences max. The single most important thing to know walking into this item. No headers, no bullets, just the essential read.
+
+Part 2 (after ===SPLIT===): The full prep — how to frame this topic, what to listen for, suggested talking points or questions, and how to move toward a positive outcome. Use short markdown sections. This is the deep-dive shown only if the CSM wants it.
+
+Sound like a senior colleague giving real advice.`,
       `sage-item-${i}`,i
     ));
   });
@@ -567,19 +837,33 @@ Write prep notes for this CSM. Let the complexity and urgency guide depth. Cover
   await Promise.allSettled(calls);
 }
 
+const sageNotesStore = {}; // elId -> { gist, full }
+
 async function callSage(prompt,elId,tpIdx) {
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const text=data.content?.[0]?.text||'Unable to generate notes.';
+    const parts=text.split('===SPLIT===');
+    const gist=parts[0].trim();
+    const full=(parts[1]||'').trim();
+    sageNotesStore[elId]={gist,full};
+
     const target=document.getElementById(elId);
-    if(target){target.classList.remove('sage-loading');target.innerHTML=fmtSage(text);}
+    if(target){
+      target.classList.remove('sage-loading');
+      const fullId=elId+'-full';
+      target.innerHTML=`
+        <div class="sage-gist">${fmtSage(gist)}</div>
+        ${full?`<button class="expand-btn" onclick="toggleFull('${fullId}',this)">▸ Show full prep notes</button>
+        <div class="sage-full" id="${fullId}">${fmtSage(full)}</div>`:''}`;
+    }
     if(tpIdx!==null){
       const tp=document.getElementById('tp-'+tpIdx);
-      if(tp){tp.style.cssText='font-style:normal;color:var(--text-dim)';tp.innerHTML=fmtSageShort(text);}
+      if(tp){tp.style.cssText='font-style:normal;color:var(--text-dim)';tp.innerHTML=fmtSageShort(gist);}
     }
   } catch {
     const target=document.getElementById(elId);
@@ -587,12 +871,18 @@ async function callSage(prompt,elId,tpIdx) {
   }
 }
 
+function toggleFull(fullId, btn) {
+  const el=document.getElementById(fullId);
+  const open=el.classList.toggle('show');
+  btn.textContent = open ? '▾ Hide full prep notes' : '▸ Show full prep notes';
+}
+
 async function callTLDR() {
   const d=meetingData;
   const summary=d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,
         messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words.`}]})
     });
@@ -612,14 +902,22 @@ async function generateSummary() {
   setModalState('summary','loading');
   genBtn.disabled=true;
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
-        messages:[{role:'user',content:`You are Sage. Write a professional warm post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
+        messages:[{role:'user',content:`You are Sage. Write a clean, professional post-meeting follow-up email from ${d.csmName||'the CSM'} to ${d.contactName||'the client'} at ${d.companyName}.
 Meeting: ${MEETING_LABELS[d.meetingType]} on ${d.meetingDate?fmtDate(d.meetingDate):'today'}.
 Items covered:\n${d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n')}
 ${notes?`\nLive notes from the call:\n${notes}`:''}
-Write a complete ready-to-send email. Warm opening, concise recap, action items with owners, friendly close with next steps. Professional but human. Include a subject line.`}]})
+
+FORMAT RULES — follow these exactly:
+- NO emojis anywhere.
+- NO markdown tables, NO decorative section headers with symbols.
+- Start with a subject line, then a warm but brief one-paragraph opening (2-3 sentences, not effusive).
+- Then a short recap written as flowing prose or a few simple labeled lines — one short paragraph per topic, not a formatted report. Keep each topic to 2-3 sentences.
+- Then a plain "Action Items" section as a simple list. Each line: the action, then who owns it, then a target if known. Format each as a single clean line like "— Confirm renewal stakeholders (Jane, before August renewal)". No table.
+- Then a short, genuine closing line and a signature block with the sender's name.
+- Keep the whole thing tight and skimmable. Sound like a real person wrote it quickly and professionally, not like a template. Warm but not gushing.`}]})
     });
     const data=await res.json();
     setModalState('summary','done',data.content?.[0]?.text||'Unable to generate summary.');
@@ -633,12 +931,12 @@ async function generateAnnouncement() {
   setModalState('announcement','loading');
   genBtn.disabled=true;
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,
         messages:[{role:'user',content:`You are Sage. Write an internal employee announcement email that ${d.companyName} can send to their team about an upcoming software rollout.
 Product: ${d.modules||'the new platform'}. Seats: ${d.seats||'company-wide'}. Launch date: ${d.launchDate?fmtDate(d.launchDate):'coming soon'}. Goal: ${d.successCriteria||'successful adoption'}.
-Write as FROM the customer's internal comms team TO their employees. Explain what's changing and why, set timeline expectations, tell employees what to do, close with encouraging tone. Concise. Include a subject line. Sound like a real internal company email.`}]})
+Write as FROM the customer's internal comms team TO their employees. Explain what's changing and why, set timeline expectations, tell employees what to do, close with encouraging tone. Concise. Include a subject line. Sound like a real internal company email. NO emojis, no markdown tables, no decorative headers — clean professional prose with at most a short simple list if needed.`}]})
     });
     const data=await res.json();
     setModalState('announcement','done',data.content?.[0]?.text||'Unable to generate email.');
@@ -660,20 +958,165 @@ function setModalState(modal,state,text) {
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+// ── REFINE WORDING ──
+async function refineWording(i) {
+  const box=document.getElementById('refine-'+i);
+  const textEl=document.getElementById('refine-text-'+i);
+  box.classList.add('show');
+  textEl.innerHTML='<span style="color:var(--sage);font-style:italic">Sage is refining...</span>';
+  const item=meetingData.items[i];
+  const prompt=`You are Sage. A CSM wrote this agenda item in internal shorthand. Rewrite it as ONE clean, client-appropriate sentence suitable for a client-facing slide — professional, clear, no internal jargon or blame. Return ONLY the rewritten sentence, nothing else.\n\nOriginal: ${item.detail}`;
+  try {
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const suggestion=(data.content?.[0]?.text||'').trim();
+    textEl.dataset.suggestion=suggestion;
+    textEl.textContent=suggestion;
+  } catch {
+    textEl.textContent='Could not generate a suggestion. Try again.';
+  }
+}
+
+function useRefined(i) {
+  const suggestion=document.getElementById('refine-text-'+i).dataset.suggestion;
+  if(!suggestion) return;
+  meetingData.items[i].detail=suggestion;
+  document.getElementById('detail-'+i).textContent=suggestion;
+  document.getElementById('refine-'+i).classList.remove('show');
+}
+
+function keepOriginal(i) {
+  document.getElementById('refine-'+i).classList.remove('show');
+}
+
+// ── EXPORT: PREP NOTES (private CSM doc) ──
+function openPrepExport() {
+  const d=meetingData;
+  let rows=d.items.map((it,i)=>`
+    <div class="export-row">
+      <input type="checkbox" id="exp-${i}" checked>
+      <div><div class="export-row-label">${it.label}</div><div class="export-row-detail">${it.detail.slice(0,90)}${it.detail.length>90?'...':''}</div></div>
+    </div>`).join('');
+  document.getElementById('prep-export-list').innerHTML=rows;
+  openModal('prep-export-modal');
+}
+
+function generatePrepDoc() {
+  const d=meetingData;
+  const checks=d.items.map((it,i)=>document.getElementById('exp-'+i)?.checked);
+  let html=`<html><head><meta charset="utf-8"><title>${d.companyName} — CSM Prep Notes</title>
+    <style>
+      body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:800px;margin:40px auto;padding:0 24px;color:#1a1a2e;line-height:1.6;}
+      h1{font-size:24px;margin-bottom:4px;} .sub{color:#666;font-size:13px;margin-bottom:8px;}
+      .conf{display:inline-block;background:#fee;color:#c00;font-size:11px;font-weight:600;padding:3px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:24px;}
+      .item{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #e2e8f0;}
+      .item-label{font-size:16px;font-weight:700;color:#0d9488;margin-bottom:4px;}
+      .item-detail{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px;}
+      .gist{font-size:14px;margin-bottom:12px;}
+      .full{font-size:13px;color:#333;}
+      .full h1,.full h2,.full h3{font-size:14px;margin:12px 0 6px;}
+      @media print{.noprint{display:none;}}
+    </style></head><body>
+    <h1>${d.companyName} — CSM Prep Notes</h1>
+    <div class="sub">${MEETING_LABELS[d.meetingType]} · ${d.meetingDate?fmtDate(d.meetingDate):''} · Prepared by ${d.csmName||'—'}</div>
+    <div class="conf">Internal Only — Not for Distribution</div>`;
+
+  d.items.forEach((it,i)=>{
+    const notes=sageNotesStore['sage-item-'+i]||{gist:'',full:''};
+    html+=`<div class="item"><div class="item-label">${it.label}</div>
+      <div class="item-detail">${it.detail}</div>
+      <div class="gist"><strong>Quick read:</strong> ${mdToHtml(notes.gist)}</div>`;
+    if(checks[i] && notes.full){ html+=`<div class="full">${mdToHtml(notes.full)}</div>`; }
+    html+=`</div>`;
+  });
+  html+=`<p class="noprint" style="color:#999;font-size:12px;margin-top:20px">Tip: use your browser's Print dialog to save this as a PDF.</p></body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html); w.document.close();
+  closeModal('prep-export-modal');
+}
+
+// ── EXPORT: CLIENT DECK (clean PPTX) ──
+function exportClientDeck() {
+  const d=meetingData;
+  const BG='0d0f12', SURF='1a1e25', BORDER='2f3540', TEXT='ffffff', MUTED='8b95a3', SAGE='7eb89a';
+  const pptx=new PptxGenJS();
+  pptx.layout='LAYOUT_16x9';
+  pptx.title=`${d.companyName} — ${MEETING_LABELS[d.meetingType]}`;
+
+  // Cover
+  let s=pptx.addSlide(); s.background={color:BG};
+  s.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:0.08,h:5.63,fill:{color:SAGE},line:{color:SAGE}});
+  s.addText((MEETING_LABELS[d.meetingType]||'').toUpperCase(),{x:0.6,y:1.4,w:8,h:0.3,fontSize:11,color:SAGE,charSpacing:3,fontFace:'Arial'});
+  s.addText(d.companyName,{x:0.6,y:1.75,w:8.5,h:1,fontSize:40,bold:true,color:TEXT,fontFace:'Arial'});
+  s.addText(d.meetingDate?fmtDate(d.meetingDate):'',{x:0.6,y:2.75,w:8,h:0.4,fontSize:14,color:MUTED,fontFace:'Arial'});
+  let meta=[];
+  if(d.csmName) meta.push(`CSM / TAM: ${d.csmName}`);
+  if(d.contactName) meta.push(`Contact: ${d.contactName}`);
+  if(d.attendees) meta.push(`Attendees: ${d.attendees}`);
+  s.addText(meta.join('     '),{x:0.6,y:3.5,w:8.5,h:0.4,fontSize:11,color:MUTED,fontFace:'Arial'});
+
+  // Kickoff snapshot
+  if(d.meetingType==='kickoff'&&(d.seats||d.modules||d.launchDate||d.successCriteria)){
+    let ks=pptx.addSlide(); ks.background={color:BG};
+    ks.addText('Account Snapshot',{x:0.6,y:0.5,w:8,h:0.6,fontSize:24,bold:true,color:TEXT,fontFace:'Arial'});
+    let lines=[];
+    if(d.seats) lines.push({text:`Seats / Licenses:  ${d.seats}`,options:{color:TEXT,bold:false}});
+    if(d.modules) lines.push({text:`Contracted Modules:  ${d.modules}`,options:{color:TEXT}});
+    if(d.launchDate) lines.push({text:`Target Launch:  ${fmtDate(d.launchDate)}`,options:{color:TEXT}});
+    if(d.successCriteria) lines.push({text:`Success Criteria:  ${d.successCriteria}`,options:{color:TEXT}});
+    ks.addText(lines.map(l=>l.text).join('\n'),{x:0.6,y:1.5,w:8.8,h:3,fontSize:15,color:TEXT,fontFace:'Arial',lineSpacingMultiple:1.8});
+  }
+
+  // Item slides (clean — detail only, no prep notes)
+  d.items.forEach((it,idx)=>{
+    let is=pptx.addSlide(); is.background={color:BG};
+    is.addShape(pptx.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:SAGE},line:{color:SAGE}});
+    is.addText(it.label,{x:0.6,y:0.5,w:8.8,h:0.6,fontSize:24,bold:true,color:TEXT,fontFace:'Arial'});
+    is.addShape(pptx.shapes.RECTANGLE,{x:0.6,y:1.5,w:8.8,h:2.5,fill:{color:SURF},line:{color:BORDER,width:0.5}});
+    is.addText(it.detail,{x:0.85,y:1.7,w:8.3,h:2.1,fontSize:15,color:TEXT,fontFace:'Arial',lineSpacingMultiple:1.4,valign:'top'});
+  });
+
+  pptx.writeFile({fileName:`${d.companyName.replace(/[^a-z0-9]/gi,'_')}_Client_Deck.pptx`});
+}
+
+// Minimal markdown -> HTML for the print doc
+function mdToHtml(md) {
+  if(!md) return '';
+  return md
+    .replace(/^\s*[-–—]{3,}\s*$/gm,'')
+    .replace(/^### (.*)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.*)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.*)$/gm,'<h2>$1</h2>')
+    .replace(/^\s*>\s?(.+)$/gm,'<blockquote style="border-left:3px solid #cbd5e1;padding-left:12px;margin:8px 0;font-style:italic;color:#555">$1</blockquote>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^[-•*]\s+(.*)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*?<\/li>\n?)+/gs,m=>`<ul>${m}</ul>`)
+    .replace(/\n\n/g,'<br><br>');
+}
+
 function toggleCSMPanel(){document.getElementById('csm-panel').classList.toggle('collapsed');}
 function clearNotes(){if(confirm('Clear all live notes?'))document.getElementById('live-notes').value='';}
 function el(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
 function fmtDate(s){if(!s)return'';return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
 function fmtSage(text){
   return text
+    .replace(/^\s*#{1,6}\s+(.+)$/gm,'<div class="sage-h">$1</div>')
+    .replace(/^\s*>\s?(.+)$/gm,'<div class="sage-quote">$1</div>')
+    .replace(/^\s*[-–—]{3,}\s*$/gm,'')
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>')
+    .replace(/^[-•*]\s+(.+)$/gm,'<li>$1</li>')
     .replace(/(<li>.*?<\/li>\n?)+/gs,m=>`<ul>${m}</ul>`)
-    .replace(/\n\n/g,'<br><br>');
+    .replace(/\n{2,}/g,'<br><br>')
+    .replace(/(<\/div>)<br><br>/g,'$1')
+    .replace(/<br><br>(<div)/g,'$1');
 }
 function fmtSageShort(text){
-  return text.split('\n').filter(l=>l.trim()).slice(0,3)
-    .map(l=>l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^[-•]\s+/,'')).join('<br>');
+  return text.split('\n').filter(l=>l.trim()&&!/^\s*#{1,6}\s/.test(l)&&!/^\s*[-–—]{3,}\s*$/.test(l)).slice(0,3)
+    .map(l=>l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^[-•*>]\s+/,'')).join('<br>');
 }
 function copyText(elId,btnId){
   const text=document.getElementById(elId).textContent;

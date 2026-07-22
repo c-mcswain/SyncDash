@@ -262,6 +262,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .refine-use:hover { background: #92caa8; }
 .refine-keep { background: none; color: var(--text-dim); border-color: var(--border2); }
 .refine-keep:hover { color: var(--text); }
+.panel-action-btn.value-btn { background: var(--danger-dim); border-color: rgba(224,112,112,0.35); color: #f0a0a0; }
+.panel-action-btn.value-btn:hover { background: rgba(224,112,112,0.2); }
 /* Comm modal */
 .comm-field { margin-bottom: 18px; }
 .comm-field-label { font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px; display: block; }
@@ -432,6 +434,7 @@ textarea.comm-input { min-height: 70px; resize: vertical; line-height: 1.6; }
         <div class="panel-actions">
           <button class="panel-action-btn sage" onclick="openModal('summary-modal')">✉️ Follow-Up Summary (for you → admin)</button>
           <button class="panel-action-btn accent" onclick="openCommModal()">📢 Draft a Communication (template for admin)</button>
+          <button class="panel-action-btn value-btn" id="value-reminder-btn" onclick="openValueModal()" style="display:none">🛡️ Value Reminder (de-escalation aid)</button>
           <button class="panel-action-btn sage" onclick="openPrepExport()">📝 Export Prep Notes (private)</button>
           <button class="panel-action-btn sage" onclick="exportClientDeck()">📊 Export Client Deck (PPTX)</button>
         </div>
@@ -450,6 +453,38 @@ textarea.comm-input { min-height: 70px; resize: vertical; line-height: 1.6; }
     <div class="modal-footer">
       <button class="cancel-btn" onclick="closeModal('prep-export-modal')">Cancel</button>
       <button class="copy-btn" onclick="generatePrepDoc()">Open Printable Doc</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="value-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🛡️ Value Reminder</div><button class="modal-close" onclick="closeModal('value-modal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">A private set of talking points to help you de-escalate and re-anchor on the value of the partnership. Acknowledges the frustration, shows momentum, reframes toward retention. For your eyes only.</p>
+
+      <div class="comm-field">
+        <label class="comm-field-label">What is the escalation about? <span style="font-weight:400;color:var(--danger)">*</span><span class="comm-field-sub">So the reframe speaks to their actual frustration</span></label>
+        <textarea class="comm-input" id="value-issue" placeholder="e.g. Repeated data export delays over the past three weeks, VP is frustrated..."></textarea>
+      </div>
+
+      <div class="comm-field">
+        <label class="comm-field-label">What's being done to handle it? <span style="font-weight:400;color:var(--text-muted)">(optional)</span><span class="comm-field-sub">Lets Sage show momentum and active resolution</span></label>
+        <textarea class="comm-input" id="value-handling" placeholder="e.g. Root cause identified, fix in QA, daily status updates committed..."></textarea>
+      </div>
+
+      <div class="comm-field">
+        <label class="comm-field-label">Additional value context <span style="font-weight:400;color:var(--text-muted)">(optional)</span><span class="comm-field-sub">Anything the account context above might be missing</span></label>
+        <textarea class="comm-input" id="value-context" placeholder="e.g. Platform saved them 6 hrs/week in reporting, drove 22% error reduction..."></textarea>
+      </div>
+
+      <div class="comm-result" id="value-result"></div>
+      <div class="parse-status" id="value-status" style="margin-top:4px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" onclick="closeModal('value-modal')">Close</button>
+      <button class="copy-btn" id="value-generate-btn" onclick="generateValueReminder()">Generate Talking Points</button>
+      <button class="copy-btn" id="value-copy-btn" onclick="copyText('value-text','value-copy-btn')" style="display:none">Copy</button>
     </div>
   </div>
 </div>
@@ -861,6 +896,11 @@ function buildDeckShell() {
     </div>`;
   c.appendChild(tldr);
 
+  // Show the Value Reminder (de-escalation) button for escalation meetings or when an escalation item is present
+  const hasEscalation = d.meetingType==='escalation' || d.items.some(it=>it.type==='escalation');
+  const vbtn=document.getElementById('value-reminder-btn');
+  if(vbtn) vbtn.style.display = hasEscalation ? 'flex' : 'none';
+
   const tp=document.getElementById('talking-points-list');
   tp.innerHTML='';
   d.items.forEach((item,i)=>{
@@ -943,19 +983,43 @@ function toggleFull(fullId, btn) {
 async function callTLDR() {
   const d=meetingData;
   const summary=d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
+  const mkList=arr=>arr?.length?`<ul>${arr.map(b=>`<li>${b}</li>`).join('')}</ul>`:'<span style="color:var(--text-muted)">—</span>';
+  const render=parsed=>{
+    document.getElementById('tldr-wins').innerHTML=mkList(parsed.wins);
+    document.getElementById('tldr-wins').style.cssText='';
+    document.getElementById('tldr-address').innerHTML=mkList(parsed.address);
+    document.getElementById('tldr-address').style.cssText='';
+    document.getElementById('tldr-next').innerHTML=mkList(parsed.next);
+    document.getElementById('tldr-next').style.cssText='';
+  };
+  // Fallback built from the items themselves, so TL;DR is never empty
+  const fallback=()=>{
+    const wins=d.items.filter(it=>['positive','adoption','usage'].includes(it.type)).map(it=>it.label);
+    const address=d.items.filter(it=>['risk','ticket','escalation','action','decision'].includes(it.type)).map(it=>it.label);
+    render({
+      wins: wins.length?wins.slice(0,3):['Review highlights with the client'],
+      address: address.length?address.slice(0,3):['Confirm any open items'],
+      next: ['Confirm owners on action items','Schedule the follow-up','Share the recap with stakeholders']
+    });
+  };
   try {
     const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,
-        messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nRespond ONLY with JSON, no markdown:\n{"wins":["..."],"address":["..."],"next":["..."]}\nKeep each bullet under 12 words.`}]})
+        messages:[{role:'user',content:`Summarize this ${MEETING_LABELS[d.meetingType]} for ${d.companyName} into a TL;DR. Items:\n${summary}\n\nReturn ONLY a JSON object, no other text, no markdown fences:\n{"wins":["..."],"address":["..."],"next":["..."]}\nEach array 1-3 short bullets, each under 12 words. wins = positives/things going well. address = items needing attention. next = concrete next steps.`}]})
     });
     const data=await res.json();
-    const parsed=JSON.parse(data.content?.[0]?.text?.replace(/\`\`\`json|\`\`\`/g,'').trim()||'{}');
-    const mkList=arr=>arr?.length?`<ul>${arr.map(b=>`<li>${b}</li>`).join('')}</ul>`:'—';
-    document.getElementById('tldr-wins').innerHTML=mkList(parsed.wins);
-    document.getElementById('tldr-address').innerHTML=mkList(parsed.address);
-    document.getElementById('tldr-next').innerHTML=mkList(parsed.next);
-  } catch {['tldr-wins','tldr-address','tldr-next'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.fontStyle='normal';e.textContent='—';}});}
+    let raw=data.content?.[0]?.text||'';
+    // Pull the JSON object out even if wrapped in prose or fences
+    raw=raw.replace(/```json/gi,'').replace(/```/g,'');
+    const match=raw.match(/\{[\s\S]*\}/);
+    if(!match) return fallback();
+    let parsed;
+    try { parsed=JSON.parse(match[0]); }
+    catch { return fallback(); }
+    if(!parsed.wins&&!parsed.address&&!parsed.next) return fallback();
+    render(parsed);
+  } catch { fallback(); }
 }
 
 async function generateSummary() {
@@ -1123,6 +1187,14 @@ function generatePrepDoc() {
     });
     html+=`</div>`;
   }
+  // Value Reminder (de-escalation) section
+  if(generatedValueReminder){
+    html+=`<hr class="item-divider"><div class="value-section"><h2 style="font-size:18px;color:#0d9488;margin:0 0 6px;">De-escalation Talking Points</h2>
+      <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Private value-reminder talking points prepared for this escalation. Captured for the account record.</p>
+      <div style="font-size:12px;color:#64748b;margin-bottom:8px;">Escalation: ${generatedValueReminder.issue}</div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px 16px;font-size:12.5px;color:#334155;white-space:pre-wrap;line-height:1.6;">${generatedValueReminder.text.replace(/</g,'&lt;')}</div>
+    </div>`;
+  }
   html+=`<div class="foot noprint">Tip: use your browser's Print dialog (Cmd/Ctrl + P) to save this as a PDF.</div></body></html>`;
 
   const w=window.open('','_blank');
@@ -1279,6 +1351,75 @@ FORMAT: Clean and professional. NO emojis, no markdown tables, no decorative hea
 function copyCommDraft(id, btn) {
   const text=document.getElementById(id).textContent;
   navigator.clipboard.writeText(text).then(()=>{ const o=btn.textContent; btn.textContent='Copied!'; setTimeout(()=>btn.textContent=o,2000); });
+}
+
+// ── VALUE REMINDER (de-escalation aid, private) ──
+let generatedValueReminder = null; // {issue, text}
+
+function openValueModal() {
+  document.getElementById('value-issue').value='';
+  document.getElementById('value-handling').value='';
+  document.getElementById('value-context').value='';
+  document.getElementById('value-result').innerHTML='';
+  document.getElementById('value-status').className='parse-status';
+  document.getElementById('value-copy-btn').style.display='none';
+  openModal('value-modal');
+}
+
+async function generateValueReminder() {
+  const d=meetingData;
+  const issue=document.getElementById('value-issue').value.trim();
+  const handling=document.getElementById('value-handling').value.trim();
+  const extra=document.getElementById('value-context').value.trim();
+  const status=document.getElementById('value-status');
+
+  if(!issue){ status.className='parse-status show error'; status.textContent='Tell Sage what the escalation is about first.'; return; }
+
+  const btn=document.getElementById('value-generate-btn');
+  btn.disabled=true;
+  status.className='parse-status show';
+  status.innerHTML='<div class="spinner green" style="width:13px;height:13px"></div> Sage is preparing your talking points...';
+  document.getElementById('value-result').innerHTML='';
+  document.getElementById('value-copy-btn').style.display='none';
+
+  const itemsCtx=d.items.map(it=>`- ${it.label}: ${it.detail}`).join('\n');
+  const prompt=`You are Sage, a senior CSM advisor coaching a CSM through a live escalation with ${d.companyName}. Generate a PRIVATE set of talking points the CSM can glance at mid-call to de-escalate and re-anchor the conversation on the value of the partnership. This is NOT a script to read aloud — it's a confident, grounding reminder.
+
+The escalation is about: ${issue}
+${handling?`What's being done to resolve it: ${handling}`:''}
+${extra?`Additional value context: ${extra}`:''}
+
+Account context: ${MEETING_LABELS[d.meetingType]} with ${d.companyName}.${d.background?' Background: '+d.background:''}
+${itemsCtx?`Other items in play:\n${itemsCtx}`:''}
+
+Structure the talking points to:
+1. ACKNOWLEDGE the frustration first, genuinely and without defensiveness.
+2. SHOW MOMENTUM — reference what's being done so they feel heard and see action.
+3. RE-ANCHOR ON VALUE — remind them, warmly and specifically, of what the partnership delivers and why it's worth continuing through this bump.
+4. Offer a forward-looking next step that rebuilds trust.
+
+Tone: warm, confident, partnership-focused. Never defensive, never salesy, never dismissive of their concern. Empathy plus solutions. Use short markdown sections and brief bullet points the CSM can scan quickly.`;
+
+  try {
+    const res=await fetch('https://sage-proxy.christy-m-mcswain.workers.dev',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:900,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=(data.content?.[0]?.text||'Unable to generate.').trim();
+    document.getElementById('value-result').innerHTML=`
+      <div class="comm-draft">
+        <div class="comm-draft-head"><span class="comm-draft-audience employee">Private · De-escalation Talking Points</span></div>
+        <div class="comm-draft-body" id="value-text">${fmtSage(text)}</div>
+      </div>`;
+    document.getElementById('value-copy-btn').style.display='inline-block';
+    generatedValueReminder={issue, text};
+    status.className='parse-status'; status.textContent='';
+  } catch {
+    status.className='parse-status show error'; status.textContent='Could not generate. Try again.';
+  } finally {
+    btn.disabled=false;
+  }
 }
 
 function toggleCSMPanel(){document.getElementById('csm-panel').classList.toggle('collapsed');}
